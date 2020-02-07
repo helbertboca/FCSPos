@@ -10,25 +10,12 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar"/>
-
-        <!-- The main content view -->
         <FrameLayout
-            android:id="@+id/content_frame"
+            android:id="@+id/contMenuPrincipalFrag"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-    </LinearLayout>
 
-    <android.support.design.widget.NavigationView
-        android:id="@+id/navview"
-        android:layout_height="match_parent"
-        android:layout_width="wrap_content"
-        android:layout_gravity="start"
-        app:headerLayout="@layout/header_navigation_drawer"
-        android:fitsSystemWindows="true"
-        app:menu="@menu/nav_options"/>
+    </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

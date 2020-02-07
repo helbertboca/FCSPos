@@ -1,4 +1,4 @@
-package com.fcs.fcspos.fragments;
+package com.fcs.fcspos.ui.fragments;
 
 
 import android.os.Bundle;
@@ -12,10 +12,10 @@ import com.fcs.fcspos.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class Consignar extends Fragment {
+public class Turno extends Fragment {
 
 
-    public Consignar() {
+    public Turno() {
         // Required empty public constructor
     }
 
@@ -24,7 +24,7 @@ public class Consignar extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_consignar, container, false);
+        return inflater.inflate(R.layout.fragment_turno, container, false);
     }
 
 }

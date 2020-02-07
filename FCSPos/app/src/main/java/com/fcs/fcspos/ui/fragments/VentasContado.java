@@ -1,4 +1,4 @@
-package com.fcs.fcspos.fragments;
+package com.fcs.fcspos.ui.fragments;
 
 
 import android.app.AlertDialog;

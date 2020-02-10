@@ -61,7 +61,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         switch (selectedOption){
             case COUNTED:
                 sale.setKind("Counted");
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, productKindFragment).addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, productKindFragment).
+                        addToBackStack(null).commit();
                 break;
             case LOYAL:
                 sale.setKind("Loyal");
@@ -87,7 +88,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
                 sale.setProduct(PRODUCT_TWO);
                 break;
         }
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, vehicleKindFragment).addToBackStack(null).commit();
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, vehicleKindFragment).
+                addToBackStack(null).commit();
     }
 
     @Override
@@ -111,7 +113,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
                 break;
         }
         sale.setVehicle(vehicle);
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, presetKindFragment).addToBackStack(null).commit();
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, presetKindFragment).
+                addToBackStack(null).commit();
     }
 
     @Override
@@ -120,11 +123,13 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         switch (selectedKindPreset){
             case MONEY:
                 sale.setPresetKind(MONEY);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, moneyFragment).addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, moneyFragment).
+                        addToBackStack(null).commit();
             break;
             case VOLUME:
                 sale.setPresetKind(VOLUME);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, volumeFragment).addToBackStack(null).commit();
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, volumeFragment).
+                        addToBackStack(null).commit();
                 break;
             case FULL:
                 //mostrar levante manguera

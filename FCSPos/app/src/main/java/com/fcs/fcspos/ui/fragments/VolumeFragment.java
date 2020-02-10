@@ -36,7 +36,8 @@ public class VolumeFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(!edtVolume.getText().toString().equals("")){
-                    saleOption.volume(Double.parseDouble(edtVolume.getText().toString()));
+                    saleOption.volume(Double.parseDouble( edtVolume.getText().toString().
+                            replace(",",".") ));
                 }else {
                     Toast.makeText(getContext(), "Ingrese un valor", Toast.LENGTH_SHORT).show();
                 }

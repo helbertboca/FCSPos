@@ -1,5 +1,7 @@
 package com.fcs.fcspos.model;
 
+import android.support.annotation.NonNull;
+
 public class Sale {
 
     private String kind;
@@ -32,5 +34,35 @@ public class Sale {
 
     public void setVoleme(double voleme) {
         this.voleme = voleme;
+    }
+
+    public String getKind() {
+        return kind;
+    }
+
+    public int getProduct() {
+        return product;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public int getPresetKind() {
+        return presetKind;
+    }
+
+    public int getMoney() {
+        return money;
+    }
+
+    public double getVoleme() {
+        return voleme;
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return "VENTA.  Tipo:" + kind + ", Producto:" + product + ", Vehiculo:" + vehicle + ", Tipo de Preset:" + presetKind + ", Dinero:" + money + ", Volumen:"+ voleme ;
     }
 }

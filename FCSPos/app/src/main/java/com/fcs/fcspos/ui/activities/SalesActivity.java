@@ -1,8 +1,6 @@
 package com.fcs.fcspos.ui.activities;
 
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -17,11 +15,12 @@ import com.fcs.fcspos.ui.fragments.SalesKindFragment;
 import com.fcs.fcspos.ui.fragments.VehicleKindFragment;
 import com.fcs.fcspos.ui.fragments.VolumeFragment;
 
+
+
 public class SalesActivity extends AppCompatActivity  implements SaleOption {
 
 
     private FragmentManager fragmentManager;
-    private FragmentTransaction fragmentTransaction;
     private SalesKindFragment salesKindFragment;
     private ProductKindFragment productKindFragment;
     private VehicleKindFragment vehicleKindFragment;
@@ -44,16 +43,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     private void addFragmentos() {
         fragmentManager = getSupportFragmentManager();
         instantiateFragmets();
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.contSaleKind, salesKindFragment);
-        fragmentTransaction.add(R.id.contProductKind, productKindFragment);
-        fragmentTransaction.add(R.id.contVehicleKind, vehicleKindFragment);
-        fragmentTransaction.add(R.id.contPresetKind, presetKindFragment);
-        fragmentTransaction.add(R.id.contMoney, moneyFragment);
-        fragmentTransaction.add(R.id.contVolume, volumeFragment);
-        hideFragments(productKindFragment, vehicleKindFragment, presetKindFragment, moneyFragment,
-                volumeFragment);
-        fragmentTransaction.commit();
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, salesKindFragment).commit();
     }
 
     private void instantiateFragmets() {
@@ -71,10 +61,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         switch (selectedOption){
             case COUNTED:
                 sale.setKind("Counted");
-                fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.hide(salesKindFragment);
-                fragmentTransaction.show(productKindFragment);
-                fragmentTransaction.commit();
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, productKindFragment).addToBackStack(null).commit();
                 break;
             case LOYAL:
                 sale.setKind("Loyal");
@@ -100,10 +87,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
                 sale.setProduct(PRODUCT_TWO);
                 break;
         }
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.hide(productKindFragment);
-        fragmentTransaction.show(vehicleKindFragment);
-        fragmentTransaction.commit();
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, vehicleKindFragment).addToBackStack(null).commit();
     }
 
     @Override
@@ -127,51 +111,50 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
                 break;
         }
         sale.setVehicle(vehicle);
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.hide(vehicleKindFragment);
-        fragmentTransaction.show(presetKindFragment);
-        fragmentTransaction.commit();
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, presetKindFragment).addToBackStack(null).commit();
     }
 
     @Override
     public void optionPresetKind(int selectedKindPreset) {
         final int MONEY=1,VOLUME=2,FULL=3;
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.hide(presetKindFragment);
         switch (selectedKindPreset){
             case MONEY:
                 sale.setPresetKind(MONEY);
-                fragmentTransaction.show(moneyFragment);
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, moneyFragment).addToBackStack(null).commit();
             break;
             case VOLUME:
                 sale.setPresetKind(VOLUME);
-                fragmentTransaction.show(volumeFragment);
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, volumeFragment).addToBackStack(null).commit();
                 break;
             case FULL:
                 //mostrar levante manguera
                 sale.setPresetKind(FULL);
                 break;
         }
-        fragmentTransaction.commit();
     }
 
     @Override
     public void money(int money) {
         sale.setMoney(money);
+        sale.setVoleme(0);
+        //hacer calculo para volumen
+        System.out.println(sale.toString());
     }
 
     @Override
     public void volume(double volume) {
         sale.setVoleme(volume);
+        sale.setMoney(0);
+        //hacer calculo para dinero
+        System.out.println(sale.toString());
+        System.out.println(sale.getVehicle().toString());
     }
 
 
-    private void hideFragments(Fragment... fragment) {
-        for (Fragment frg: fragment) {
-            fragmentTransaction.hide(frg);
-        }
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        getFragmentManager().popBackStack();
     }
-
-
 
 }

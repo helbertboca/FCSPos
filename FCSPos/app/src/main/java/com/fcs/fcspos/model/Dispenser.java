@@ -1,6 +1,6 @@
 package com.fcs.fcspos.model;
 
-public class Surtidor {
+public class Dispenser {
 
     private String marca;
     private int numeroDdigitos;

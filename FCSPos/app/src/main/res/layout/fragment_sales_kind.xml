@@ -4,33 +4,28 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.MenuPrincipalFragment">
+    tools:context=".ui.fragments.SalesKindFragment">
 
     <!-- TODO: Update blank fragment layout -->
 
     <Button
-        android:text="Ventas"
-        android:id="@+id/btnVentas"
+        android:text="Contado"
+        android:id="@+id/btnCounted"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <Button
-        android:text="Canasta"
-        android:id="@+id/btnCanasta"
+        android:text="Fidelizado"
+        android:id="@+id/btnLoyal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <Button
-        android:text="Consignar"
-        android:id="@+id/btnConsignar"
+        android:text="Credito"
+        android:id="@+id/btnCredit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
     <Button
-        android:text="Turno"
-        android:id="@+id/btnTurno"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <Button
-        android:text="Calibrar"
-        android:id="@+id/btnCalibrar"
+        android:text="Forma De Pago"
+        android:id="@+id/btnWayToPay"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

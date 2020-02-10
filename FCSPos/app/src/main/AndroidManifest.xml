@@ -9,6 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ui.activities.CalibrateActivity"></activity>
+        <activity android:name=".ui.activities.TurnActivity" />
+        <activity android:name=".ui.activities.RecordActivity" />
+        <activity android:name=".ui.activities.BasketActivity" />
+        <activity android:name=".ui.activities.SalesActivity" />
         <activity android:name=".ui.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

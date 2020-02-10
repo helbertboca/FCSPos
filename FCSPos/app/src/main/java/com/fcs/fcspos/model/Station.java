@@ -1,6 +1,6 @@
 package com.fcs.fcspos.model;
 
-public class Estacion {
+public class Station {
 
     private String nombre;
     private String nit;

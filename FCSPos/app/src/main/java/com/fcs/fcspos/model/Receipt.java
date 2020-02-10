@@ -2,9 +2,9 @@ package com.fcs.fcspos.model;
 
 import java.util.Date;
 
-public class Recibo {
+public class Receipt {
 
-    private Estacion estacion;
+    private Station station;
     private Date date;
     private String consecutivo;
 

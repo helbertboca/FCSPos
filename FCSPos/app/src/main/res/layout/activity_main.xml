@@ -9,12 +9,31 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <FrameLayout
-            android:id="@+id/contMenuPrincipalFrag"
+        <Button
+            android:text="Ventas"
+            android:id="@+id/btnSales"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-
-
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="Canasta"
+            android:id="@+id/btnBasket"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="Consignar"
+            android:id="@+id/btnRecord"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="Turno"
+            android:id="@+id/btnTurn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="Calibrar"
+            android:id="@+id/btnCalibrate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
     </LinearLayout>
 
 </android.support.v4.widget.DrawerLayout>

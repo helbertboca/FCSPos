@@ -1,45 +1,64 @@
 package com.fcs.fcspos.ui.activities;
 
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
 import com.fcs.fcspos.R;
-import com.fcs.fcspos.model.OpcionMenu;
-import com.fcs.fcspos.ui.fragments.MenuPrincipalFragment;
 
 
-public class MainActivity extends AppCompatActivity implements OpcionMenu {
+public class MainActivity extends AppCompatActivity{
 
     private String BASE_URL = "http://fcservices.distracom.com.co/TestRestPos/TramaRestService.svc/";
-    private FragmentManager fragmentManager;
-    private FragmentTransaction fragmentTransaction;
-    private MenuPrincipalFragment menuPrincipalFrag;
+    private Button btnSales,btnBasket,btnRecord,btnTurn,btnCalibrate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        menuPrincipalFrag = new MenuPrincipalFragment();
-        fragmentManager = getSupportFragmentManager();
-        adjuntarFragmentos();
+        initView();
+        eventsViews();
     }
 
-    private void adjuntarFragmentos() {
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(R.id.contMenuPrincipalFrag, menuPrincipalFrag);
-
-
-        fragmentTransaction.show(menuPrincipalFrag);
-        fragmentTransaction.commit();
+    private void eventsViews() {
+        btnSales.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getApplicationContext(), SalesActivity.class);
+                startActivity(i);
+            }
+        });
+        btnBasket.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+        btnRecord.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+        btnTurn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
+        btnCalibrate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
     }
 
-    @Override
-    public void opcionMenuElegida(int opcionSeleccionada) {
-        System.out.println("presionado");
+    private void initView() {
+        btnSales = findViewById(R.id.btnSales);
+        btnBasket = findViewById(R.id.btnBasket);
+        btnRecord = findViewById(R.id.btnRecord);
+        btnTurn = findViewById(R.id.btnTurn);
+        btnCalibrate = findViewById(R.id.btnCalibrate);
     }
-
 
 
 }

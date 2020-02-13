@@ -5,21 +5,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.fcs.fcspos.R;
+import com.fcs.fcspos.io.MfcWifi;
 
 
 public class MainActivity extends AppCompatActivity{
 
-    private String BASE_URL = "http://fcservices.distracom.com.co/TestRestPos/TramaRestService.svc/";
+
     private Button btnSales,btnBasket,btnRecord,btnTurn,btnCalibrate;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initView();
-        eventsViews();
+
+        final MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
+        //final MfcWifi mfcWifi = MfcWifi.getInstance("SurtidorA", "modulo001","192.168.4.1", 80);
+        if(mfcWifi.conectionMfcWifi(getApplicationContext())){
+            //Toast.makeText(this, "Conexion con MFC exitosa",
+                    //Toast.LENGTH_SHORT).show();
+            initView();
+            eventsViews();
+        }
+
     }
 
     private void eventsViews() {

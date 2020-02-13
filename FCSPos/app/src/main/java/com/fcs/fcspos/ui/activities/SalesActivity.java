@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.fcs.fcspos.R;
+import com.fcs.fcspos.io.MfcWifi;
 import com.fcs.fcspos.model.Sale;
 import com.fcs.fcspos.model.SaleOption;
 import com.fcs.fcspos.model.Vehicle;
@@ -144,6 +145,17 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         sale.setVoleme(0);
         //hacer calculo para volumen
         System.out.println(sale.toString());
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(sale.getPresetKind());
+        stringBuilder.append(sale.getProduct());
+        stringBuilder.append(sale.getMoney());
+
+        MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
+        //MfcWifi mfcWifi = MfcWifi.getInstance("","","",1);
+        mfcWifi.sendRequest(stringBuilder.toString());
+
+        System.out.println("haodf");
     }
 
     @Override

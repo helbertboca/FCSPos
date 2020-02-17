@@ -16,7 +16,7 @@
         <activity android:name=".ui.activities.RecordActivity" />
         <activity android:name=".ui.activities.BasketActivity" />
         <activity android:name=".ui.activities.SalesActivity" />
-        <activity android:name=".ui.activities.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

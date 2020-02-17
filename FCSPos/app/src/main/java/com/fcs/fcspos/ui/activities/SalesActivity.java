@@ -151,8 +151,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         stringBuilder.append(sale.getProduct());
         stringBuilder.append(sale.getMoney());
 
-        MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
-        //MfcWifi mfcWifi = MfcWifi.getInstance("","","",1);
+        MfcWifi mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
+        //MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
         mfcWifi.sendRequest(stringBuilder.toString());
 
         System.out.println("haodf");

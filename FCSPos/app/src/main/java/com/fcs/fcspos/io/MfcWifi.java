@@ -5,7 +5,7 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.widget.Toast;
 
-import com.fcs.fcspos.ui.activities.MainActivity;
+import com.fcs.fcspos.MainActivity;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

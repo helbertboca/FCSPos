@@ -6,6 +6,9 @@ public class Hose {
     private int electronicTotal;
     private short ppu;
 
+    public Hose(short ppu){
+        this.ppu = ppu;
+    }
 
     public void setState(byte state) {
         this.state = state;
@@ -21,6 +24,10 @@ public class Hose {
 
     public short getPpu() {
         return ppu;
+    }
+
+    public void setElectronicTotal(int electronicTotal) {
+        this.electronicTotal = electronicTotal;
     }
 
     public int getElectronicTotal() {

@@ -1,5 +1,6 @@
 package com.fcs.fcspos.ui.activities;
 
+import android.os.SystemClock;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +31,9 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     private VolumeFragment volumeFragment;
     private Sale sale;
     private Vehicle vehicle;
+    private final int ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,6 +143,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         }
     }
 
+    private MfcWifi mfcWifi;
     @Override
     public void money(int money) {
         sale.setMoney(money);
@@ -151,11 +156,24 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         stringBuilder.append(sale.getProduct());
         stringBuilder.append(sale.getMoney());
 
-        MfcWifi mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
+        mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
         //MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
-        mfcWifi.sendRequest(stringBuilder.toString());
 
-        System.out.println("haodf");
+        mfcWifi.sendRequest("estado;1");
+        if(mfcWifi.getAnswer()!=null){
+            System.out.println("Respuesta: " + mfcWifi.getAnswer());
+            final String[] splitAnswer = mfcWifi.getAnswer().split(";");
+            if(Integer.parseInt(splitAnswer[2]) == ESPERA){
+                mfcWifi.sendRequest("manguera;1");
+                if(mfcWifi.getAnswer()!=null){
+                    System.out.println("Respuesta manguera: " + mfcWifi.getAnswer());
+                }else{
+                    System.out.println("No hubo manguera");
+                }
+            }
+        }else{
+            System.out.println("No hubo estado");
+        }
     }
 
     @Override

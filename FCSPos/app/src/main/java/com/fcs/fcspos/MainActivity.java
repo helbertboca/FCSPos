@@ -31,36 +31,39 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
 
         mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
-        //final MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!||!", "192.168.102.29", 8080);
-        if(mfcWifi.conectionMfcWifi(getApplicationContext())){
-            //Toast.makeText(this, "Conexion con MFC exitosa",
-                    //Toast.LENGTH_SHORT).show();
-            initialSettingsDispenser();
-            initView();
-            eventsViews();
-        }
+        //mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!||!", "192.168.102.29", 8080);
+        initialSettingsDispenser();
+        initView();
+        eventsViews();
 
     }
 
 
     private void initialSettingsDispenser() {
-        dispenser = new Dispenser();
-        Side sideA = new Side();
-        Side sideB = new Side();
 
-        ArrayList<Hose> hosesLA = new ArrayList<>();
-        ArrayList<Hose> hosesLB = new ArrayList<>();
-        hosesLA.add(new Hose());
-        hosesLA.add(new Hose());
-        hosesLB.add(new Hose());
-        hosesLB.add(new Hose());
+        //Configuraciones parciales para pruebas de venta ------------------------------------------
+        final String BRAND="Gilbarco";
+        final byte NUMBER_OF_DIGITS=7, DECIMALS_IN_VOLUME=3;
+        final byte NUMBER_OF_FACES=2, NUMBER_OF_HOUSES_PERFACE=3;
+        final byte SIDE_A=0, SIDE_B=1;
+        short[] ppus = {7000,8000,10500};
+        //------------------------------------------------------------------------------------------
 
-        sideA.setHoses(hosesLA);
-        sideB.setHoses(hosesLB);
-
+        dispenser = new Dispenser(BRAND , NUMBER_OF_DIGITS, DECIMALS_IN_VOLUME);
         ArrayList<Side> sides = new ArrayList<>();
-        sides.add(sideA);
-        sides.add(sideB);
+        for(int x=0; x<NUMBER_OF_FACES; x++){
+            sides.add(new Side());
+        }
+        ArrayList<Hose> hosesLA = new ArrayList<>();
+        for(int x=0; x<NUMBER_OF_HOUSES_PERFACE;x++){
+            hosesLA.add(new Hose(ppus[x]));
+        }
+        sides.get(SIDE_A).setHoses(hosesLA);
+        ArrayList<Hose> hosesLB = new ArrayList<>();
+        for(int x=0; x<NUMBER_OF_HOUSES_PERFACE;x++){
+            hosesLB.add(new Hose(ppus[x]));
+        }
+        sides.get(SIDE_B).setHoses(hosesLB);
         dispenser.setSides(sides);
     }
 
@@ -69,24 +72,13 @@ public class MainActivity extends AppCompatActivity{
         btnSales.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //--------------------------------------------------------------------------------------
-                mfcWifi.sendRequest("estado;1");
-                SystemClock.sleep(60);
-                System.out.println("Respuesta pos1 = " + mfcWifi.getAnswer());
-
-                Hose hose = dispenser.getSides().get(0).getHoses().get(0);
-                hose.setState((byte) 2);
-
-                //Intent i = new Intent(getApplicationContext(), SalesActivity.class);
-                //startActivity(i);
+                Intent i = new Intent(getApplicationContext(), SalesActivity.class);
+                startActivity(i);
             }
         });
         btnBasket.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mfcWifi.sendRequest("estado;2");
-                SystemClock.sleep(60);
-                System.out.println("Respuesta pos2 = " + mfcWifi.getAnswer());
             }
         });
         btnRecord.setOnClickListener(new View.OnClickListener() {

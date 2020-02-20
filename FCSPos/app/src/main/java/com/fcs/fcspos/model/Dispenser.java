@@ -7,20 +7,14 @@ import java.util.ArrayList;
 public class Dispenser {
 
     private String brand;
-    private int numberOfDigits;
-    private int decimalsInVolume;
+    private byte numberOfDigits;
+    private byte decimalsInVolume;
     private ArrayList<Side> sides;
 
 
-    public void setBrand(String brand) {
+    public Dispenser(String brand, byte numberOfDigits, byte decimalsInVolume){
         this.brand = brand;
-    }
-
-    public void setNumberOfDigits(int numberOfDigits) {
         this.numberOfDigits = numberOfDigits;
-    }
-
-    public void setDecimalsInVolume(int decimalsInVolume) {
         this.decimalsInVolume = decimalsInVolume;
     }
 

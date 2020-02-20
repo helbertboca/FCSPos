@@ -1,6 +1,8 @@
 package com.fcs.fcspos.model;
 
-public class Hose {
+import java.io.Serializable;
+
+public class Hose implements Serializable {
 
     private byte state;
     private int electronicTotal;

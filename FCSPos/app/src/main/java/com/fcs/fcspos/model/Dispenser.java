@@ -2,9 +2,10 @@ package com.fcs.fcspos.model;
 
 import android.print.PrinterId;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Dispenser {
+public class Dispenser implements Serializable {
 
     private String brand;
     private byte numberOfDigits;

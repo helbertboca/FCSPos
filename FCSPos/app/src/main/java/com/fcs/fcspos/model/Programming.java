@@ -2,14 +2,16 @@ package com.fcs.fcspos.model;
 
 import android.support.annotation.NonNull;
 
-public class Sale {
+import java.io.Serializable;
+
+public class Programming implements Serializable {
 
     private String kind;
     private int product;
     private Vehicle vehicle;
     private int presetKind;
     private int money;
-    private double voleme;
+    private double volume;
 
 
     public void setKind(String kind) {
@@ -33,7 +35,7 @@ public class Sale {
     }
 
     public void setVoleme(double voleme) {
-        this.voleme = voleme;
+        this.volume = voleme;
     }
 
     public String getKind() {
@@ -56,13 +58,13 @@ public class Sale {
         return money;
     }
 
-    public double getVoleme() {
-        return voleme;
+    public double getVolume() {
+        return volume;
     }
 
     @NonNull
     @Override
     public String toString() {
-        return "VENTA.  Tipo:" + kind + ", Producto:" + product + ", Vehiculo:" + vehicle + ", Tipo de Preset:" + presetKind + ", Dinero:" + money + ", Volumen:"+ voleme ;
+        return "VENTA.  Tipo:" + kind + ", Producto:" + product + ", Vehiculo:" + vehicle + ", Tipo de Preset:" + presetKind + ", Dinero:" + money + ", Volumen:"+ volume ;
     }
 }

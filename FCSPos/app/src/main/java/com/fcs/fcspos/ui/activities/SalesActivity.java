@@ -1,5 +1,6 @@
 package com.fcs.fcspos.ui.activities;
 
+import android.graphics.drawable.TransitionDrawable;
 import android.os.SystemClock;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +8,9 @@ import android.os.Bundle;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.MfcWifi;
-import com.fcs.fcspos.model.Sale;
+import com.fcs.fcspos.model.Client;
+import com.fcs.fcspos.model.Dispenser;
+import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.SaleOption;
 import com.fcs.fcspos.model.Vehicle;
 import com.fcs.fcspos.ui.fragments.MoneyFragment;
@@ -29,8 +32,9 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     private PresetKindFragment presetKindFragment;
     private MoneyFragment moneyFragment;
     private VolumeFragment volumeFragment;
-    private Sale sale;
+    private Programming programming;
     private Vehicle vehicle;
+    private Dispenser dispenser;
     private final int ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
 
 
@@ -39,7 +43,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sales);
-        sale = new Sale();
+        dispenser =(Dispenser)getIntent().getSerializableExtra("surtidor");
+        programming = new Programming();
         vehicle = new Vehicle();
         addFragmentos();
     }
@@ -65,20 +70,21 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         final int COUNTED=1,LOYAL=2,CREDIT=3,WAY_TO_PAY=4;
         switch (selectedOption){
             case COUNTED:
-                sale.setKind("Counted");
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, productKindFragment).
-                        addToBackStack(null).commit();
+                programming.setKind("Counted");
+                //dispenser.getSides().get(0).getHoses().get(0).getSale().setKind("Counted");
                 break;
             case LOYAL:
-                sale.setKind("Loyal");
+                programming.setKind("Loyal");
                 break;
             case CREDIT:
-                sale.setKind("Credit");
+                programming.setKind("Credit");
                 break;
             case WAY_TO_PAY:
-                sale.setKind("Way To Pay");
+                programming.setKind("Way To Pay");
                 break;
         }
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, productKindFragment).
+                addToBackStack(null).commit();
     }
 
     @Override
@@ -87,10 +93,10 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
 
         switch (selectedProduct){
             case PRODUCT_ONE:
-                sale.setProduct(PRODUCT_ONE);
+                programming.setProduct(PRODUCT_ONE);
                 break;
             case PRODUCT_TWO:
-                sale.setProduct(PRODUCT_TWO);
+                programming.setProduct(PRODUCT_TWO);
                 break;
         }
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, vehicleKindFragment).
@@ -117,7 +123,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
                 vehicle.setKind(OTRO);
                 break;
         }
-        sale.setVehicle(vehicle);
+        programming.setVehicle(vehicle);
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, presetKindFragment).
                 addToBackStack(null).commit();
     }
@@ -127,18 +133,18 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         final int MONEY=1,VOLUME=2,FULL=3;
         switch (selectedKindPreset){
             case MONEY:
-                sale.setPresetKind(MONEY);
+                programming.setPresetKind(MONEY);
                 fragmentManager.beginTransaction().replace(R.id.contSaleKind, moneyFragment).
                         addToBackStack(null).commit();
             break;
             case VOLUME:
-                sale.setPresetKind(VOLUME);
+                programming.setPresetKind(VOLUME);
                 fragmentManager.beginTransaction().replace(R.id.contSaleKind, volumeFragment).
                         addToBackStack(null).commit();
                 break;
             case FULL:
                 //mostrar levante manguera
-                sale.setPresetKind(FULL);
+                programming.setPresetKind(FULL);
                 break;
         }
     }
@@ -146,43 +152,128 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     private MfcWifi mfcWifi;
     @Override
     public void money(int money) {
-        sale.setMoney(money);
-        sale.setVoleme(0);
-        //hacer calculo para volumen
-        System.out.println(sale.toString());
+        final int OK = 1;
+        programming.setMoney(money);
 
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(sale.getPresetKind());
-        stringBuilder.append(sale.getProduct());
-        stringBuilder.append(sale.getMoney());
+
 
         mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
         //MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
 
-        mfcWifi.sendRequest("estado;1");
+        //new Hilo1().start();
+
+        mfcWifi.sendRequest("estado;1");//pido estado
         if(mfcWifi.getAnswer()!=null){
-            System.out.println("Respuesta: " + mfcWifi.getAnswer());
             final String[] splitAnswer = mfcWifi.getAnswer().split(";");
             if(Integer.parseInt(splitAnswer[2]) == ESPERA){
-                mfcWifi.sendRequest("manguera;1");
+                mfcWifi.sendRequest("manguera;1");//manguera
                 if(mfcWifi.getAnswer()!=null){
-                    System.out.println("Respuesta manguera: " + mfcWifi.getAnswer());
+                    final String[] splitAnswerManguera = mfcWifi.getAnswer().split(";");
+                    if(Integer.parseInt(splitAnswerManguera[2]) == OK){
+                        mfcWifi.sendRequest("programar;1;M1;T2;P12000"); //programo
+                        SystemClock.sleep(140);
+                        if(mfcWifi.getAnswer()!=null){
+                            final String[] splitProgramacion = mfcWifi.getAnswer().split(";");
+                            if(Integer.parseInt(splitProgramacion[2]) == OK){
+                                mfcWifi.sendRequest("autorizar;1"); //autorizo
+                                if(mfcWifi.getAnswer()!=null) {
+                                    final String[] splitAnswerAutorizacion = mfcWifi.getAnswer().split(";");
+                                    if(Integer.parseInt(splitAnswerAutorizacion[2]) == OK){
+
+                                        mfcWifi.sendRequest("estado;1");//pido estado
+                                        System.out.println("mirando datos: " + mfcWifi.getAnswer());
+
+                                        if(mfcWifi.getAnswer()!=null) {
+                                            final String[] splitAnswerEstado = mfcWifi.getAnswer().split(";");
+                                            if(Integer.parseInt(splitAnswerEstado[2]) == AUTORIZADO){
+                                                System.out.println("entre");
+                                                //levante la manguera imagen
+                                                /*do {
+                                                    mfcWifi.sendRequest("estado;1");
+                                                    System.out.println("estado;" + mfcWifi.getAnswer());
+                                                    if (mfcWifi.getAnswer() != null) {
+                                                        System.out.println("Respuesta estado: " + mfcWifi.getAnswer());
+                                                        final String[] splitState = mfcWifi.getAnswer().split(";");
+                                                        if(Integer.parseInt(splitAnswerEstado[2]) == SURTIENDO){
+                                                            System.out.println("SURTIENDO.....");
+
+
+
+                                                        }else {
+                                                            System.out.println("No esta en estado de surtiendo");
+                                                        }
+                                                    }else{
+                                                        System.out.println("No hubo respuesta del estado");
+                                                    }
+                                                } while (true);*/
+                                            }else {
+                                                System.out.println("estado:" + Integer.parseInt(splitAnswerEstado[2]));
+                                            }
+                                        }else{
+                                            System.out.println("No hubo respuesta de estado");
+                                        }
+                                    }else{
+                                        System.out.println("error en la autorizacion");
+                                    }
+                                }else{
+                                    System.out.println("No hubo respuesta de autorizacion");
+                                }
+                            }else{
+                                System.out.println("error en la programacion");
+                            }
+                        }else{
+                            System.out.println("No hubo respuesta de la programacion");
+                        }
+                    }else {
+                        System.out.println("error en la manguera");
+                    }
                 }else{
-                    System.out.println("No hubo manguera");
+                    System.out.println("No hubo respuesta de la manguera");
                 }
             }
         }else{
-            System.out.println("No hubo estado");
+            System.out.println("No hubo respuesta del estado");
         }
+
+
+
+        /*do {
+            mfcWifi.sendRequest("estado;1");//pido estado
+            if (mfcWifi.getAnswer() != null) {
+                System.out.println("Respuesta estado: " + mfcWifi.getAnswer());
+
+
+
+
+            }
+        } while (true);*/
+
     }
+
+    class Hilo1 extends Thread{
+
+        final int OK = 1;
+        public void run(){
+
+
+
+        }
+
+    }
+
+
+
+
+
+
 
     @Override
     public void volume(double volume) {
-        sale.setVoleme(volume);
-        sale.setMoney(0);
+        programming.setVoleme(volume);
+        programming.setMoney(0);
         //hacer calculo para dinero
-        System.out.println(sale.toString());
-        System.out.println(sale.getVehicle().toString());
+        System.out.println(programming.toString());
+        System.out.println(programming.getVehicle().toString());
     }
 
 
@@ -191,5 +282,16 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         super.onBackPressed();
         getFragmentManager().popBackStack();
     }
+
+
+
+
+
+
+
+
+
+
+
 
 }

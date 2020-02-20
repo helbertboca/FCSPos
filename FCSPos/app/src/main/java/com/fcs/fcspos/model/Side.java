@@ -1,8 +1,9 @@
 package com.fcs.fcspos.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Side {
+public class Side implements Serializable {
 
     private ArrayList<Hose> hoses;
 

@@ -2,6 +2,8 @@ package com.fcs.fcspos.io;
 
 import android.os.SystemClock;
 
+import com.fcs.fcspos.R;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -73,7 +75,8 @@ public class MfcWifi implements Serializable {
     }
 
     public String getAnswer() {
-        SystemClock.sleep(140);
+        SystemClock.sleep(140);//funciona con 140
+        System.out.println("Respuesta MFCWifi: " + answer);
         return answer;
     }
 

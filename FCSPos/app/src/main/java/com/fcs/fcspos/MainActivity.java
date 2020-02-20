@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.MfcWifi;
+import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Hose;
 import com.fcs.fcspos.model.Side;
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(getApplicationContext(), SalesActivity.class);
+                i.putExtra("surtidor",dispenser);
                 startActivity(i);
             }
         });

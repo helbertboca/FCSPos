@@ -1,6 +1,8 @@
 package com.fcs.fcspos.model;
 
-public class Client {
+import java.io.Serializable;
+
+public class Client implements Serializable {
     private String cedula;
     private String nit;
 }

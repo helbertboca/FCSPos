@@ -41,7 +41,7 @@ public class AppMfc {
                                 if (mfcWifi.getAnswer() != null) {
                                     final String[] splitAnswerAutorizacion = mfcWifi.getAnswer().split(";");
                                     if (Integer.parseInt(splitAnswerAutorizacion[2]) == OK) {
-                                        System.out.println("SE AUTORIZO");
+                                        //System.out.println("SE AUTORIZO");
                                     } else {
                                         System.out.println("error en la autorizacion");
                                     }
@@ -79,7 +79,6 @@ public class AppMfc {
 
                         mfcWifi.sendRequest("venta;1");
                         if (mfcWifi.getAnswer() != null) {
-                            System.out.println("Respuesta Venta: " + mfcWifi.getAnswer());
                             final String[] splitAnswerS = mfcWifi.getAnswer().split(";");
 
                         }
@@ -89,12 +88,11 @@ public class AppMfc {
                         break;
                     case ERROR:
                         System.out.println("ESTADO ERROR");
-
                         break;
-
                 }
+            }else {
+                System.out.println("NULL EN ESTADO");
             }
-            System.out.println("NULL EN ESTADO");
 
         } while (!ventaTerminada);
 

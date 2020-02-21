@@ -49,6 +49,7 @@ public class MfcWifi implements Serializable {
 
 
     public void sendRequest(final String dataToMfc) {
+
         answer = null;
         new Thread(new Runnable() {
             @Override
@@ -64,19 +65,23 @@ public class MfcWifi implements Serializable {
                     socket.close();
                 }catch (Exception e){
                     e.printStackTrace();
+                    setAnswer("");
                 }
+
             }
         }).start();
 
     }
+
+
 
     private void setAnswer(String answer) {
         this.answer = answer;
     }
 
     public String getAnswer() {
-        SystemClock.sleep(140);
-        System.out.println("Respuesta MFCWifi: " + answer);
+        SystemClock.sleep(170);
+        //System.out.println("Respuesta MFCWifi: " + answer);
         return answer;
     }
 

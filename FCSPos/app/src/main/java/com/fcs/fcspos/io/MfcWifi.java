@@ -75,7 +75,7 @@ public class MfcWifi implements Serializable {
     }
 
     public String getAnswer() {
-        SystemClock.sleep(140);//funciona con 140
+        SystemClock.sleep(140);
         System.out.println("Respuesta MFCWifi: " + answer);
         return answer;
     }

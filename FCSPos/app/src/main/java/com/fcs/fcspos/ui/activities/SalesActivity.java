@@ -1,14 +1,15 @@
 package com.fcs.fcspos.ui.activities;
 
-import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.os.SystemClock;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.fcs.fcspos.R;
+import com.fcs.fcspos.io.AppMfc;
 import com.fcs.fcspos.io.MfcWifi;
-import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.SaleOption;
@@ -154,116 +155,23 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     public void money(int money) {
         final int OK = 1;
         programming.setMoney(money);
-
-
-
         mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
         //MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
 
-        //new Hilo1().start();
-
-        mfcWifi.sendRequest("estado;1");//pido estado
-        if(mfcWifi.getAnswer()!=null){
-            final String[] splitAnswer = mfcWifi.getAnswer().split(";");
-            if(Integer.parseInt(splitAnswer[2]) == ESPERA){
-                mfcWifi.sendRequest("manguera;1");//manguera
-                if(mfcWifi.getAnswer()!=null){
-                    final String[] splitAnswerManguera = mfcWifi.getAnswer().split(";");
-                    if(Integer.parseInt(splitAnswerManguera[2]) == OK){
-                        mfcWifi.sendRequest("programar;1;M1;T2;P12000"); //programo
-                        SystemClock.sleep(140);
-                        if(mfcWifi.getAnswer()!=null){
-                            final String[] splitProgramacion = mfcWifi.getAnswer().split(";");
-                            if(Integer.parseInt(splitProgramacion[2]) == OK){
-                                mfcWifi.sendRequest("autorizar;1"); //autorizo
-                                if(mfcWifi.getAnswer()!=null) {
-                                    final String[] splitAnswerAutorizacion = mfcWifi.getAnswer().split(";");
-                                    if(Integer.parseInt(splitAnswerAutorizacion[2]) == OK){
-
-                                        mfcWifi.sendRequest("estado;1");//pido estado
-                                        System.out.println("mirando datos: " + mfcWifi.getAnswer());
-
-                                        if(mfcWifi.getAnswer()!=null) {
-                                            final String[] splitAnswerEstado = mfcWifi.getAnswer().split(";");
-                                            if(Integer.parseInt(splitAnswerEstado[2]) == AUTORIZADO){
-                                                System.out.println("entre");
-                                                //levante la manguera imagen
-                                                /*do {
-                                                    mfcWifi.sendRequest("estado;1");
-                                                    System.out.println("estado;" + mfcWifi.getAnswer());
-                                                    if (mfcWifi.getAnswer() != null) {
-                                                        System.out.println("Respuesta estado: " + mfcWifi.getAnswer());
-                                                        final String[] splitState = mfcWifi.getAnswer().split(";");
-                                                        if(Integer.parseInt(splitAnswerEstado[2]) == SURTIENDO){
-                                                            System.out.println("SURTIENDO.....");
-
-
-
-                                                        }else {
-                                                            System.out.println("No esta en estado de surtiendo");
-                                                        }
-                                                    }else{
-                                                        System.out.println("No hubo respuesta del estado");
-                                                    }
-                                                } while (true);*/
-                                            }else {
-                                                System.out.println("estado:" + Integer.parseInt(splitAnswerEstado[2]));
-                                            }
-                                        }else{
-                                            System.out.println("No hubo respuesta de estado");
-                                        }
-                                    }else{
-                                        System.out.println("error en la autorizacion");
-                                    }
-                                }else{
-                                    System.out.println("No hubo respuesta de autorizacion");
-                                }
-                            }else{
-                                System.out.println("error en la programacion");
-                            }
-                        }else{
-                            System.out.println("No hubo respuesta de la programacion");
-                        }
-                    }else {
-                        System.out.println("error en la manguera");
-                    }
-                }else{
-                    System.out.println("No hubo respuesta de la manguera");
-                }
-            }
-        }else{
-            System.out.println("No hubo respuesta del estado");
-        }
-
+        AppMfc appMfc = new AppMfc(mfcWifi);
+        appMfc.machineCommunication();
 
 
         /*do {
             mfcWifi.sendRequest("estado;1");//pido estado
+            SystemClock.sleep(140);
             if (mfcWifi.getAnswer() != null) {
                 System.out.println("Respuesta estado: " + mfcWifi.getAnswer());
-
-
-
 
             }
         } while (true);*/
 
     }
-
-    class Hilo1 extends Thread{
-
-        final int OK = 1;
-        public void run(){
-
-
-
-        }
-
-    }
-
-
-
-
 
 
 
@@ -271,12 +179,12 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     public void volume(double volume) {
         programming.setVoleme(volume);
         programming.setMoney(0);
-        //hacer calculo para dinero
         System.out.println(programming.toString());
         System.out.println(programming.getVehicle().toString());
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)//se agrego
     @Override
     public void onBackPressed() {
         super.onBackPressed();

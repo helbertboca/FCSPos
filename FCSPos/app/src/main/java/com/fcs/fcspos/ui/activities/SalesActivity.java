@@ -1,7 +1,6 @@
 package com.fcs.fcspos.ui.activities;
 
 import android.os.Build;
-import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -36,8 +35,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     private Programming programming;
     private Vehicle vehicle;
     private Dispenser dispenser;
-    private final int ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
-
 
 
     @Override
@@ -69,6 +66,10 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     @Override
     public void optionSaleKind(int selectedOption) {
         final int COUNTED=1,LOYAL=2,CREDIT=3,WAY_TO_PAY=4;
+
+        programming.setPosition((byte)1);//dato quemado para posicion uno ya que no se ha realizado
+        //la previa pantalla
+
         switch (selectedOption){
             case COUNTED:
                 programming.setKind("Counted");
@@ -158,18 +159,9 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
         //MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
 
-        AppMfc appMfc = new AppMfc(mfcWifi);
-        appMfc.machineCommunication();
-
-
-        /*do {
-            mfcWifi.sendRequest("estado;1");//pido estado
-            SystemClock.sleep(140);
-            if (mfcWifi.getAnswer() != null) {
-                System.out.println("Respuesta estado: " + mfcWifi.getAnswer());
-
-            }
-        } while (true);*/
+        AppMfc appMfc = new AppMfc(mfcWifi);//envio conexion
+        appMfc.setProgramming(programming);//envio programacion del usuario
+        appMfc.machineCommunication();//empiezo comunicacion con surtirdor
 
     }
 
@@ -177,7 +169,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
 
     @Override
     public void volume(double volume) {
-        programming.setVoleme(volume);
+        programming.setVolume(volume);
         programming.setMoney(0);
         System.out.println(programming.toString());
         System.out.println(programming.getVehicle().toString());

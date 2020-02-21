@@ -12,6 +12,7 @@ public class Programming implements Serializable {
     private int presetKind;
     private int money;
     private double volume;
+    private byte position;
 
 
     public void setKind(String kind) {
@@ -34,10 +35,6 @@ public class Programming implements Serializable {
         this.money = money;
     }
 
-    public void setVoleme(double voleme) {
-        this.volume = voleme;
-    }
-
     public String getKind() {
         return kind;
     }
@@ -58,8 +55,17 @@ public class Programming implements Serializable {
         return money;
     }
 
-    public double getVolume() {
-        return volume;
+
+    public void setVolume(double volume) {
+        this.volume = volume;
+    }
+
+    public byte getPosition() {
+        return position;
+    }
+
+    public void setPosition(byte position) {
+        this.position = position;
     }
 
     @NonNull

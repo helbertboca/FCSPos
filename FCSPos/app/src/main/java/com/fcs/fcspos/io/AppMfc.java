@@ -2,10 +2,13 @@ package com.fcs.fcspos.io;
 
 import android.os.SystemClock;
 
+import com.fcs.fcspos.model.Programming;
+
 
 public class AppMfc {
 
     private MfcWifi mfcWifi;
+    private Programming programming;
 
 
     public AppMfc(MfcWifi mfcWifi){
@@ -18,7 +21,9 @@ public class AppMfc {
         final int OK = 1;
         boolean ventaTerminada=false;
         do {
-            mfcWifi.sendRequest("estado;1");//pido estado
+            //mfcWifi.sendRequest("estado;1");//pido estado
+            mfcWifi.sendRequest("estado;" + programming.getPosition());//pido estado
+
             if (mfcWifi.getAnswer() != null) {
                 System.out.println("Respuesta estado: " + mfcWifi.getAnswer());
                 final String[] splitAnswer = mfcWifi.getAnswer().split(";");
@@ -102,7 +107,7 @@ public class AppMfc {
     }
 
 
-
-
-
+    public void setProgramming(Programming programming) {
+        this.programming = programming;
+    }
 }

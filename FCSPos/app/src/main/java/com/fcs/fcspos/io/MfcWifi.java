@@ -2,13 +2,14 @@ package com.fcs.fcspos.io;
 
 import android.os.SystemClock;
 
-import com.fcs.fcspos.R;
-
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.net.Socket;
+import java.util.Objects;
+
 
 public class MfcWifi implements Serializable {
 
@@ -19,8 +20,6 @@ public class MfcWifi implements Serializable {
     private Socket socket;
     private String answer;
     private static MfcWifi mfcWifi;
-
-
 
 
     private MfcWifi(String networkSSID, String networkPass, String addressIpServer, int port) {
@@ -54,25 +53,33 @@ public class MfcWifi implements Serializable {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                PrintWriter printWriter=null;
+                InputStreamReader inputStreamReader=null;
                 try {
                     socket = new Socket(addressIpServer, port);
-                    PrintWriter printWriter = new PrintWriter(socket.getOutputStream());
+                    printWriter = new PrintWriter(socket.getOutputStream());
                     printWriter.write(dataToMfc + "\n");
                     printWriter.flush();
-                    answer = new BufferedReader(new InputStreamReader(socket.getInputStream())).readLine();
+                    inputStreamReader = new InputStreamReader(socket.getInputStream());
+                    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+                    answer = bufferedReader.readLine();
                     setAnswer(answer);
-                    printWriter.close();
                     socket.close();
-                }catch (Exception e){
-                    e.printStackTrace();
+                }catch (IOException e){
+                    System.out.println("Inconveniente de Lectura nula");
                     setAnswer("");
+                }finally {
+                    try {
+                        Objects.requireNonNull(inputStreamReader).close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Objects.requireNonNull(printWriter).close();
                 }
-
             }
         }).start();
 
     }
-
 
 
     private void setAnswer(String answer) {
@@ -81,7 +88,6 @@ public class MfcWifi implements Serializable {
 
     public String getAnswer() {
         SystemClock.sleep(170);
-        //System.out.println("Respuesta MFCWifi: " + answer);
         return answer;
     }
 

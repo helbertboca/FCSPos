@@ -73,7 +73,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         switch (selectedOption){
             case COUNTED:
                 programming.setKind("Counted");
-                //dispenser.getSides().get(0).getHoses().get(0).getSale().setKind("Counted");
                 break;
             case LOYAL:
                 programming.setKind("Loyal");
@@ -132,7 +131,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
 
     @Override
     public void optionPresetKind(int selectedKindPreset) {
-        final int MONEY=1,VOLUME=2,FULL=3;
+        final int FULL=3,MONEY=2,VOLUME=1;
         switch (selectedKindPreset){
             case MONEY:
                 programming.setPresetKind(MONEY);
@@ -146,43 +145,50 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
                 break;
             case FULL:
                 //mostrar levante manguera
+                if( dispenser.getNumberOfDigits()==7){
+                    programming.setQuantity(9999900);
+                }else{
+                    programming.setQuantity(999900);
+                }
+                sendShuduledSale();
                 programming.setPresetKind(FULL);
                 break;
         }
     }
 
-    private MfcWifi mfcWifi;
+
     @Override
     public void money(int money) {
-        final int OK = 1;
-        programming.setMoney(money);
-        mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
-        //MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
-
-        AppMfc appMfc = new AppMfc(mfcWifi);//envio conexion
-        appMfc.setProgramming(programming);//envio programacion del usuario
-        appMfc.machineCommunication();//empiezo comunicacion con surtirdor
-
+        programming.setQuantity(money);
+        sendShuduledSale();
     }
-
 
 
     @Override
     public void volume(double volume) {
-        programming.setVolume(volume);
-        programming.setMoney(0);
-        System.out.println(programming.toString());
-        System.out.println(programming.getVehicle().toString());
+        int volumeInt = ((int)(volume*100))*10;
+        programming.setPresetKind(1);
+        programming.setQuantity(volumeInt);
+        sendShuduledSale();
     }
 
 
-    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)//se agrego
+    @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         getFragmentManager().popBackStack();
     }
 
+
+    private void sendShuduledSale(){
+        MfcWifi mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
+        //MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
+
+        AppMfc appMfc = new AppMfc(mfcWifi);//envio conexion
+        appMfc.setProgramming(programming);//envio programacion del usuario
+        appMfc.machineCommunication();//empiezo comunicacion con surtirdor
+    }
 
 
 

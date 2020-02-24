@@ -1,16 +1,12 @@
 package com.fcs.fcspos;
 
 import android.content.Intent;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.Toast;
 
-import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.MfcWifi;
-import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Hose;
 import com.fcs.fcspos.model.Side;
@@ -44,7 +40,7 @@ public class MainActivity extends AppCompatActivity{
 
         //Configuraciones parciales para pruebas de venta ------------------------------------------
         final String BRAND="Gilbarco";
-        final byte NUMBER_OF_DIGITS=7, DECIMALS_IN_VOLUME=3;
+        final byte NUMBER_OF_DIGITS=6, DECIMALS_IN_VOLUME=3;
         final byte NUMBER_OF_FACES=2, NUMBER_OF_HOUSES_PERFACE=3;
         final byte SIDE_A=0, SIDE_B=1;
         short[] ppus = {7000,8000,10500};

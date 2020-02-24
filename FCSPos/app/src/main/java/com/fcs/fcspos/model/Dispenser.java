@@ -26,4 +26,12 @@ public class Dispenser implements Serializable {
     public ArrayList<Side> getSides() {
         return sides;
     }
+
+    public byte getNumberOfDigits() {
+        return numberOfDigits;
+    }
+
+    public void setNumberOfDigits(byte numberOfDigits) {
+        this.numberOfDigits = numberOfDigits;
+    }
 }

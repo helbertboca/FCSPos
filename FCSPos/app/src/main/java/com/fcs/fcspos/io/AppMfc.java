@@ -19,14 +19,13 @@ public class AppMfc {
     public void machineCommunication(){
         final int ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
         final int OK = 1;
+        final String SEPARATOR=";";
         boolean ventaTerminada=false;
         do {
-            //mfcWifi.sendRequest("estado;1");//pido estado
             mfcWifi.sendRequest("estado;" + programming.getPosition());//pido estado
-
             if (mfcWifi.getAnswer() != null) {
                 System.out.println("Respuesta estado: " + mfcWifi.getAnswer());
-                final String[] splitAnswer = mfcWifi.getAnswer().split(";");
+                final String[] splitAnswer = mfcWifi.getAnswer().split(SEPARATOR);
                 if (splitAnswer[2].equals("A")) {
                     splitAnswer[2] = "10";
                 }
@@ -37,14 +36,16 @@ public class AppMfc {
                         //if(mfcWifi.getAnswer()!=null) {
                         //final String[] splitAnswerManguera = mfcWifi.getAnswer().split(";");
                         //if (Integer.parseInt(splitAnswerManguera[2]) == OK) {
-                        mfcWifi.sendRequest("programar;1;M1;T2;P12000");
+                        mfcWifi.sendRequest("programar;"+ programming.getPosition()
+                                +";M" + programming.getProduct() + ";T" + programming.getPresetKind()
+                                + ";P" + programming.getQuantity());
                         SystemClock.sleep(140);
                         if (mfcWifi.getAnswer() != null) {
-                            final String[] splitProgramacion = mfcWifi.getAnswer().split(";");
+                            final String[] splitProgramacion = mfcWifi.getAnswer().split(SEPARATOR);
                             if (Integer.parseInt(splitProgramacion[2]) == OK) {
-                                mfcWifi.sendRequest("autorizar;1");
+                                mfcWifi.sendRequest("autorizar;" + programming.getPosition());
                                 if (mfcWifi.getAnswer() != null) {
-                                    final String[] splitAnswerAutorizacion = mfcWifi.getAnswer().split(";");
+                                    final String[] splitAnswerAutorizacion = mfcWifi.getAnswer().split(SEPARATOR);
                                     if (Integer.parseInt(splitAnswerAutorizacion[2]) == OK) {
                                         //System.out.println("SE AUTORIZO");
                                     } else {
@@ -82,9 +83,9 @@ public class AppMfc {
                         System.out.println("ESTADO VENTA");
 
 
-                        mfcWifi.sendRequest("venta;1");
+                        mfcWifi.sendRequest("venta;" + programming.getPosition());
                         if (mfcWifi.getAnswer() != null) {
-                            final String[] splitAnswerS = mfcWifi.getAnswer().split(";");
+                            final String[] splitAnswerS = mfcWifi.getAnswer().split(SEPARATOR);
 
                         }
 
@@ -102,7 +103,6 @@ public class AppMfc {
         } while (!ventaTerminada);
 
         System.out.println("FIN TEMPORAL");
-
 
     }
 

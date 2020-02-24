@@ -19,7 +19,7 @@ public class PresetKindFragment extends Fragment {
 
 
     private SaleOption saleOption;
-    private final int MONEY=1,VOLUME=2,FULL=3;
+    private final int FULL=3,MONEY=2,VOLUME=1;
 
 
     public PresetKindFragment() {}

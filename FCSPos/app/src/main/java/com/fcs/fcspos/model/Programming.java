@@ -10,8 +10,7 @@ public class Programming implements Serializable {
     private int product;
     private Vehicle vehicle;
     private int presetKind;
-    private int money;
-    private double volume;
+    private int quantity;
     private byte position;
 
 
@@ -19,58 +18,51 @@ public class Programming implements Serializable {
         this.kind = kind;
     }
 
-    public void setProduct(int product) {
-        this.product = product;
-    }
-
-    public void setVehicle(Vehicle vehicle) {
-        this.vehicle = vehicle;
-    }
-
-    public void setPresetKind(int presetKind) {
-        this.presetKind = presetKind;
-    }
-
-    public void setMoney(int money) {
-        this.money = money;
-    }
-
     public String getKind() {
         return kind;
+    }
+
+    public void setProduct(int product) {
+        this.product = product;
     }
 
     public int getProduct() {
         return product;
     }
 
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
+    }
+
     public Vehicle getVehicle() {
         return vehicle;
+    }
+
+    public void setPresetKind(int presetKind) {
+        this.presetKind = presetKind;
     }
 
     public int getPresetKind() {
         return presetKind;
     }
 
-    public int getMoney() {
-        return money;
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
+    public int getQuantity() { return quantity; }
 
-    public void setVolume(double volume) {
-        this.volume = volume;
+    public void setPosition(byte position) {
+        this.position = position;
     }
 
     public byte getPosition() {
         return position;
     }
 
-    public void setPosition(byte position) {
-        this.position = position;
-    }
-
     @NonNull
     @Override
     public String toString() {
-        return "VENTA.  Tipo:" + kind + ", Producto:" + product + ", Vehiculo:" + vehicle + ", Tipo de Preset:" + presetKind + ", Dinero:" + money + ", Volumen:"+ volume ;
+        return "VENTA.  Tipo:" + kind + ", Producto:" + product + ", Vehiculo:" + vehicle + ", Tipo de Preset:" + presetKind + ", Cantidad:" + quantity ;
     }
 }

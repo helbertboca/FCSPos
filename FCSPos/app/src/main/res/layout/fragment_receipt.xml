@@ -8,11 +8,22 @@
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:text="CANTIDAD DE RECIBOS" />
 
-    <TextView
+
+    <Button
+        android:id="@+id/btn1Recibo"
+        android:text="Uno"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+
+    <Button
+        android:id="@+id/btn2Recibo"
+        android:text="Dos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

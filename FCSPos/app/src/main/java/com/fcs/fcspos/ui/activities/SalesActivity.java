@@ -161,6 +161,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                     programming.setQuantity(999900);
                 }
                 programming.setPresetKind(FULL);
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
+                        addToBackStack(null).commit();//Levante la manguera
                 sendShuduledSale();
                 break;
         }
@@ -181,7 +183,18 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         int volumeInt = ((int)(volume*100))*10;
         programming.setPresetKind(1);
         programming.setQuantity(volumeInt);
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
+                addToBackStack(null).commit();//Levante la manguera
         sendShuduledSale();
+    }
+
+    @Override
+    public void receipt(short cantidad) {
+        if(cantidad>1){
+            finish();
+        }else{
+            finish();
+        }
     }
 
 
@@ -215,58 +228,17 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
             appMfc.setProgramming(programming);//envio programacion del usuario
             do {
                 appMfc.machineCommunication();
-                System.out.println("primer do");
             } while (appMfc.getEstado() != LISTO);
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
                     addToBackStack(null).commit();//Levante la manguera
             do {
                 appMfc.machineCommunication();
-                System.out.println("segundo do");
             } while (appMfc.getEstado() != VENTA);
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).
                     addToBackStack(null).commit();//Levante la manguera
-
+            System.out.println(appMfc.getSale());
         }
     }
-
-
-
-        //if(appMfc.getEstado()== ESPERA){
-            /*do{
-                appMfc.machineCommunication();
-                System.out.println("primer do");
-                //if(appMfc.getEstado()==LISTO || appMfc.getEstado()==AUTORIZADO){
-                    //MOSTRAR IMAGEN DE LEVANTE MANGUERA
-                    //fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
-                    //        addToBackStack(null).commit();
-                //    break;
-                //}
-            }while (appMfc.getEstado()== ESPERA);
-
-
-            //System.out.println("");
-
-            do{
-                appMfc.machineCommunication();
-                //MOSTRAR IMAGEN DE SURTIENDO
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
-                        addToBackStack(null).commit();
-                if(appMfc.getEstado()== VENTA){
-                    break;
-                }
-            }while (appMfc.getEstado()== SURTIENDO);
-            System.out.println("VENTA FINALIZADA<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-
-
-            fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).
-                    addToBackStack(null).commit();
-
-
-            //muestre venta
-        //}*/
-
-
-
 
 
 }

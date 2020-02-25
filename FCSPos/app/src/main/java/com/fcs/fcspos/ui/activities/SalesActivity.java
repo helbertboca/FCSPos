@@ -1,6 +1,8 @@
 package com.fcs.fcspos.ui.activities;
 
+import android.content.Intent;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -13,16 +15,19 @@ import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.SaleOption;
 import com.fcs.fcspos.model.Vehicle;
+import com.fcs.fcspos.ui.fragments.FillingUpFragment;
 import com.fcs.fcspos.ui.fragments.MoneyFragment;
 import com.fcs.fcspos.ui.fragments.PresetKindFragment;
 import com.fcs.fcspos.ui.fragments.ProductKindFragment;
+import com.fcs.fcspos.ui.fragments.ReceiptFragment;
 import com.fcs.fcspos.ui.fragments.SalesKindFragment;
+import com.fcs.fcspos.ui.fragments.UpHoseFragment;
 import com.fcs.fcspos.ui.fragments.VehicleKindFragment;
 import com.fcs.fcspos.ui.fragments.VolumeFragment;
 
 
 
-public class SalesActivity extends AppCompatActivity  implements SaleOption {
+public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
 
     private FragmentManager fragmentManager;
@@ -32,6 +37,9 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     private PresetKindFragment presetKindFragment;
     private MoneyFragment moneyFragment;
     private VolumeFragment volumeFragment;
+    private UpHoseFragment upHoseFragment;
+    private FillingUpFragment fillingUpFragment;
+    private ReceiptFragment receiptFragment;
     private Programming programming;
     private Vehicle vehicle;
     private Dispenser dispenser;
@@ -61,6 +69,9 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
         presetKindFragment = new PresetKindFragment();
         moneyFragment = new MoneyFragment();
         volumeFragment = new VolumeFragment();
+        upHoseFragment = new UpHoseFragment();
+        fillingUpFragment = new FillingUpFragment();
+        receiptFragment = new ReceiptFragment();
     }
 
     @Override
@@ -144,14 +155,13 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
                         addToBackStack(null).commit();
                 break;
             case FULL:
-                //mostrar levante manguera
-                if( dispenser.getNumberOfDigits()==7){
+                if( dispenser.getNumberOfDigits()>=7){
                     programming.setQuantity(9999900);
                 }else{
                     programming.setQuantity(999900);
                 }
-                sendShuduledSale();
                 programming.setPresetKind(FULL);
+                sendShuduledSale();
                 break;
         }
     }
@@ -160,6 +170,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     @Override
     public void money(int money) {
         programming.setQuantity(money);
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
+                addToBackStack(null).commit();//Levante la manguera
         sendShuduledSale();
     }
 
@@ -181,20 +193,77 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption {
     }
 
 
-    private void sendShuduledSale(){
-        MfcWifi mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
-        //MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
 
-        AppMfc appMfc = new AppMfc(mfcWifi);//envio conexion
-        appMfc.setProgramming(programming);//envio programacion del usuario
-        appMfc.machineCommunication();//empiezo comunicacion con surtirdor
+    private void sendShuduledSale(){
+        PrimeThread p = new PrimeThread(143);
+        p.start();
+    }
+
+
+    class PrimeThread extends Thread {
+        long minPrime;
+        PrimeThread(long minPrime) {
+            this.minPrime = minPrime;
+        }
+
+        public void run() {
+            int ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
+
+            MfcWifi mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
+            //MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
+            AppMfc appMfc = new AppMfc(mfcWifi);//abro conexion
+            appMfc.setProgramming(programming);//envio programacion del usuario
+            do {
+                appMfc.machineCommunication();
+                System.out.println("primer do");
+            } while (appMfc.getEstado() != LISTO);
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
+                    addToBackStack(null).commit();//Levante la manguera
+            do {
+                appMfc.machineCommunication();
+                System.out.println("segundo do");
+            } while (appMfc.getEstado() != VENTA);
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).
+                    addToBackStack(null).commit();//Levante la manguera
+
+        }
     }
 
 
 
+        //if(appMfc.getEstado()== ESPERA){
+            /*do{
+                appMfc.machineCommunication();
+                System.out.println("primer do");
+                //if(appMfc.getEstado()==LISTO || appMfc.getEstado()==AUTORIZADO){
+                    //MOSTRAR IMAGEN DE LEVANTE MANGUERA
+                    //fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
+                    //        addToBackStack(null).commit();
+                //    break;
+                //}
+            }while (appMfc.getEstado()== ESPERA);
 
 
+            //System.out.println("");
 
+            do{
+                appMfc.machineCommunication();
+                //MOSTRAR IMAGEN DE SURTIENDO
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
+                        addToBackStack(null).commit();
+                if(appMfc.getEstado()== VENTA){
+                    break;
+                }
+            }while (appMfc.getEstado()== SURTIENDO);
+            System.out.println("VENTA FINALIZADA<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
+
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).
+                    addToBackStack(null).commit();
+
+
+            //muestre venta
+        //}*/
 
 
 

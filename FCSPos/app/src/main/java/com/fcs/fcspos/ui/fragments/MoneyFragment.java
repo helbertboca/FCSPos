@@ -2,7 +2,6 @@ package com.fcs.fcspos.ui.fragments;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -14,7 +13,6 @@ import android.widget.Toast;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.model.SaleOption;
-import com.fcs.fcspos.ui.activities.SalesActivity;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragments.SaleDataFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:id="@+id/txtProgrammedValue"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Valor Programado:" />
+    <Space
+        android:layout_width="10dp"
+        android:layout_height="100dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Placa:" />
+    <EditText
+        android:id="@+id/edtLicensePlate"
+        android:hint="ingrese placa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cedula:" />
+    <EditText
+        android:id="@+id/edtIdentificationCard"
+        android:hint="ingrese cedula"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="NIT:" />
+    <EditText
+        android:id="@+id/edtNit"
+        android:hint="ingrese nit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Kilometraje:" />
+    <EditText
+        android:id="@+id/edtMileage"
+        android:hint="ingrese kilometraje"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <Space
+        android:layout_width="10dp"
+        android:layout_height="100dp"/>
+
+    <Button
+        android:id="@+id/btnEndSale"
+        android:layout_gravity="center"
+        android:text="Siguiente"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+</LinearLayout>

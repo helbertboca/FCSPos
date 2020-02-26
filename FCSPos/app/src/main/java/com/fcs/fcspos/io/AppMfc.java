@@ -1,6 +1,5 @@
 package com.fcs.fcspos.io;
 
-import android.content.Intent;
 import android.os.SystemClock;
 
 import com.fcs.fcspos.model.Programming;
@@ -13,6 +12,7 @@ public class AppMfc {
     private Programming programming;
     private short estado;
     private Sale sale;
+    private final String SEPARATOR=";";
 
 
     public AppMfc(MfcWifi mfcWifi){
@@ -23,7 +23,6 @@ public class AppMfc {
     public void machineCommunication(){
         final int ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
         final int OK = 1;
-        final String SEPARATOR=";";
 
         String[] splitAnswer;
         mfcWifi.sendRequest("estado;" + programming.getPosition());//pido estado
@@ -87,7 +86,7 @@ public class AppMfc {
                     case VENTA:
                         System.out.println("ESTADO VENTA");
                         estado = VENTA;
-                        mfcWifi.sendRequest("venta;" + programming.getPosition());
+                        /*mfcWifi.sendRequest("venta;" + programming.getPosition());
                         if (mfcWifi.getAnswer() != null) {
                             final String[] splitSale = mfcWifi.getAnswer().split(SEPARATOR);
                             if(splitSale.length>5){
@@ -97,7 +96,7 @@ public class AppMfc {
                                         Integer.parseInt(splitSale[6]) );
                             }
                             System.out.println(sale.toString());
-                        }
+                        }*/
                         break;
                     case ERROR:
                         System.out.println("ESTADO ERROR");
@@ -124,6 +123,17 @@ public class AppMfc {
     }
 
     public Sale getSale() {
-        return sale;
+        mfcWifi.sendRequest("venta;" + programming.getPosition());
+        if (mfcWifi.getAnswer() != null) {
+            final String[] splitSale = mfcWifi.getAnswer().split(SEPARATOR);
+            if(splitSale.length>5){
+                return new Sale(Short.parseShort(splitSale[1]),
+                        Short.parseShort(splitSale[2]),Short.parseShort(splitSale[3]),
+                        transformVolume(splitSale[4]),Integer.parseInt(splitSale[5]),
+                        Integer.parseInt(splitSale[6]) );
+            }
+            System.out.println(sale.toString());
+        }
+        return null;
     }
 }

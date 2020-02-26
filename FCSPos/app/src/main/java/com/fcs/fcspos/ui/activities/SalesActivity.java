@@ -2,17 +2,18 @@ package com.fcs.fcspos.ui.activities;
 
 import android.content.Intent;
 import android.os.Build;
-import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.fcs.fcspos.MainActivity;
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfc;
 import com.fcs.fcspos.io.MfcWifi;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Programming;
+import com.fcs.fcspos.model.Sale;
 import com.fcs.fcspos.model.SaleOption;
 import com.fcs.fcspos.model.Vehicle;
 import com.fcs.fcspos.ui.fragments.FillingUpFragment;
@@ -20,6 +21,7 @@ import com.fcs.fcspos.ui.fragments.MoneyFragment;
 import com.fcs.fcspos.ui.fragments.PresetKindFragment;
 import com.fcs.fcspos.ui.fragments.ProductKindFragment;
 import com.fcs.fcspos.ui.fragments.ReceiptFragment;
+import com.fcs.fcspos.ui.fragments.SaleDataFragment;
 import com.fcs.fcspos.ui.fragments.SalesKindFragment;
 import com.fcs.fcspos.ui.fragments.UpHoseFragment;
 import com.fcs.fcspos.ui.fragments.VehicleKindFragment;
@@ -50,7 +52,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sales);
         dispenser =(Dispenser)getIntent().getSerializableExtra("surtidor");
-        programming = new Programming();
+        programming = (Programming) getIntent().getSerializableExtra("programming");
         vehicle = new Vehicle();
         addFragmentos();
     }
@@ -77,9 +79,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     @Override
     public void optionSaleKind(int selectedOption) {
         final int COUNTED=1,LOYAL=2,CREDIT=3,WAY_TO_PAY=4;
-
-        programming.setPosition((byte)1);//dato quemado para posicion uno ya que no se ha realizado
-        //la previa pantalla
 
         switch (selectedOption){
             case COUNTED:
@@ -189,11 +188,24 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     }
 
     @Override
+    public void endSale(Sale sale) {
+        System.out.println(sale + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        System.out.println(sale.getVehicle() + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        System.out.println(sale.getClient() + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).
+                addToBackStack(null).commit();
+    }
+
+    @Override
     public void receipt(short cantidad) {
         if(cantidad>1){
-            finish();
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            this.finish();
         }else{
-            finish();
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivity(intent);
+            this.finish();
         }
     }
 
@@ -234,9 +246,11 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
             do {
                 appMfc.machineCommunication();
             } while (appMfc.getEstado() != VENTA);
-            fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).
-                    addToBackStack(null).commit();//Levante la manguera
-            System.out.println(appMfc.getSale());
+
+
+            SaleDataFragment saleDataFragment = new SaleDataFragment(programming, appMfc);
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
+                    addToBackStack(null).commit();
         }
     }
 

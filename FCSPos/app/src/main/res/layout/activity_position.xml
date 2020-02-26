@@ -1,40 +1,43 @@
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/drawer_layout"
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true">
+    tools:context=".ui.activities.PositionActivity">
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:gravity="center"
-            android:text="ELIJA UNA POSICION DE LA EDS"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
         <Button
-            android:text="Posicion 1"
-            android:id="@+id/btnPos1"
+            android:text="Ventas"
+            android:id="@+id/btnSales"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <Button
-            android:text="Posicion 2"
-            android:id="@+id/btnPos2"
+            android:text="Canasta"
+            android:id="@+id/btnBasket"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <Button
-            android:text="Posicion 3"
-            android:id="@+id/btnPos3"
+            android:text="Consignar"
+            android:id="@+id/btnRecord"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <Button
-            android:text="Posicion 4"
-            android:id="@+id/btnPos4"
+            android:text="Turno"
+            android:id="@+id/btnTurn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="Calibrar"
+            android:id="@+id/btnCalibrate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>
 
-</android.support.v4.widget.DrawerLayout>
+</LinearLayout>

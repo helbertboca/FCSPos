@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activities.Prueba"></activity>
+        <activity android:name=".ui.activities.PositionActivity"></activity>
+        <activity android:name=".ui.activities.Prueba" />
         <activity android:name=".ui.activities.CalibrateActivity" />
         <activity android:name=".ui.activities.TurnActivity" />
         <activity android:name=".ui.activities.RecordActivity" />

@@ -10,6 +10,8 @@ public class Sale {
     private double volumen;
     private int dinero;
     private int ppu;
+    private Client client;
+    private Vehicle vehicle;
 
 
     public Sale(short position, short ok, short manguera, double volumen, int dinero, int ppu) {
@@ -43,6 +45,22 @@ public class Sale {
 
     public int getPpu() {
         return ppu;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public Vehicle getVehicle() {
+        return vehicle;
+    }
+
+    public void setVehicle(Vehicle vehicle) {
+        this.vehicle = vehicle;
     }
 
     @NonNull

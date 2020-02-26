@@ -45,24 +45,28 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private Programming programming;
     private Vehicle vehicle;
     private Dispenser dispenser;
-
+    private final byte ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
+    private byte currentProcess;
+    private PrimeThread primeThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sales);
         dispenser =(Dispenser)getIntent().getSerializableExtra("surtidor");
-        programming = (Programming) getIntent().getSerializableExtra("programming");
+        programming = (Programming)getIntent().getSerializableExtra("programming");
+        currentProcess = (byte)getIntent().getSerializableExtra("currentProcess");
         vehicle = new Vehicle();
-        addFragmentos();
-    }
-
-
-    private void addFragmentos() {
         fragmentManager = getSupportFragmentManager();
         instantiateFragmets();
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, salesKindFragment).commit();
+        if(currentProcess!=ESPERA){
+            secondThread();
+        }else {
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, salesKindFragment).commit();
+        }
     }
+
 
     private void instantiateFragmets() {
         salesKindFragment = new SalesKindFragment();
@@ -160,8 +164,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                     programming.setQuantity(999900);
                 }
                 programming.setPresetKind(FULL);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
-                        addToBackStack(null).commit();//Levante la manguera
                 sendShuduledSale();
                 break;
         }
@@ -171,8 +173,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     @Override
     public void money(int money) {
         programming.setQuantity(money);
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
-                addToBackStack(null).commit();//Levante la manguera
         sendShuduledSale();
     }
 
@@ -182,9 +182,12 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         int volumeInt = ((int)(volume*100))*10;
         programming.setPresetKind(1);
         programming.setQuantity(volumeInt);
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
-                addToBackStack(null).commit();//Levante la manguera
         sendShuduledSale();
+    }
+
+    @Override
+    public void positionChange(){
+        startApp();
     }
 
     @Override
@@ -199,14 +202,19 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     @Override
     public void receipt(short cantidad) {
         if(cantidad>1){
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            this.finish();
+            startApp();
         }else{
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-            this.finish();
+            startApp();
         }
+    }
+
+    private void startApp(){
+        if(primeThread.isAlive()){
+            primeThread.killThread(true);
+        }
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+        this.finish();
     }
 
 
@@ -220,39 +228,68 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
 
     private void sendShuduledSale(){
-        PrimeThread p = new PrimeThread(143);
-        p.start();
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
+                addToBackStack(null).commit();
+        secondThread();
     }
 
 
+    private void secondThread(){
+        primeThread = new PrimeThread(143);
+        primeThread.killThread(false);
+        primeThread.start();
+    }
+
+
+    //----------------------------------------------------------------------------------------------
     class PrimeThread extends Thread {
-        long minPrime;
+
+        private long minPrime;
+        private boolean kill;
+
         PrimeThread(long minPrime) {
             this.minPrime = minPrime;
         }
 
         public void run() {
-            int ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
-
             MfcWifi mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
-            //MfcWifi mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!!", "192.168.102.29", 8080);
             AppMfc appMfc = new AppMfc(mfcWifi);//abro conexion
             appMfc.setProgramming(programming);//envio programacion del usuario
-            do {
-                appMfc.machineCommunication();
-            } while (appMfc.getEstado() != LISTO);
-            fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
-                    addToBackStack(null).commit();//Levante la manguera
-            do {
-                appMfc.machineCommunication();
-            } while (appMfc.getEstado() != VENTA);
-
-
             SaleDataFragment saleDataFragment = new SaleDataFragment(programming, appMfc);
-            fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
-                    addToBackStack(null).commit();
+            switch (currentProcess){
+                case SURTIENDO:
+                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
+                            addToBackStack(null).commit();
+                    do {
+                        appMfc.machineCommunication(true);
+                    } while ((appMfc.getEstado() != VENTA) && (!kill));
+                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
+                            addToBackStack(null).commit();
+                    break;
+                case VENTA:
+                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
+                            addToBackStack(null).commit();
+                    break;
+                default:
+                    do {
+                        appMfc.machineCommunication(false);
+                    } while (appMfc.getEstado() != LISTO);
+                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
+                            addToBackStack(null).commit();//Levante la manguera
+                    do {
+                        appMfc.machineCommunication(false);
+                    } while ((appMfc.getEstado() != VENTA) && (!kill));
+                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
+                            addToBackStack(null).commit();
+            }
         }
+
+        private void killThread(boolean kill){
+            this.kill = kill;
+        }
+
     }
+    //----------------------------------------------------------------------------------------------
 
 
 }

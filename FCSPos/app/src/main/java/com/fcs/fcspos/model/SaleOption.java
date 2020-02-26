@@ -7,6 +7,7 @@ public interface SaleOption {
     void optionPresetKind(int selectedKindPreset);
     void money(int money);
     void volume(double volume);
+    void positionChange();
     void endSale(Sale sale);
     void receipt(short cantidad);
 

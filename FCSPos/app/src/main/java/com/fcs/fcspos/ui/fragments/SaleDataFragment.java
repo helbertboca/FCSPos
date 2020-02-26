@@ -50,8 +50,8 @@ public class SaleDataFragment extends Fragment {
         btnEndSale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                programming.getVehicle().setLicense_plate(edtLicensePlate.getText().toString());
-                programming.getVehicle().setKilometres(edtMileage.getText().toString());
+                //programming.getVehicle().setLicense_plate(edtLicensePlate.getText().toString());
+                //programming.getVehicle().setKilometres(edtMileage.getText().toString());
                 //----------------------------------------------------------------------------------
                 //puede haber un cambio de posicion que haria que se pierda de momento el vehiculo de la programacion
                 //----------------------------------------------------------------------------------
@@ -75,6 +75,8 @@ public class SaleDataFragment extends Fragment {
         });
         return view;
     }
+
+
     @Override
     public void onAttach(Activity activity){
         super.onAttach(activity);

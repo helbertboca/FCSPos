@@ -11,7 +11,6 @@ public class AppMfc {
     private MfcWifi mfcWifi;
     private Programming programming;
     private byte estado;
-    private Sale sale;
     private final String SEPARATOR=";";
 
 
@@ -124,7 +123,6 @@ public class AppMfc {
                         transformVolume(splitSale[4]),Integer.parseInt(splitSale[5]),
                         Integer.parseInt(splitSale[6]) );
             }
-            System.out.println(sale.toString());
         }
         return null;
     }

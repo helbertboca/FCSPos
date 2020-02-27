@@ -70,9 +70,13 @@ public class MfcWifi implements Serializable {
                     setAnswer("");
                 }finally {
                     try {
-                        Objects.requireNonNull(inputStreamReader).close();//revisar
+                        if (inputStreamReader != null) {
+                            inputStreamReader.close();
+                        }
+                        //Objects.requireNonNull(inputStreamReader).close();//revisar
                     } catch (IOException e) {
                         e.printStackTrace();
+                        System.out.println("bug<<<<<<<<<<<<<<<<<");
                     }
                     Objects.requireNonNull(printWriter).close();
                 }

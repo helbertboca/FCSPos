@@ -263,12 +263,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                     do {
                         appMfc.machineCommunication(true);
                     } while ((appMfc.getEstado() != VENTA) && (!kill));
-                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
-                            addToBackStack(null).commit();
                     break;
                 case VENTA:
-                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
-                            addToBackStack(null).commit();
                     break;
                 default:
                     do {
@@ -279,10 +275,11 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                     do {
                         appMfc.machineCommunication(false);
                     } while ((appMfc.getEstado() != VENTA) && (!kill));
-                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
-                            addToBackStack(null).commit();
             }
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
+                    addToBackStack(null).commit();
         }
+
 
         private void killThread(boolean kill){
             this.kill = kill;

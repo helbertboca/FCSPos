@@ -48,24 +48,24 @@ public class PositionActivity extends AppCompatActivity {
         //mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!||!", "192.168.102.29", 8080);
         AppMfc appMfc = new AppMfc(mfcWifi);//abro conexion //NOTA tal vez alla que enviar la comunicacion a la siguiente actividad
         appMfc.setProgramming(programming);//envio programacion del usuario
-        //do {
-            appMfc.machineCommunication(false);
-            SystemClock.sleep(80);
-            switch (appMfc.getEstado()){
-                case LISTO:
-                    Toast.makeText(getApplicationContext(), "Manguera levantada", Toast.LENGTH_SHORT).show();
-                    break;
-                case SURTIENDO:
-                    Toast.makeText(getApplicationContext(), "Surtiendo", Toast.LENGTH_SHORT).show();
-                    nextActivity((byte) SURTIENDO);
-                    break;
-                case VENTA:
-                    nextActivity((byte) VENTA);
-                    break;
-                case ERROR:
-                    break;
+        appMfc.machineCommunication(false);
+        SystemClock.sleep(80);
+        switch (appMfc.getEstado()){
+            case LISTO:
+                Toast.makeText(getApplicationContext(), "Manguera levantada", Toast.LENGTH_SHORT).show();
+                break;
+            case SURTIENDO:
+                Toast.makeText(getApplicationContext(), "Surtiendo", Toast.LENGTH_SHORT).show();
+                nextActivity((byte) SURTIENDO);
+                break;
+            case VENTA:
+                nextActivity((byte) VENTA);
+                break;
+            case ERROR:
+                Toast.makeText(getApplicationContext(), "No hay respuesta de la MFC", Toast.LENGTH_SHORT).show();
+                finish();
+                break;
             }
-        //} while (appMfc.getEstado() != ESPERA);
     }
 
 

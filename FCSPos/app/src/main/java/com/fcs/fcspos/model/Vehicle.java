@@ -1,7 +1,9 @@
 package com.fcs.fcspos.model;
 
 
-public class Vehicle {
+import java.io.Serializable;
+
+public class Vehicle implements Serializable {
 
     private String license_plate;
     private String kilometres;

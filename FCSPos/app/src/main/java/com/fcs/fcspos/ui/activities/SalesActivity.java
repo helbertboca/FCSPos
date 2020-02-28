@@ -9,8 +9,8 @@ import android.os.Bundle;
 
 import com.fcs.fcspos.MainActivity;
 import com.fcs.fcspos.R;
-import com.fcs.fcspos.io.AppMfc;
-import com.fcs.fcspos.io.MfcWifi;
+import com.fcs.fcspos.io.AppMfcProtocol;
+import com.fcs.fcspos.io.MfcWifiCom;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
@@ -55,8 +55,9 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sales);
         dispenser =(Dispenser)getIntent().getSerializableExtra("surtidor");
-        programming = (Programming)getIntent().getSerializableExtra("programming");
         currentProcess = (byte)getIntent().getSerializableExtra("currentProcess");
+        AppMfcProtocol appMfcProtocol = (AppMfcProtocol)getIntent().getSerializableExtra("appMfcProtocol");
+        programming = appMfcProtocol.getProgramming();
         vehicle = new Vehicle();
         fragmentManager = getSupportFragmentManager();
         instantiateFragmets();
@@ -252,29 +253,29 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         }
 
         public void run() {
-            MfcWifi mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
-            AppMfc appMfc = new AppMfc(mfcWifi);//abro conexion
-            appMfc.setProgramming(programming);//envio programacion del usuario
-            SaleDataFragment saleDataFragment = new SaleDataFragment(programming, appMfc);
+            MfcWifiCom mfcWifiCom = MfcWifiCom.getInstance("192.168.4.1", 80);
+            AppMfcProtocol appMfcProtocol = new AppMfcProtocol(mfcWifiCom);//abro conexion
+            appMfcProtocol.setProgramming(programming);//envio programacion del usuario
+            SaleDataFragment saleDataFragment = new SaleDataFragment(programming, appMfcProtocol);
             switch (currentProcess){
                 case SURTIENDO:
                     fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
                             addToBackStack(null).commit();
                     do {
-                        appMfc.machineCommunication(true);
-                    } while ((appMfc.getEstado() != VENTA) && (!kill));
+                        appMfcProtocol.machineCommunication(true);
+                    } while ((appMfcProtocol.getEstado() != VENTA) && (!kill));
                     break;
                 case VENTA:
                     break;
                 default:
                     do {
-                        appMfc.machineCommunication(false);
-                    } while (appMfc.getEstado() != LISTO);
+                        appMfcProtocol.machineCommunication(false);
+                    } while (appMfcProtocol.getEstado() != LISTO);
                     fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
                             addToBackStack(null).commit();//Levante la manguera
                     do {
-                        appMfc.machineCommunication(false);
-                    } while ((appMfc.getEstado() != VENTA) && (!kill));
+                        appMfcProtocol.machineCommunication(false);
+                    } while ((appMfcProtocol.getEstado() != VENTA) && (!kill));
             }
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
                     addToBackStack(null).commit();

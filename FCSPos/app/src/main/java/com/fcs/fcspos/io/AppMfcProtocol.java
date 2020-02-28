@@ -5,19 +5,20 @@ import android.os.SystemClock;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
 
+import java.io.Serializable;
 
-public class AppMfc {
 
-    private MfcWifi mfcWifi;
+public class AppMfcProtocol implements Serializable {
+
+    private MfcWifiCom mfcWifiCom;
     private Programming programming;
     private byte estado;
     private final String SEPARATOR=";";
 
 
-    public AppMfc(MfcWifi mfcWifi){
-        this.mfcWifi = mfcWifi;
+    public AppMfcProtocol(MfcWifiCom mfcWifiCom){
+        this.mfcWifiCom = mfcWifiCom;
     }
-
 
     public void machineCommunication(boolean pendingSale){
         final int ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
@@ -25,10 +26,10 @@ public class AppMfc {
 
         String[] splitAnswer;
         System.out.println(programming.getPosition() + "pos");
-        mfcWifi.sendRequest("estado;" + programming.getPosition());//pido estado
-        if (mfcWifi.getAnswer() != null) {
-            System.out.println("Respuesta estado: " + mfcWifi.getAnswer());
-            splitAnswer = mfcWifi.getAnswer().split(SEPARATOR);
+        mfcWifiCom.sendRequest("estado;" + programming.getPosition());//pido estado
+        if (mfcWifiCom.getAnswer() != null) {
+            System.out.println("Respuesta estado: " + mfcWifiCom.getAnswer());
+            splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
             if(splitAnswer.length>2){
                 if (splitAnswer[2].equals("A")) {
                     splitAnswer[2] = "10";
@@ -38,15 +39,15 @@ public class AppMfc {
                         System.out.println("ESTADO ESPERA");
                         estado = ESPERA;
                         if(programming.getKind()!=null && !pendingSale){//si hay venta programada, realizarla
-                            mfcWifi.sendRequest("programar;"+ programming.getPosition()
+                            mfcWifiCom.sendRequest("programar;"+ programming.getPosition()
                                     +";M" + programming.getProduct() + ";T" + programming.getPresetKind()
                                     + ";P" + programming.getQuantity());
                             SystemClock.sleep(140);
-                            if (mfcWifi.getAnswer() != null) {
+                            if (mfcWifiCom.getAnswer() != null) {
                                 for(int i=0; i<splitAnswer.length; i++){
                                     splitAnswer[i]="";
                                 }
-                                splitAnswer = mfcWifi.getAnswer().split(SEPARATOR);
+                                splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
                                 if (Integer.parseInt(splitAnswer[2]) == OK) {
                                     System.out.println("SE PROGRAMO");
                                 } else {
@@ -61,12 +62,12 @@ public class AppMfc {
                         System.out.println("ESTADO LISTO");
                         estado = LISTO;
                         if(programming.getKind()!=null && !pendingSale) {//si hay venta programada, realizarla
-                            mfcWifi.sendRequest("autorizar;" + programming.getPosition());
-                            if (mfcWifi.getAnswer() != null) {
+                            mfcWifiCom.sendRequest("autorizar;" + programming.getPosition());
+                            if (mfcWifiCom.getAnswer() != null) {
                                 for (int i = 0; i < splitAnswer.length; i++) {
                                     splitAnswer[i] = "";
                                 }
-                                splitAnswer = mfcWifi.getAnswer().split(SEPARATOR);
+                                splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
                                 if (Integer.parseInt(splitAnswer[2]) == OK) {
                                     System.out.println("SE AUTORIZO");
                                 } else {
@@ -105,6 +106,10 @@ public class AppMfc {
         return Double.parseDouble((x/1000) + "." + (x%1000));
     }
 
+    public Programming getProgramming() {
+        return programming;
+    }
+
     public void setProgramming(Programming programming) {
         this.programming = programming;
     }
@@ -114,9 +119,9 @@ public class AppMfc {
     }
 
     public Sale getSale() {
-        mfcWifi.sendRequest("venta;" + programming.getPosition());
-        if (mfcWifi.getAnswer() != null) {
-            final String[] splitSale = mfcWifi.getAnswer().split(SEPARATOR);
+        mfcWifiCom.sendRequest("venta;" + programming.getPosition());
+        if (mfcWifiCom.getAnswer() != null) {
+            final String[] splitSale = mfcWifiCom.getAnswer().split(SEPARATOR);
             if(splitSale.length>5){
                 return new Sale(Short.parseShort(splitSale[1]),
                         Short.parseShort(splitSale[2]),Short.parseShort(splitSale[3]),

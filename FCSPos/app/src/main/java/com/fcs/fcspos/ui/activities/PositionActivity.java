@@ -9,11 +9,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.fcs.fcspos.R;
-import com.fcs.fcspos.io.AppMfc;
-import com.fcs.fcspos.io.MfcWifi;
+import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Hose;
-import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Side;
 
 import java.util.ArrayList;
@@ -23,34 +21,27 @@ public class PositionActivity extends AppCompatActivity {
 
     private Button btnSales,btnBasket,btnRecord,btnTurn,btnCalibrate;
     private Dispenser dispenser;
-    private Programming programming;
     private final byte ESPERA=6;
+    private AppMfcProtocol appMfcProtocol;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_position);
-
         initialSettingsDispenser();
-        programming = new Programming();
-        programming.setPosition((byte)getIntent().getSerializableExtra("position"));
-        supplierStatus(programming);
-        //initialSettingsDispenser();
+        appMfcProtocol = (AppMfcProtocol) getIntent().getSerializableExtra("AppMfcProtocol");
+        supplierStatus();
         initView();
         eventsViews();
     }
 
-    private void supplierStatus(Programming programming){
-        final int ERROR=0, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
 
-        MfcWifi mfcWifi = MfcWifi.getInstance("ESP32", "123456789", "192.168.4.1", 80);
-        //mfcWifi = MfcWifi.getInstance("FCS_INVITADOS", "Fcs.inv*!||!", "192.168.102.29", 8080);
-        AppMfc appMfc = new AppMfc(mfcWifi);//abro conexion //NOTA tal vez alla que enviar la comunicacion a la siguiente actividad
-        appMfc.setProgramming(programming);//envio programacion del usuario
-        appMfc.machineCommunication(false);
+    private void supplierStatus(){
+        final int ERROR=0, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
+        appMfcProtocol.machineCommunication(false);
         SystemClock.sleep(80);
-        switch (appMfc.getEstado()){
+        switch (appMfcProtocol.getEstado()){
             case LISTO:
                 Toast.makeText(getApplicationContext(), "Manguera levantada", Toast.LENGTH_SHORT).show();
                 break;
@@ -99,8 +90,8 @@ public class PositionActivity extends AppCompatActivity {
     private void nextActivity(byte currentProcess){
         Intent i = new Intent(getApplicationContext(), SalesActivity.class);
         i.putExtra("surtidor",dispenser);
-        i.putExtra("programming",programming);
         i.putExtra("currentProcess", currentProcess);
+        i.putExtra("appMfcProtocol", appMfcProtocol);
         startActivity(i);
     }
 

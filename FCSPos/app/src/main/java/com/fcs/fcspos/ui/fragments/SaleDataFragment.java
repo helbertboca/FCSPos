@@ -13,7 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.fcs.fcspos.R;
-import com.fcs.fcspos.io.AppMfc;
+import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
@@ -28,14 +28,14 @@ public class SaleDataFragment extends Fragment {
 
     private Programming programming;
     private SaleOption saleOption;
-    private AppMfc appMfc;
+    private AppMfcProtocol appMfcProtocol;
 
     public SaleDataFragment() {}
 
     @SuppressLint("ValidFragment")
-    public SaleDataFragment(Programming programming, AppMfc appMfc) {
+    public SaleDataFragment(Programming programming, AppMfcProtocol appMfcProtocol) {
         this.programming = programming;
-        this.appMfc = appMfc;
+        this.appMfcProtocol = appMfcProtocol;
     }
 
     @Override
@@ -63,8 +63,8 @@ public class SaleDataFragment extends Fragment {
                 client.setNit(edtNit.getText().toString());
                 //pedir venta
 
-                if(appMfc.getSale()!=null){
-                    Sale sale = appMfc.getSale();
+                if(appMfcProtocol.getSale()!=null && client.getIdentificationCard()!=null){//revisar que cuando no se llenan los datos de la venta al parecer se bloquea
+                    Sale sale = appMfcProtocol.getSale();
                     sale.setClient(client);
                     sale.setVehicle(vehicle);
                     saleOption.endSale(sale);

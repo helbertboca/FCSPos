@@ -2,18 +2,20 @@ package com.fcs.fcspos.ui.activities;
 
 import android.content.Intent;
 import android.os.Build;
-import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fcs.fcspos.MainActivity;
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.io.MfcWifiCom;
 import com.fcs.fcspos.model.Dispenser;
+import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
 import com.fcs.fcspos.model.SaleOption;
@@ -29,6 +31,7 @@ import com.fcs.fcspos.ui.fragments.UpHoseFragment;
 import com.fcs.fcspos.ui.fragments.VehicleKindFragment;
 import com.fcs.fcspos.ui.fragments.VolumeFragment;
 
+import java.util.List;
 
 
 public class SalesActivity extends AppCompatActivity  implements SaleOption{
@@ -50,6 +53,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private final byte ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
     private byte currentProcess;
     private PrimeThread primeThread;
+    private boolean scheduledSaleFlag=false;
+    private Net net;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +64,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         dispenser =(Dispenser)getIntent().getSerializableExtra("surtidor");
         currentProcess = (byte)getIntent().getSerializableExtra("currentProcess");
         AppMfcProtocol appMfcProtocol = (AppMfcProtocol)getIntent().getSerializableExtra("appMfcProtocol");
+        net = (Net)getIntent().getSerializableExtra("net");
         programming = appMfcProtocol.getProgramming();
         vehicle = new Vehicle();
         fragmentManager = getSupportFragmentManager();
@@ -200,8 +206,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         System.out.println(sale + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         System.out.println(sale.getVehicle() + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         System.out.println(sale.getClient() + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).
-                addToBackStack(null).commit();
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).commit();
     }
 
     @Override
@@ -226,15 +231,22 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB)
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        getFragmentManager().popBackStack();
+        if(scheduledSaleFlag){
+            Toast.makeText(getApplicationContext(), "Venta ya programada", Toast.LENGTH_SHORT).show();
+        }else{super.onBackPressed();
+            getFragmentManager().popBackStack();
+        }
     }
-
 
 
     private void sendShuduledSale(){
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
                 addToBackStack(null).commit();
+        List<Fragment> fragments = fragmentManager.getFragments();
+        for (Fragment f: fragments) {
+            getFragmentManager().popBackStack();
+        }
+        scheduledSaleFlag=true;
         secondThread();
     }
 
@@ -257,14 +269,13 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         }
 
         public void run() {
-            MfcWifiCom mfcWifiCom = MfcWifiCom.getInstance("192.168.4.1", 80);
+            MfcWifiCom mfcWifiCom = MfcWifiCom.getInstance(net.getIp(), net.getPort());
             AppMfcProtocol appMfcProtocol = new AppMfcProtocol(mfcWifiCom);//abro conexion
             appMfcProtocol.setProgramming(programming);//envio programacion del usuario
             SaleDataFragment saleDataFragment = new SaleDataFragment(programming, appMfcProtocol);
             switch (currentProcess){
                 case SURTIENDO:
-                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
-                            addToBackStack(null).commit();
+                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
                     do {
                         appMfcProtocol.machineCommunication(true);
                     } while ((appMfcProtocol.getEstado() != VENTA) && (!kill));
@@ -275,8 +286,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                     do {
                         appMfcProtocol.machineCommunication(false);
                     } while (appMfcProtocol.getEstado() != LISTO);
-                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).
-                            addToBackStack(null).commit();//Levante la manguera
+                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
                     do {
                         appMfcProtocol.machineCommunication(false);
                     } while ((appMfcProtocol.getEstado() != VENTA) && (!kill));

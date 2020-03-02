@@ -12,6 +12,7 @@ import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Hose;
+import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Side;
 
 import java.util.ArrayList;
@@ -23,6 +24,7 @@ public class PositionActivity extends AppCompatActivity {
     private Dispenser dispenser;
     private final byte ESPERA=6;
     private AppMfcProtocol appMfcProtocol;
+    private Net net;
 
 
     @Override
@@ -31,6 +33,7 @@ public class PositionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_position);
         initialSettingsDispenser();
         appMfcProtocol = (AppMfcProtocol) getIntent().getSerializableExtra("AppMfcProtocol");
+        net = (Net)getIntent().getSerializableExtra("net");
         supplierStatus();
         initView();
         eventsViews();
@@ -92,6 +95,7 @@ public class PositionActivity extends AppCompatActivity {
         i.putExtra("surtidor",dispenser);
         i.putExtra("currentProcess", currentProcess);
         i.putExtra("appMfcProtocol", appMfcProtocol);
+        i.putExtra("net", net);
         startActivity(i);
     }
 

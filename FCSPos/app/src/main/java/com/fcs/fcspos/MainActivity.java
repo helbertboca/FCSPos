@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity{
             if(respuesta){
                 Intent i = new Intent(getApplicationContext(), PositionActivity.class);
                 i.putExtra("AppMfcProtocol", appMfcProtocol);
+                i.putExtra("net", net);
                 startActivity(i);
             }else{
                 Toast.makeText(getApplicationContext(), "No puede conectarse con el equipo", Toast.LENGTH_SHORT).show();

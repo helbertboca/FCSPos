@@ -1,6 +1,8 @@
 package com.fcs.fcspos.model;
 
-public class Net {
+import java.io.Serializable;
+
+public class Net implements Serializable {
 
     private String ssid;
     private String password;

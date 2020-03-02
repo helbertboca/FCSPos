@@ -13,19 +13,16 @@
         android:layout_height="wrap_content"
         android:text="CANTIDAD DE RECIBOS" />
 
-
     <Button
         android:id="@+id/btn1Recibo"
         android:text="Uno"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-
     <Button
         android:id="@+id/btn2Recibo"
         android:text="Dos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-
 
 </LinearLayout>

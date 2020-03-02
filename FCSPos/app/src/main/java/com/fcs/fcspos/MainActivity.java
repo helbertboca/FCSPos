@@ -54,13 +54,19 @@ public class MainActivity extends AppCompatActivity{
         btnPos3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),"Posicion 3 no habilitada", Toast.LENGTH_SHORT).show();
+                programming = new Programming();
+                programming.setPosition((byte) 1);//esta posicion tiene que ir determinada por los botones
+                net = new Net("ESP33","123456780","192.168.4.1",80);
+                establishConnection();
             }
         });
         btnPos4.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getApplicationContext(),"Posicion 4 no habilitada", Toast.LENGTH_SHORT).show();
+                programming = new Programming();
+                programming.setPosition((byte) 2);//esta posicion tiene que ir determinada por los botones
+                net = new Net("ESP33","123456780","192.168.4.1",80);
+                establishConnection();
             }
         });
 

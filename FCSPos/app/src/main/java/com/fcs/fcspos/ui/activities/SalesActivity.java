@@ -2,10 +2,12 @@ package com.fcs.fcspos.ui.activities;
 
 import android.content.Intent;
 import android.os.Build;
+import android.os.SystemClock;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import com.fcs.fcspos.MainActivity;
 import com.fcs.fcspos.R;
@@ -193,6 +195,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
     @Override
     public void endSale(Sale sale) {
+        TextView textView = findViewById(R.id.infoVenta);
+        textView.setText("Venta;" + sale + ", VEHICULO; " + sale.getVehicle() + ", CLIENTE; " + sale.getClient());
         System.out.println(sale + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         System.out.println(sale.getVehicle() + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         System.out.println(sale.getClient() + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");

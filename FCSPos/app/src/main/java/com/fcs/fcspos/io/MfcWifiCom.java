@@ -104,7 +104,7 @@ public class MfcWifiCom implements Serializable {
         if (wifiManager != null) {
             if(wifiManager.getWifiState()==WifiManager.WIFI_STATE_ENABLED){
                 System.out.println(wifiManager.getConnectionInfo().getSSID());
-                if(wifiManager.getConnectionInfo().getSSID().equals("\"" +"ESP32"+ "\"")){
+                if(wifiManager.getConnectionInfo().getSSID().equals("\"" + networkSSID + "\"")){
                     System.out.println("no hay problema con la red");
                     return OLD_CONNECTION;
                 }else {

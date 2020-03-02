@@ -24,22 +24,22 @@
             android:layout_height="wrap_content"/>
 
         <Button
-            android:text="Posicion 1"
+            android:text="Equipo A Posicion 1"
             android:id="@+id/btnPos1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <Button
-            android:text="Posicion 2"
+            android:text="Equipo A Posicion 2"
             android:id="@+id/btnPos2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <Button
-            android:text="Posicion 3"
+            android:text="Equipo B Posicion 1"
             android:id="@+id/btnPos3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <Button
-            android:text="Posicion 4"
+            android:text="Equipo B Posicion 2"
             android:id="@+id/btnPos4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

@@ -218,7 +218,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                 break;
             case DELETE:
                 editor.remove(net.getSsid() + "/" + programming.getPosition());
-                editor.clear();
                 editor.apply();
                 break;
         }

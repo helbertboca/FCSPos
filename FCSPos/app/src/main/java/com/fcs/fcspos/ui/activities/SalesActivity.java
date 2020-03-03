@@ -1,11 +1,12 @@
 package com.fcs.fcspos.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,13 +49,15 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private FillingUpFragment fillingUpFragment;
     private ReceiptFragment receiptFragment;
     private Programming programming;
-    private Vehicle vehicle;
+    private Vehicle vehiclePending;
     private Dispenser dispenser;
     private final byte ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
     private byte currentProcess;
     private PrimeThread primeThread;
     private boolean scheduledSaleFlag=false;
     private Net net;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +68,11 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         currentProcess = (byte)getIntent().getSerializableExtra("currentProcess");
         AppMfcProtocol appMfcProtocol = (AppMfcProtocol)getIntent().getSerializableExtra("appMfcProtocol");
         net = (Net)getIntent().getSerializableExtra("net");
+
+        vehiclePending = (Vehicle) getIntent().getSerializableExtra("vehicle");//v2
+
         programming = appMfcProtocol.getProgramming();
-        vehicle = new Vehicle();
+        //vehicle = new Vehicle();
         fragmentManager = getSupportFragmentManager();
         instantiateFragmets();
         if(currentProcess!=ESPERA){
@@ -132,22 +138,22 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         final int PESADO=1, PARTICULAR=2, TAXI=3, MOTO=4, OTRO=5;
         switch (selectedVehicle){
             case PESADO:
-                vehicle.setKind(PESADO);
+                vehiclePending.setKind(PESADO);
                 break;
             case PARTICULAR:
-                vehicle.setKind(PARTICULAR);
+                vehiclePending.setKind(PARTICULAR);
                 break;
             case TAXI:
-                vehicle.setKind(TAXI);
+                vehiclePending.setKind(TAXI);
                 break;
             case MOTO:
-                vehicle.setKind(MOTO);
+                vehiclePending.setKind(MOTO);
                 break;
             case OTRO:
-                vehicle.setKind(OTRO);
+                vehiclePending.setKind(OTRO);
                 break;
         }
-        programming.setVehicle(vehicle);
+        programming.setVehicle(vehiclePending);
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, presetKindFragment).
                 addToBackStack(null).commit();
     }
@@ -196,16 +202,39 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
     @Override
     public void positionChange(){
+        pendingSales_file((byte) 1);
         startApp();
     }
 
+
+    private void pendingSales_file(byte action){
+        final byte SAVE=1, READ=2, DELETE=3;
+        final SharedPreferences sharedPref = SalesActivity.this.getSharedPreferences("pendingSales", MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPref.edit();
+        switch (action){
+            case SAVE:
+                editor.putString(net.getSsid() + "/" + programming.getPosition(), vehiclePending.getKind() + "/");
+                editor.apply();
+                break;
+            case DELETE:
+                editor.remove(net.getSsid() + "/" + programming.getPosition());
+                editor.clear();
+                editor.apply();
+                break;
+        }
+    }
+
+
     @Override
     public void endSale(Sale sale) {
+        Vehicle vehicleCurrent =sale.getVehicle();
+        vehiclePending.setLicense_plate(vehicleCurrent.getLicense_plate());
+        vehiclePending.setKilometres(vehicleCurrent.getKilometres());
+        sale.setVehicle(vehiclePending);
+
+        pendingSales_file((byte) 3);
         TextView textView = findViewById(R.id.infoVenta);
         textView.setText("Venta;" + sale + ", VEHICULO; " + sale.getVehicle() + ", CLIENTE; " + sale.getClient());
-        System.out.println(sale + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        System.out.println(sale.getVehicle() + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        System.out.println(sale.getClient() + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).commit();
     }
 

@@ -1,6 +1,6 @@
 package com.fcs.fcspos.model;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 public class Sale {
 

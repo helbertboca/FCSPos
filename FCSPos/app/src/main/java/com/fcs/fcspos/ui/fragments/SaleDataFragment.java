@@ -4,7 +4,7 @@ package com.fcs.fcspos.ui.fragments;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,11 +50,6 @@ public class SaleDataFragment extends Fragment {
         btnEndSale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //programming.getVehicle().setLicense_plate(edtLicensePlate.getText().toString());
-                //programming.getVehicle().setKilometres(edtMileage.getText().toString());
-                //----------------------------------------------------------------------------------
-                //puede haber un cambio de posicion que haria que se pierda de momento el vehiculo de la programacion
-                //----------------------------------------------------------------------------------
                 Vehicle vehicle = new Vehicle();
                 vehicle.setLicense_plate(edtLicensePlate.getText().toString());
                 vehicle.setKilometres(edtMileage.getText().toString());

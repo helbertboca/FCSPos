@@ -12,21 +12,28 @@ import android.widget.Toast;
 
 import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.io.MfcWifiCom;
+import com.fcs.fcspos.model.Dispenser;
+import com.fcs.fcspos.model.Hose;
 import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Programming;
+import com.fcs.fcspos.model.Side;
 import com.fcs.fcspos.ui.activities.PositionActivity;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity{
 
     private Net net;
     private Programming programming;
+    private Dispenser dispenser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initialSettingsDispenser();
         Button btnPos1 = findViewById(R.id.btnPos1);
         Button btnPos2 = findViewById(R.id.btnPos2);
         Button btnPos3 = findViewById(R.id.btnPos3);
@@ -88,6 +95,32 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
+    private void initialSettingsDispenser() {
+        //Configuraciones parciales para pruebas de venta ------------------------------------------
+        final String BRAND="Gilbarco";
+        final byte NUMBER_OF_DIGITS=6, DECIMALS_IN_VOLUME=3;
+        final byte NUMBER_OF_FACES=2, NUMBER_OF_HOUSES_PERFACE=3;
+        final byte SIDE_A=0, SIDE_B=1;
+        short[] ppus = {7000,8000,10500};
+        //------------------------------------------------------------------------------------------
+        dispenser = new Dispenser(BRAND , NUMBER_OF_DIGITS, DECIMALS_IN_VOLUME);
+        ArrayList<Side> sides = new ArrayList<>();
+        for(int x=0; x<NUMBER_OF_FACES; x++){
+            sides.add(new Side());
+        }
+        ArrayList<Hose> hosesLA = new ArrayList<>();
+        for(int x=0; x<NUMBER_OF_HOUSES_PERFACE;x++){
+            hosesLA.add(new Hose(ppus[x]));
+        }
+        sides.get(SIDE_A).setHoses(hosesLA);
+        ArrayList<Hose> hosesLB = new ArrayList<>();
+        for(int x=0; x<NUMBER_OF_HOUSES_PERFACE;x++){
+            hosesLB.add(new Hose(ppus[x]));
+        }
+        sides.get(SIDE_B).setHoses(hosesLB);
+        dispenser.setSides(sides);
+    }
+
 
 
     //----------------------------------------------------------------------------------------------
@@ -110,7 +143,7 @@ public class MainActivity extends AppCompatActivity{
                 count++;
             }
             MfcWifiCom mfcWifiCom = MfcWifiCom.getInstance(net.getIp(), net.getPort());
-            appMfcProtocol = new AppMfcProtocol(mfcWifiCom);
+            appMfcProtocol = new AppMfcProtocol(mfcWifiCom,dispenser);
             appMfcProtocol.setProgramming(programming);
             appMfcProtocol.machineCommunication(false);
             SystemClock.sleep(80);
@@ -124,6 +157,7 @@ public class MainActivity extends AppCompatActivity{
                 Intent i = new Intent(getApplicationContext(), PositionActivity.class);
                 i.putExtra("AppMfcProtocol", appMfcProtocol);
                 i.putExtra("net", net);
+                i.putExtra("dispenser", dispenser);
                 startActivity(i);
             }else{
                 Toast.makeText(getApplicationContext(), "No puede conectarse con el equipo", Toast.LENGTH_SHORT).show();

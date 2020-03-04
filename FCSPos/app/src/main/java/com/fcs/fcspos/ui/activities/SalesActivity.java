@@ -45,13 +45,11 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private PresetKindFragment presetKindFragment;
     private MoneyFragment moneyFragment;
     private VolumeFragment volumeFragment;
-    private UpHoseFragment upHoseFragment;
     private FillingUpFragment fillingUpFragment;
     private ReceiptFragment receiptFragment;
     private Programming programming;
     private Vehicle vehiclePending;
     private Dispenser dispenser;
-    private final byte ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
     private byte currentProcess;
     private PrimeThread primeThread;
     private boolean scheduledSaleFlag=false;
@@ -61,7 +59,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sales);
         dispenser =(Dispenser)getIntent().getSerializableExtra("surtidor");
@@ -72,7 +69,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         programming = appMfcProtocol.getProgramming();
         fragmentManager = getSupportFragmentManager();
         instantiateFragmets();
-        if(currentProcess!=ESPERA){
+        if(currentProcess!=dispenser.getCod_ESPERA()){
             secondThread();
         }else {
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, salesKindFragment).commit();
@@ -87,7 +84,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         presetKindFragment = new PresetKindFragment();
         moneyFragment = new MoneyFragment();
         volumeFragment = new VolumeFragment();
-        upHoseFragment = new UpHoseFragment();
         fillingUpFragment = new FillingUpFragment();
         receiptFragment = new ReceiptFragment();
     }
@@ -197,6 +193,24 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         sendShuduledSale();
     }
 
+    private void sendShuduledSale(){
+        UpHoseFragment upHoseFragment = new UpHoseFragment(programming, net, dispenser);
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
+                addToBackStack(null).commit();
+    }
+
+
+    @Override
+    public void correctHose(boolean is_hose) {
+        if(is_hose){
+            takeOutStackFragments();
+            scheduledSaleFlag=true;
+            secondThread();
+        }else {
+            Toast.makeText(getApplicationContext(), "Excedio el tiempo de levantar la manguera", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void positionChange(){
         takeOutStackFragments();
@@ -265,16 +279,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     }
 
 
-    private void sendShuduledSale(){
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
-                addToBackStack(null).commit();
-        takeOutStackFragments();
-        scheduledSaleFlag=true;
-        secondThread();
-    }
-
-
-
     private void takeOutStackFragments(){
         List<Fragment> fragments = fragmentManager.getFragments();
         for (Fragment f: fragments) {
@@ -302,30 +306,29 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
         public void run() {
             MfcWifiCom mfcWifiCom = MfcWifiCom.getInstance(net.getIp(), net.getPort());
-            AppMfcProtocol appMfcProtocol = new AppMfcProtocol(mfcWifiCom);//abro conexion
+            AppMfcProtocol appMfcProtocol = new AppMfcProtocol(mfcWifiCom, dispenser);//abro conexion
             appMfcProtocol.setProgramming(programming);//envio programacion del usuario
             SaleDataFragment saleDataFragment = new SaleDataFragment(programming, appMfcProtocol);
-            switch (currentProcess){
-                case SURTIENDO:
-                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
-                    scheduledSaleFlag=true;
-                    pendingSales_file((byte) 1);
-                    do {
-                        appMfcProtocol.machineCommunication(true);
-                    } while ((appMfcProtocol.getEstado() != VENTA) && (!kill));
-                    break;
-                case VENTA:
-                    break;
-                default:
-                    do {
-                        appMfcProtocol.machineCommunication(false);
-                    } while (appMfcProtocol.getEstado() != LISTO);
-                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
-                    scheduledSaleFlag=true;
-                    pendingSales_file((byte) 1);
-                    do {
-                        appMfcProtocol.machineCommunication(false);
-                    } while ((appMfcProtocol.getEstado() != VENTA) && (!kill));
+
+            if(currentProcess == dispenser.getCod_SURTIENDO()){
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
+                scheduledSaleFlag=true;
+                pendingSales_file((byte) 1);
+                do {
+                    appMfcProtocol.machineCommunication(true);
+                } while ((appMfcProtocol.getEstado() != dispenser.getCod_VENTA()) && (!kill));
+            }else if(currentProcess == dispenser.getCod_VENTA()){
+
+            }else{
+                do {
+                    appMfcProtocol.machineCommunication(false);
+                } while (appMfcProtocol.getEstado() != dispenser.getCod_LISTO());
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
+                scheduledSaleFlag=true;
+                pendingSales_file((byte) 1);
+                do {
+                    appMfcProtocol.machineCommunication(false);
+                } while ((appMfcProtocol.getEstado() != dispenser.getCod_VENTA()) && (!kill));
             }
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
                     addToBackStack(null).commit();

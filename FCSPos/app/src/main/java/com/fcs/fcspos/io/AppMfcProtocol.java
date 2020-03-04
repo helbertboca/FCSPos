@@ -2,6 +2,7 @@ package com.fcs.fcspos.io;
 
 import android.os.SystemClock;
 
+import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
 
@@ -14,14 +15,16 @@ public class AppMfcProtocol implements Serializable {
     private Programming programming;
     private byte estado;
     private final String SEPARATOR=";";
+    private boolean correctHose=false;
+    private Dispenser dispenser;
 
 
-    public AppMfcProtocol(MfcWifiCom mfcWifiCom){
+    public AppMfcProtocol(MfcWifiCom mfcWifiCom, Dispenser dispenser){
         this.mfcWifiCom = mfcWifiCom;
+        this.dispenser = dispenser;
     }
 
     public void machineCommunication(boolean pendingSale){
-        final int ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
         final int OK = 1;
 
         String[] splitAnswer;
@@ -34,67 +37,75 @@ public class AppMfcProtocol implements Serializable {
                 if (splitAnswer[2].equals("A")) {
                     splitAnswer[2] = "10";
                 }
-                switch (Integer.parseInt(splitAnswer[2])) {
-                    case ESPERA:
-                        System.out.println("ESTADO ESPERA");
-                        estado = ESPERA;
-                        if(programming.getKind()!=null && !pendingSale){//si hay venta programada, realizarla
-                            mfcWifiCom.sendRequest("programar;"+ programming.getPosition()
-                                    +";M" + programming.getProduct() + ";T" + programming.getPresetKind()
-                                    + ";P" + programming.getQuantity());
-                            SystemClock.sleep(140);
-                            if (mfcWifiCom.getAnswer() != null) {
-                                for(int i=0; i<splitAnswer.length; i++){
-                                    splitAnswer[i]="";
-                                }
-                                splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
-                                if (Integer.parseInt(splitAnswer[2]) == OK) {
-                                    System.out.println("SE PROGRAMO");
+
+                if(Integer.parseInt(splitAnswer[2]) == dispenser.getCod_ESPERA()){ //ESPERA
+                    System.out.println("ESTADO ESPERA");
+                    estado = dispenser.getCod_ESPERA();
+                }else if(Integer.parseInt(splitAnswer[2]) == dispenser.getCod_LISTO()){ //LISTO
+                    System.out.println("ESTADO LISTO");
+                    estado = dispenser.getCod_LISTO();
+                    if(programming.getKind()!=null && !pendingSale) {//si hay venta programada, realizarla
+                        mfcWifiCom.sendRequest("autorizar;" + programming.getPosition());
+                        if (mfcWifiCom.getAnswer() != null) {
+                            for (int i = 0; i < splitAnswer.length; i++) {
+                                splitAnswer[i] = "";
+                            }
+                            splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
+                            if (Integer.parseInt(splitAnswer[2]) == OK) {
+                                System.out.println("SE AUTORIZO");
+                            } else {
+                                System.out.println("error en la autorizacion");
+                            }
+                        } else {
+                            System.out.println("No hubo respuesta de autorizacion");
+                        }
+                    }else{
+                        mfcWifiCom.sendRequest("manguera;" + programming.getPosition());
+                        if(mfcWifiCom.getAnswer()!= null){
+                            for (int i = 0; i < splitAnswer.length; i++) {
+                                splitAnswer[i] = "";
+                            }
+                            splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
+                            if (Integer.parseInt(splitAnswer[2]) == programming.getProduct()) {
+                                System.out.println("Manguera correcta");
+                                setCorrectHose(true);
+                                mfcWifiCom.sendRequest("programar;"+ programming.getPosition()
+                                        +";M" + programming.getProduct() + ";T" + programming.getPresetKind()
+                                        + ";P" + programming.getQuantity());
+                                SystemClock.sleep(140);
+                                if (mfcWifiCom.getAnswer() != null) {
+                                    for(int i=0; i<splitAnswer.length; i++){
+                                        splitAnswer[i]="";
+                                    }
+                                    splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
+                                    if (Integer.parseInt(splitAnswer[2]) == OK) {
+                                        System.out.println("SE PROGRAMO");
+                                    } else {
+                                        System.out.println("error en la programacion");
+                                    }
                                 } else {
-                                    System.out.println("error en la programacion");
+                                    System.out.println("No hubo respuesta de la programacion");
                                 }
                             } else {
-                                System.out.println("No hubo respuesta de la programacion");
+                                System.out.println("manguera incorrecta");
+                                setCorrectHose(false);
                             }
                         }
-                        break;
-                    case LISTO:
-                        System.out.println("ESTADO LISTO");
-                        estado = LISTO;
-                        if(programming.getKind()!=null && !pendingSale) {//si hay venta programada, realizarla
-                            mfcWifiCom.sendRequest("autorizar;" + programming.getPosition());
-                            if (mfcWifiCom.getAnswer() != null) {
-                                for (int i = 0; i < splitAnswer.length; i++) {
-                                    splitAnswer[i] = "";
-                                }
-                                splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
-                                if (Integer.parseInt(splitAnswer[2]) == OK) {
-                                    System.out.println("SE AUTORIZO");
-                                } else {
-                                    System.out.println("error en la autorizacion");
-                                }
-                            } else {
-                                System.out.println("No hubo respuesta de autorizacion");
-                            }
-                        }
-                        break;
-                    case AUTORIZADO:
-                        System.out.println("ESTADO AUTORIZADO");
-                        estado = AUTORIZADO;
-                        break;
-                    case SURTIENDO:
-                        System.out.println("ESTADO SURTIENDO");
-                        estado = SURTIENDO;
-                        break;
-                    case VENTA:
-                        System.out.println("ESTADO VENTA");
-                        estado = VENTA;
-                        break;
-                    case ERROR:
-                        System.out.println("ESTADO ERROR");
-                        estado = LISTO;
-                        break;
+                    }
+                }else if(Integer.parseInt(splitAnswer[2]) == dispenser.getCod_AUTORIZADO()){ //AUTORIZADO
+                    System.out.println("ESTADO AUTORIZADO");
+                    estado = dispenser.getCod_AUTORIZADO();
+                }else if(Integer.parseInt(splitAnswer[2]) == dispenser.getCod_SURTIENDO()){ //SURTIENDO
+                    System.out.println("ESTADO SURTIENDO");
+                    estado = dispenser.getCod_SURTIENDO();
+                }else if(Integer.parseInt(splitAnswer[2]) == dispenser.getCod_VENTA()){ //VENTA
+                    System.out.println("ESTADO VENTA");
+                    estado = dispenser.getCod_VENTA();
+                }else if(Integer.parseInt(splitAnswer[2]) == dispenser.getCod_ERROR()){ //ERROR
+                    System.out.println("ESTADO ERROR");
+                    estado = dispenser.getCod_ERROR();
                 }
+
             }
         }else {
             System.out.println("NULL EN ESTADO");
@@ -130,5 +141,13 @@ public class AppMfcProtocol implements Serializable {
             }
         }
         return null;
+    }
+
+    public boolean isCorrectHose() {
+        return correctHose;
+    }
+
+    private void setCorrectHose(boolean correctHose) {
+        this.correctHose = correctHose;
     }
 }

@@ -68,11 +68,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         currentProcess = (byte)getIntent().getSerializableExtra("currentProcess");
         AppMfcProtocol appMfcProtocol = (AppMfcProtocol)getIntent().getSerializableExtra("appMfcProtocol");
         net = (Net)getIntent().getSerializableExtra("net");
-
         vehiclePending = (Vehicle) getIntent().getSerializableExtra("vehicle");//v2
-
         programming = appMfcProtocol.getProgramming();
-        //vehicle = new Vehicle();
         fragmentManager = getSupportFragmentManager();
         instantiateFragmets();
         if(currentProcess!=ESPERA){
@@ -202,7 +199,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
     @Override
     public void positionChange(){
-        pendingSales_file((byte) 1);
+        takeOutStackFragments();
         startApp();
     }
 
@@ -230,7 +227,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         vehiclePending.setLicense_plate(vehicleCurrent.getLicense_plate());
         vehiclePending.setKilometres(vehicleCurrent.getKilometres());
         sale.setVehicle(vehiclePending);
-
         pendingSales_file((byte) 3);
         TextView textView = findViewById(R.id.infoVenta);
         textView.setText("Venta;" + sale + ", VEHICULO; " + sale.getVehicle() + ", CLIENTE; " + sale.getClient());
@@ -239,6 +235,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
     @Override
     public void receipt(short cantidad) {
+        takeOutStackFragments();
         if(cantidad>1){
             startApp();
         }else{
@@ -250,6 +247,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         if(primeThread.isAlive()){
             primeThread.killThread(true);
         }
+        takeOutStackFragments();
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
         this.finish();
@@ -270,12 +268,18 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private void sendShuduledSale(){
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
                 addToBackStack(null).commit();
+        takeOutStackFragments();
+        scheduledSaleFlag=true;
+        secondThread();
+    }
+
+
+
+    private void takeOutStackFragments(){
         List<Fragment> fragments = fragmentManager.getFragments();
         for (Fragment f: fragments) {
             getFragmentManager().popBackStack();
         }
-        scheduledSaleFlag=true;
-        secondThread();
     }
 
 
@@ -304,6 +308,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
             switch (currentProcess){
                 case SURTIENDO:
                     fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
+                    scheduledSaleFlag=true;
+                    pendingSales_file((byte) 1);
                     do {
                         appMfcProtocol.machineCommunication(true);
                     } while ((appMfcProtocol.getEstado() != VENTA) && (!kill));
@@ -315,6 +321,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                         appMfcProtocol.machineCommunication(false);
                     } while (appMfcProtocol.getEstado() != LISTO);
                     fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
+                    scheduledSaleFlag=true;
+                    pendingSales_file((byte) 1);
                     do {
                         appMfcProtocol.machineCommunication(false);
                     } while ((appMfcProtocol.getEstado() != VENTA) && (!kill));

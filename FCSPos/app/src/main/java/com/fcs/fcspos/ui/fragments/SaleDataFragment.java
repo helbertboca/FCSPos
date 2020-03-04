@@ -56,6 +56,7 @@ public class SaleDataFragment extends Fragment {
                 Client client = new Client();
                 client.setIdentificationCard(edtIdentificationCard.getText().toString());
                 client.setNit(edtNit.getText().toString());
+
                 //pedir venta
 
                 if(appMfcProtocol.getSale()!=null && client.getIdentificationCard()!=null){//revisar que cuando no se llenan los datos de la venta al parecer se bloquea
@@ -64,7 +65,7 @@ public class SaleDataFragment extends Fragment {
                     sale.setVehicle(vehicle);
                     saleOption.endSale(sale);
                 }else {
-                    Toast.makeText(getContext(),"Venta no reportada, presione SIGUIENTE", Toast.LENGTH_SHORT ).show();
+                    Toast.makeText(getContext(),"Espere un momento y presione SIGUIENTE", Toast.LENGTH_SHORT ).show();
                 }
             }
         });

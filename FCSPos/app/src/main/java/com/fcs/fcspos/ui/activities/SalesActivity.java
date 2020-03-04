@@ -1,11 +1,12 @@
 package com.fcs.fcspos.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.RequiresApi;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,32 +45,31 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private PresetKindFragment presetKindFragment;
     private MoneyFragment moneyFragment;
     private VolumeFragment volumeFragment;
-    private UpHoseFragment upHoseFragment;
     private FillingUpFragment fillingUpFragment;
     private ReceiptFragment receiptFragment;
     private Programming programming;
-    private Vehicle vehicle;
+    private Vehicle vehiclePending;
     private Dispenser dispenser;
-    private final byte ERROR=0, ESPERA=6, LISTO=7, AUTORIZADO=8, SURTIENDO=9, VENTA=10;
     private byte currentProcess;
     private PrimeThread primeThread;
     private boolean scheduledSaleFlag=false;
     private Net net;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sales);
         dispenser =(Dispenser)getIntent().getSerializableExtra("surtidor");
         currentProcess = (byte)getIntent().getSerializableExtra("currentProcess");
         AppMfcProtocol appMfcProtocol = (AppMfcProtocol)getIntent().getSerializableExtra("appMfcProtocol");
         net = (Net)getIntent().getSerializableExtra("net");
+        vehiclePending = (Vehicle) getIntent().getSerializableExtra("vehicle");//v2
         programming = appMfcProtocol.getProgramming();
-        vehicle = new Vehicle();
         fragmentManager = getSupportFragmentManager();
         instantiateFragmets();
-        if(currentProcess!=ESPERA){
+        if(currentProcess!=dispenser.getCod_ESPERA()){
             secondThread();
         }else {
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, salesKindFragment).commit();
@@ -84,7 +84,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         presetKindFragment = new PresetKindFragment();
         moneyFragment = new MoneyFragment();
         volumeFragment = new VolumeFragment();
-        upHoseFragment = new UpHoseFragment();
         fillingUpFragment = new FillingUpFragment();
         receiptFragment = new ReceiptFragment();
     }
@@ -132,22 +131,22 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         final int PESADO=1, PARTICULAR=2, TAXI=3, MOTO=4, OTRO=5;
         switch (selectedVehicle){
             case PESADO:
-                vehicle.setKind(PESADO);
+                vehiclePending.setKind(PESADO);
                 break;
             case PARTICULAR:
-                vehicle.setKind(PARTICULAR);
+                vehiclePending.setKind(PARTICULAR);
                 break;
             case TAXI:
-                vehicle.setKind(TAXI);
+                vehiclePending.setKind(TAXI);
                 break;
             case MOTO:
-                vehicle.setKind(MOTO);
+                vehiclePending.setKind(MOTO);
                 break;
             case OTRO:
-                vehicle.setKind(OTRO);
+                vehiclePending.setKind(OTRO);
                 break;
         }
-        programming.setVehicle(vehicle);
+        programming.setVehicle(vehiclePending);
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, presetKindFragment).
                 addToBackStack(null).commit();
     }
@@ -194,23 +193,63 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         sendShuduledSale();
     }
 
+    private void sendShuduledSale(){
+        UpHoseFragment upHoseFragment = new UpHoseFragment(programming, net, dispenser);
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
+                addToBackStack(null).commit();
+    }
+
+
     @Override
-    public void positionChange(){
-        startApp();
+    public void correctHose(boolean is_hose) {
+        if(is_hose){
+            takeOutStackFragments();
+            scheduledSaleFlag=true;
+            secondThread();
+        }else {
+            Toast.makeText(getApplicationContext(), "Excedio el tiempo de levantar la manguera", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
+    public void positionChange(){
+        takeOutStackFragments();
+        startApp();
+    }
+
+
+    private void pendingSales_file(byte action){
+        final byte SAVE=1, READ=2, DELETE=3;
+        final SharedPreferences sharedPref = SalesActivity.this.getSharedPreferences("pendingSales", MODE_PRIVATE);
+        final SharedPreferences.Editor editor = sharedPref.edit();
+        switch (action){
+            case SAVE:
+                editor.putString(net.getSsid() + "/" + programming.getPosition(), vehiclePending.getKind() + "/");
+                editor.apply();
+                break;
+            case DELETE:
+                editor.remove(net.getSsid() + "/" + programming.getPosition());
+                editor.apply();
+                break;
+        }
+    }
+
+
+    @Override
     public void endSale(Sale sale) {
+        Vehicle vehicleCurrent =sale.getVehicle();
+        vehiclePending.setLicense_plate(vehicleCurrent.getLicense_plate());
+        vehiclePending.setKilometres(vehicleCurrent.getKilometres());
+        sale.setVehicle(vehiclePending);
+        pendingSales_file((byte) 3);
         TextView textView = findViewById(R.id.infoVenta);
         textView.setText("Venta;" + sale + ", VEHICULO; " + sale.getVehicle() + ", CLIENTE; " + sale.getClient());
-        System.out.println(sale + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        System.out.println(sale.getVehicle() + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-        System.out.println(sale.getClient() + "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).commit();
     }
 
     @Override
     public void receipt(short cantidad) {
+        takeOutStackFragments();
         if(cantidad>1){
             startApp();
         }else{
@@ -222,6 +261,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         if(primeThread.isAlive()){
             primeThread.killThread(true);
         }
+        takeOutStackFragments();
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
         this.finish();
@@ -239,15 +279,11 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     }
 
 
-    private void sendShuduledSale(){
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
-                addToBackStack(null).commit();
+    private void takeOutStackFragments(){
         List<Fragment> fragments = fragmentManager.getFragments();
         for (Fragment f: fragments) {
             getFragmentManager().popBackStack();
         }
-        scheduledSaleFlag=true;
-        secondThread();
     }
 
 
@@ -270,26 +306,29 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
         public void run() {
             MfcWifiCom mfcWifiCom = MfcWifiCom.getInstance(net.getIp(), net.getPort());
-            AppMfcProtocol appMfcProtocol = new AppMfcProtocol(mfcWifiCom);//abro conexion
+            AppMfcProtocol appMfcProtocol = new AppMfcProtocol(mfcWifiCom, dispenser);//abro conexion
             appMfcProtocol.setProgramming(programming);//envio programacion del usuario
             SaleDataFragment saleDataFragment = new SaleDataFragment(programming, appMfcProtocol);
-            switch (currentProcess){
-                case SURTIENDO:
-                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
-                    do {
-                        appMfcProtocol.machineCommunication(true);
-                    } while ((appMfcProtocol.getEstado() != VENTA) && (!kill));
-                    break;
-                case VENTA:
-                    break;
-                default:
-                    do {
-                        appMfcProtocol.machineCommunication(false);
-                    } while (appMfcProtocol.getEstado() != LISTO);
-                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
-                    do {
-                        appMfcProtocol.machineCommunication(false);
-                    } while ((appMfcProtocol.getEstado() != VENTA) && (!kill));
+
+            if(currentProcess == dispenser.getCod_SURTIENDO()){
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
+                scheduledSaleFlag=true;
+                pendingSales_file((byte) 1);
+                do {
+                    appMfcProtocol.machineCommunication(true);
+                } while ((appMfcProtocol.getEstado() != dispenser.getCod_VENTA()) && (!kill));
+            }else if(currentProcess == dispenser.getCod_VENTA()){
+
+            }else{
+                do {
+                    appMfcProtocol.machineCommunication(false);
+                } while (appMfcProtocol.getEstado() != dispenser.getCod_LISTO());
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
+                scheduledSaleFlag=true;
+                pendingSales_file((byte) 1);
+                do {
+                    appMfcProtocol.machineCommunication(false);
+                } while ((appMfcProtocol.getEstado() != dispenser.getCod_VENTA()) && (!kill));
             }
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
                     addToBackStack(null).commit();

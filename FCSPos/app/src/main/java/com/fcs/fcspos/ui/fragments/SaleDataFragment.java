@@ -4,7 +4,7 @@ package com.fcs.fcspos.ui.fragments;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,17 +50,13 @@ public class SaleDataFragment extends Fragment {
         btnEndSale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //programming.getVehicle().setLicense_plate(edtLicensePlate.getText().toString());
-                //programming.getVehicle().setKilometres(edtMileage.getText().toString());
-                //----------------------------------------------------------------------------------
-                //puede haber un cambio de posicion que haria que se pierda de momento el vehiculo de la programacion
-                //----------------------------------------------------------------------------------
                 Vehicle vehicle = new Vehicle();
                 vehicle.setLicense_plate(edtLicensePlate.getText().toString());
                 vehicle.setKilometres(edtMileage.getText().toString());
                 Client client = new Client();
                 client.setIdentificationCard(edtIdentificationCard.getText().toString());
                 client.setNit(edtNit.getText().toString());
+
                 //pedir venta
 
                 if(appMfcProtocol.getSale()!=null && client.getIdentificationCard()!=null){//revisar que cuando no se llenan los datos de la venta al parecer se bloquea
@@ -69,7 +65,7 @@ public class SaleDataFragment extends Fragment {
                     sale.setVehicle(vehicle);
                     saleOption.endSale(sale);
                 }else {
-                    Toast.makeText(getContext(),"Venta no reportada, presione SIGUIENTE", Toast.LENGTH_SHORT ).show();
+                    Toast.makeText(getContext(),"Espere un momento y presione SIGUIENTE", Toast.LENGTH_SHORT ).show();
                 }
             }
         });

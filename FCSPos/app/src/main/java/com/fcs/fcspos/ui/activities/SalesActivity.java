@@ -46,7 +46,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private MoneyFragment moneyFragment;
     private VolumeFragment volumeFragment;
     private FillingUpFragment fillingUpFragment;
-    private ReceiptFragment receiptFragment;
     private Programming programming;
     private Vehicle vehiclePending;
     private Dispenser dispenser;
@@ -85,7 +84,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         moneyFragment = new MoneyFragment();
         volumeFragment = new VolumeFragment();
         fillingUpFragment = new FillingUpFragment();
-        receiptFragment = new ReceiptFragment();
     }
 
     @Override
@@ -244,7 +242,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         pendingSales_file((byte) 3);
         TextView textView = findViewById(R.id.infoVenta);
         textView.setText("Venta;" + sale + ", VEHICULO; " + sale.getVehicle() + ", CLIENTE; " + sale.getClient());
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ReceiptFragment(sale)).commit();
     }
 
     @Override
@@ -256,6 +254,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
             startApp();
         }
     }
+
 
     private void startApp(){
         if(primeThread.isAlive()){

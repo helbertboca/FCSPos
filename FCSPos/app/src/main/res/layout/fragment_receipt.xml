@@ -6,7 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".ui.fragments.ReceiptFragment">
 
+
     <!-- TODO: Update blank fragment layout -->
+
+    <ProgressBar
+        android:visibility="gone"
+        android:indeterminate="true"
+        android:layout_width="90dp"
+        android:layout_height="90dp"
+        android:layout_gravity="center"
+        android:id="@+id/pbPrinter"/>
+
     <TextView
         android:gravity="center"
         android:layout_width="match_parent"
@@ -14,20 +24,20 @@
         android:text="CANTIDAD DE RECIBOS" />
 
     <Button
+        android:id="@+id/btnNingunRecibo"
+        android:text="0"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <Button
         android:id="@+id/btn1Recibo"
-        android:text="Uno"
+        android:text="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <Button
         android:id="@+id/btn2Recibo"
-        android:text="Dos"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-
-    <Button
-        android:id="@+id/btn3Recibo"
-        android:text="Tres"
+        android:text="2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

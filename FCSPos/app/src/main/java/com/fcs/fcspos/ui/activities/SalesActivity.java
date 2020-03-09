@@ -20,6 +20,7 @@ import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
 import com.fcs.fcspos.model.SaleOption;
+import com.fcs.fcspos.model.Station;
 import com.fcs.fcspos.model.Vehicle;
 import com.fcs.fcspos.ui.fragments.FillingUpFragment;
 import com.fcs.fcspos.ui.fragments.MoneyFragment;
@@ -53,6 +54,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private PrimeThread primeThread;
     private boolean scheduledSaleFlag=false;
     private Net net;
+    private Station station;
 
 
 
@@ -64,7 +66,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         currentProcess = (byte)getIntent().getSerializableExtra("currentProcess");
         AppMfcProtocol appMfcProtocol = (AppMfcProtocol)getIntent().getSerializableExtra("appMfcProtocol");
         net = (Net)getIntent().getSerializableExtra("net");
-        vehiclePending = (Vehicle) getIntent().getSerializableExtra("vehicle");//v2
+        vehiclePending = (Vehicle) getIntent().getSerializableExtra("vehicle");
+        station = (Station) getIntent().getSerializableExtra("station");
         programming = appMfcProtocol.getProgramming();
         fragmentManager = getSupportFragmentManager();
         instantiateFragmets();
@@ -242,7 +245,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         pendingSales_file((byte) 3);
         TextView textView = findViewById(R.id.infoVenta);
         textView.setText("Venta;" + sale + ", VEHICULO; " + sale.getVehicle() + ", CLIENTE; " + sale.getClient());
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ReceiptFragment(sale)).commit();
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ReceiptFragment(sale, station, programming)).commit();
     }
 
     @Override

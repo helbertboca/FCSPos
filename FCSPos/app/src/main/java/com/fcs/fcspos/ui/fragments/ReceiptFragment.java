@@ -9,18 +9,26 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
+
 import androidx.fragment.app.Fragment;
 
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.fcs.fcspos.R;
+import com.fcs.fcspos.model.Programming;
+import com.fcs.fcspos.model.Receipt;
 import com.fcs.fcspos.model.Sale;
 import com.fcs.fcspos.model.SaleOption;
+import com.fcs.fcspos.model.Station;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -38,55 +46,52 @@ public class ReceiptFragment extends Fragment {
 
     private BluetoothAdapter bluetoothAdapter;
     private BluetoothDevice impresoraBluetoothDevice;
-    private PrimeThread p;
     private SaleOption saleOption;
     private Sale sale;
+    private Station station;
+    private Programming programming;
+    private boolean printerFound;
+    private ProgressBar pbPrinter;
+    private byte numberOfReceipts;
 
 
-    public ReceiptFragment(Sale sale) {
+
+    public ReceiptFragment(Sale sale, Station station, Programming programming) {
         this.sale = sale;
+        this.station = station;
+        this.programming = programming;
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_receipt, container, false);
-        Button btn1Receipt = view.findViewById(R.id.btn1Recibo);
-        Button btn2Receipts = view.findViewById(R.id.btn2Recibo);
-        Button btn3Recibo = view.findViewById(R.id.btn3Recibo);
-        btn1Receipt.setOnClickListener(new View.OnClickListener() {
+        pbPrinter = view.findViewById(R.id.pbPrinter);
+        Button btnNingunRecibo = view.findViewById(R.id.btnNingunRecibo);
+        Button btn1Recibo = view.findViewById(R.id.btn1Recibo);
+        Button btn2Recibo = view.findViewById(R.id.btn2Recibo);
+        btnNingunRecibo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                saleOption.receipt((short) 0);
+            }
+        });
+        btn1Recibo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(bluetoothActivado()){
-                    if(bluetoothAdapter.startDiscovery()){
-                        System.out.println("escaneo");
-                    }
+                    PrinterWait printerWait = new PrinterWait();
+                    printerWait.execute();
+                    numberOfReceipts=1;
                 }
-                //saleOption.receipt((short) 1);
             }
         });
-        btn2Receipts.setOnClickListener(new View.OnClickListener() {
+        btn2Recibo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(impresoraBluetoothDevice!=null){
-                    System.out.println("Se iniciara conexion: " + impresoraBluetoothDevice.getName() + impresoraBluetoothDevice.getAddress());
-                    UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-                    p = new PrimeThread(143, impresoraBluetoothDevice, MY_UUID, bluetoothAdapter);
-                    p.start();
-                    System.out.println("INICIO HILO UP");
-                }
-                //saleOption.receipt((short) 2);
-            }
-        });
-
-
-        btn3Recibo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(p.getIsconnect()){
-                    String str = sale.toString();
-                    byte[] byteArr = str.getBytes();
-                    p.write(byteArr);
-                    p.cancel();
+                if(bluetoothActivado()){
+                    PrinterWait printerWait = new PrinterWait();
+                    printerWait.execute();
+                    numberOfReceipts=2;
                 }
             }
         });
@@ -112,12 +117,18 @@ public class ReceiptFragment extends Fragment {
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
                 System.out.println("Dispositivo: " + deviceName + deviceHardwareAddress );
-                if(device.getName().equals("SUNPHOR")){
-                    System.out.println("Se encontro la impresora; " + device.getName());
-                    impresoraBluetoothDevice = device;
-                    bluetoothAdapter.cancelDiscovery();
+                if(device.getName()!=null){
+                    if(device.getName().equals("SUNPHOR")){
+                        System.out.println("Se encontro la impresora; " + device.getName());
+                        impresoraBluetoothDevice = device;
+                        bluetoothAdapter.cancelDiscovery();
+                        printerFound = true;
+                    }else{
+                        impresoraBluetoothDevice = null;
+                        printerFound = false;
+                    }
                 }else{
-                    impresoraBluetoothDevice = null;
+                    printerFound = false;
                 }
             }
         }
@@ -157,8 +168,62 @@ public class ReceiptFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Objects.requireNonNull(getActivity()).unregisterReceiver(receiver);
-        //unregisterReceiver(receiver);
     }
+
+
+    //----------------------------------------------------------------------------------------------
+    private class PrinterWait extends AsyncTask<String, Void, Boolean> {
+
+        private ProgressBar pb;
+
+        protected void onPreExecute(){
+            this.pb = pbPrinter;
+            pb.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            int count=0;
+            bluetoothAdapter.startDiscovery();
+            while (count<=7){
+                System.out.println("escaneando...");
+                SystemClock.sleep(1000);
+                if(printerFound){
+                    return true;
+                }
+                count++;
+            }
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean respuesta){
+            pb.setVisibility(View.GONE);
+            if(respuesta){
+                if(impresoraBluetoothDevice!=null){
+                    UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+                    PrimeThread p = new PrimeThread(143, impresoraBluetoothDevice, MY_UUID, bluetoothAdapter);
+                    p.start();
+                    SystemClock.sleep(2500);
+                    if(p.getIsconnect()){
+                        byte[] byteArr = new Receipt(station, sale, programming).build(numberOfReceipts).getBytes();
+                        p.write(byteArr);
+                        //saleOption.receipt((short) 1);
+                    }else {
+                        Toast.makeText(getContext(), "No se logro conectar a la impresora", Toast.LENGTH_SHORT).show();
+                    }
+                    p.cancel();
+                }
+                else {
+                    Toast.makeText(getContext(), "No se encontro la impresora, presione nuevamente", Toast.LENGTH_SHORT).show();
+                }
+            }else{
+                Toast.makeText(getContext(), "La impreasora esta fuera del rango de visibilidad", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
 
     //----------------------------------------------------------------------------------------------
     class PrimeThread extends Thread {
@@ -185,12 +250,10 @@ public class ReceiptFragment extends Fragment {
         public void run() {
             bluetoothAdapter.cancelDiscovery();
             try {
-                System.out.println("1");
                 mmSocket.connect();
             } catch (IOException connectException) {
                 connectException.printStackTrace();
                 connectException.getMessage();
-                // Unable to connect; close the socket and return.
                 try {
                     mmSocket.close();
                 } catch (IOException closeException) {
@@ -205,7 +268,7 @@ public class ReceiptFragment extends Fragment {
         }
 
 
-        public void cancel() {
+        private void cancel() {
             try {
                 mmSocket.close();
             } catch (IOException e) {
@@ -213,7 +276,7 @@ public class ReceiptFragment extends Fragment {
             }
         }
 
-        public void write(byte[] bytes) {
+        private void write(byte[] bytes) {
             try {
                 OutputStream mmOutStream = mmSocket.getOutputStream();
                 mmOutStream.write(bytes);
@@ -225,19 +288,16 @@ public class ReceiptFragment extends Fragment {
 
         private boolean isconnect;
 
-        public void setIsconnect(boolean isconnect){
+        private void setIsconnect(boolean isconnect){
             this.isconnect = isconnect;
         }
 
-        public boolean getIsconnect(){
+        private boolean getIsconnect(){
             return isconnect;
         }
 
 
     }
-    //----------------------------------------------------------------------------------------------
-
-
 
 
 }

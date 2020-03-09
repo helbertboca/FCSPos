@@ -14,6 +14,7 @@ import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Net;
+import com.fcs.fcspos.model.Station;
 import com.fcs.fcspos.model.Vehicle;
 
 
@@ -26,6 +27,7 @@ public class PositionActivity extends AppCompatActivity {
     private AppMfcProtocol appMfcProtocol;
     private Net net;
     private Vehicle vehicle;
+    private Station station;
 
 
     @Override
@@ -35,6 +37,7 @@ public class PositionActivity extends AppCompatActivity {
         appMfcProtocol = (AppMfcProtocol) getIntent().getSerializableExtra("AppMfcProtocol");
         net = (Net)getIntent().getSerializableExtra("net");
         dispenser = (Dispenser)getIntent().getSerializableExtra("dispenser");
+        station = (Station)getIntent().getSerializableExtra("station");
         vehicle = new Vehicle();
         supplierStatus();
         initView();
@@ -90,6 +93,7 @@ public class PositionActivity extends AppCompatActivity {
         i.putExtra("appMfcProtocol", appMfcProtocol);
         i.putExtra("net", net);
         i.putExtra("vehicle", vehicle);
+        i.putExtra("station", station);
         startActivity(i);
     }
 

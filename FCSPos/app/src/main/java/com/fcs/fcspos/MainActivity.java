@@ -17,6 +17,7 @@ import com.fcs.fcspos.model.Hose;
 import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Side;
+import com.fcs.fcspos.model.Station;
 import com.fcs.fcspos.ui.activities.PositionActivity;
 
 import java.util.ArrayList;
@@ -27,12 +28,14 @@ public class MainActivity extends AppCompatActivity{
     private Net net;
     private Programming programming;
     private Dispenser dispenser;
+    private Station station;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        station = new Station("EDS Los Narjanjos", "811009788-8", "43729688","Cr42 54 A-35" , "Itaguí - Antioquia");
         initialSettingsDispenser();
         Button btnPos1 = findViewById(R.id.btnPos1);
         Button btnPos2 = findViewById(R.id.btnPos2);
@@ -158,6 +161,7 @@ public class MainActivity extends AppCompatActivity{
                 i.putExtra("AppMfcProtocol", appMfcProtocol);
                 i.putExtra("net", net);
                 i.putExtra("dispenser", dispenser);
+                i.putExtra("station", station);
                 startActivity(i);
             }else{
                 Toast.makeText(getApplicationContext(), "No puede conectarse con el equipo", Toast.LENGTH_SHORT).show();

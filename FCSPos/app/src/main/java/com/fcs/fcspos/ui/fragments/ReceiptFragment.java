@@ -4,38 +4,28 @@ package com.fcs.fcspos.ui.fragments;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 
-import android.os.SystemClock;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.fcs.fcspos.R;
+import com.fcs.fcspos.io.MfcBlueCom;
 import com.fcs.fcspos.model.Programming;
-import com.fcs.fcspos.model.Receipt;
 import com.fcs.fcspos.model.Sale;
 import com.fcs.fcspos.model.SaleOption;
 import com.fcs.fcspos.model.Station;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Objects;
-import java.util.UUID;
-
-import static android.content.ContentValues.TAG;
 
 
 /**
@@ -50,9 +40,8 @@ public class ReceiptFragment extends Fragment {
     private Sale sale;
     private Station station;
     private Programming programming;
-    private boolean printerFound;
     private ProgressBar pbPrinter;
-    private byte numberOfReceipts;
+    private MfcBlueCom mfcBlueCom;
 
 
 
@@ -79,19 +68,23 @@ public class ReceiptFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 if(bluetoothActivado()){
-                    PrinterWait printerWait = new PrinterWait();
+                    mfcBlueCom = new MfcBlueCom(pbPrinter ,bluetoothAdapter,
+                            impresoraBluetoothDevice, (byte)1, sale, station, programming,
+                            getContext(), saleOption );
+                    MfcBlueCom.PrinterWait printerWait = mfcBlueCom.new PrinterWait();
                     printerWait.execute();
-                    numberOfReceipts=1;
                 }
             }
         });
         btn2Recibo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(bluetoothActivado()){
-                    PrinterWait printerWait = new PrinterWait();
+                if(bluetoothActivado()) {
+                    mfcBlueCom = new MfcBlueCom(pbPrinter ,bluetoothAdapter,
+                            impresoraBluetoothDevice, (byte)2, sale, station, programming,
+                            getContext(), saleOption );
+                    MfcBlueCom.PrinterWait printerWait = mfcBlueCom.new PrinterWait();
                     printerWait.execute();
-                    numberOfReceipts=2;
                 }
             }
         });
@@ -122,13 +115,16 @@ public class ReceiptFragment extends Fragment {
                         System.out.println("Se encontro la impresora; " + device.getName());
                         impresoraBluetoothDevice = device;
                         bluetoothAdapter.cancelDiscovery();
-                        printerFound = true;
+                        mfcBlueCom.setPrinterFound(true);
+                        mfcBlueCom.setImpresoraBluetoothDevice(impresoraBluetoothDevice);
                     }else{
                         impresoraBluetoothDevice = null;
-                        printerFound = false;
+                        mfcBlueCom.setPrinterFound(false);
+                        mfcBlueCom.setImpresoraBluetoothDevice(null);
                     }
                 }else{
-                    printerFound = false;
+                    mfcBlueCom.setPrinterFound(false);
+                    mfcBlueCom.setImpresoraBluetoothDevice(null);
                 }
             }
         }
@@ -141,7 +137,7 @@ public class ReceiptFragment extends Fragment {
         if (bluetoothAdapter == null) {
             System.out.println("dispositivo No compatible con bluetooth");
         }else{
-            System.out.println("dispositivo Compatible con bluetooth");        //se envia automaticamente un mensaje pidiendo habilitar el bluetooth al usuario
+            System.out.println("dispositivo Compatible con bluetooth");
             if (!bluetoothAdapter.isEnabled()) {
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
@@ -168,135 +164,6 @@ public class ReceiptFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         Objects.requireNonNull(getActivity()).unregisterReceiver(receiver);
-    }
-
-
-    //----------------------------------------------------------------------------------------------
-    private class PrinterWait extends AsyncTask<String, Void, Boolean> {
-
-        private ProgressBar pb;
-
-        protected void onPreExecute(){
-            this.pb = pbPrinter;
-            pb.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Boolean doInBackground(String... strings) {
-            int count=0;
-            bluetoothAdapter.startDiscovery();
-            while (count<=7){
-                System.out.println("escaneando...");
-                SystemClock.sleep(1000);
-                if(printerFound){
-                    return true;
-                }
-                count++;
-            }
-            return false;
-        }
-
-        @Override
-        protected void onPostExecute(Boolean respuesta){
-            pb.setVisibility(View.GONE);
-            if(respuesta){
-                if(impresoraBluetoothDevice!=null){
-                    UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-                    PrimeThread p = new PrimeThread(143, impresoraBluetoothDevice, MY_UUID, bluetoothAdapter);
-                    p.start();
-                    SystemClock.sleep(2500);
-                    if(p.getIsconnect()){
-                        byte[] byteArr = new Receipt(station, sale, programming).build(numberOfReceipts).getBytes();
-                        p.write(byteArr);
-                        //saleOption.receipt((short) 1);
-                    }else {
-                        Toast.makeText(getContext(), "No se logro conectar a la impresora", Toast.LENGTH_SHORT).show();
-                    }
-                    p.cancel();
-                }
-                else {
-                    Toast.makeText(getContext(), "No se encontro la impresora, presione nuevamente", Toast.LENGTH_SHORT).show();
-                }
-            }else{
-                Toast.makeText(getContext(), "La impreasora esta fuera del rango de visibilidad", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-    }
-
-
-    //----------------------------------------------------------------------------------------------
-    class PrimeThread extends Thread {
-
-        long minPrime;
-        private final BluetoothSocket mmSocket;
-        private final BluetoothDevice mmDevice;
-        private BluetoothAdapter bluetoothAdapter;
-
-        PrimeThread(long minPrime, BluetoothDevice device, UUID MY_UUID, BluetoothAdapter bluetoothAdapter) {
-            this.minPrime = minPrime;
-            this.bluetoothAdapter =bluetoothAdapter;
-            BluetoothSocket tmp = null;
-            this.mmDevice = device;
-            try {
-                tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Log.e(TAG, "Socket's create() method failed", e);
-            }
-            mmSocket = tmp;
-        }
-
-        public void run() {
-            bluetoothAdapter.cancelDiscovery();
-            try {
-                mmSocket.connect();
-            } catch (IOException connectException) {
-                connectException.printStackTrace();
-                connectException.getMessage();
-                try {
-                    mmSocket.close();
-                } catch (IOException closeException) {
-                    Log.e(TAG, "Could not close the client socket", closeException);
-                }
-                setIsconnect(false);
-                return;
-            }
-
-            System.out.println("LA CONEXION FUE EXITOSA CON LA IMPRESORA");
-            setIsconnect(true);
-        }
-
-
-        private void cancel() {
-            try {
-                mmSocket.close();
-            } catch (IOException e) {
-                Log.e(TAG, "Could not close the client socket", e);
-            }
-        }
-
-        private void write(byte[] bytes) {
-            try {
-                OutputStream mmOutStream = mmSocket.getOutputStream();
-                mmOutStream.write(bytes);
-
-            } catch (IOException e) {
-                Log.e(TAG, "Error occurred when sending data", e);
-            }
-        }
-
-        private boolean isconnect;
-
-        private void setIsconnect(boolean isconnect){
-            this.isconnect = isconnect;
-        }
-
-        private boolean getIsconnect(){
-            return isconnect;
-        }
-
-
     }
 
 

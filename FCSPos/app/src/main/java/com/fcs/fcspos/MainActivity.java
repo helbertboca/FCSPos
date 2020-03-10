@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity{
 
     private void establishConnection(){
         final byte OLD_CONNECTION=1, NEW_CONNECTION=2, ERROR_CONNECTION=0;
-        switch (MfcWifiCom.conectar(getApplicationContext(), net.getSsid(), net.getPassword())){
+        switch (MfcWifiCom.conectar(getApplicationContext(), net)){
             case OLD_CONNECTION:
                 new ConetionMfcThread().execute("0");
                 break;

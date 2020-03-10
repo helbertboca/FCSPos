@@ -5,6 +5,8 @@ import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
 import android.os.SystemClock;
 
+import com.fcs.fcspos.model.Net;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -71,25 +73,22 @@ public class MfcWifiCom implements Serializable {
                         if (inputStreamReader != null) {
                             inputStreamReader.close();
                         }
-                        //Objects.requireNonNull(inputStreamReader).close();//revisar
                     } catch (IOException e) {
                         e.printStackTrace();
                         System.out.println("bug<<<<<<<<<<<<<<<<<");
                     }
-                    //Objects.requireNonNull(printWriter).close();
                 }
             }
         }).start();
 
     }
 
-    public static byte conectar(Context context, String networkSSID, String networkPass) {
-
+    public static byte conectar(Context context, Net net) {
         final byte OLD_CONNECTION=1, NEW_CONNECTION=2, ERROR_CONNECTION=0;
 
         WifiConfiguration conf = new WifiConfiguration();
-        conf.SSID = "\"" + networkSSID + "\"";   // Please note the quotes. String should contain ssid in quotes
-        conf.preSharedKey = "\""+ networkPass +"\"";
+        conf.SSID = "\"" + net.getSsid() + "\"";   // Please note the quotes. String should contain ssid in quotes
+        conf.preSharedKey = "\""+ net.getPassword() +"\"";
         conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
         conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
         conf.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.WPA_PSK);
@@ -99,20 +98,25 @@ public class MfcWifiCom implements Serializable {
         conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP104);
         conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
         conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
-        conf.preSharedKey = "\"".concat(networkPass).concat("\"");
+        conf.preSharedKey = "\"".concat(net.getPassword()).concat("\"");
         WifiManager wifiManager = (WifiManager)context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
         if (wifiManager != null) {
             if(wifiManager.getWifiState()==WifiManager.WIFI_STATE_ENABLED){
                 System.out.println(wifiManager.getConnectionInfo().getSSID());
-                if(wifiManager.getConnectionInfo().getSSID().equals("\"" + networkSSID + "\"")){
+                if(wifiManager.getConnectionInfo().getSSID().equals("\"" + net.getSsid() + "\"")){
                     System.out.println("no hay problema con la red");
-                    return OLD_CONNECTION;
+                    if(wifiManager.reconnect()){
+                        return OLD_CONNECTION;
+                    }else {
+                        return NEW_CONNECTION;
+                    }
+                    //return OLD_CONNECTION;
                 }else {
                     wifiManager.addNetwork(conf);
                     List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
                     if(list!= null){
                         for( WifiConfiguration i : list ) {
-                            if(i.SSID != null && i.SSID.equals("\"" + networkSSID + "\"")) {
+                            if(i.SSID != null && i.SSID.equals("\"" + net.getSsid() + "\"")) {
                                 wifiManager.disconnect();
                                 wifiManager.enableNetwork(i.networkId, true);
                                 wifiManager.reconnect();

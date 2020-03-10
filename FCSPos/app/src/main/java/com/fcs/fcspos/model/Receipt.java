@@ -1,6 +1,12 @@
 package com.fcs.fcspos.model;
 
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+
+
 public class Receipt {
 
     private Station station;
@@ -17,34 +23,44 @@ public class Receipt {
     public String build(byte quantity){
         final String HEADER = "Estacion de servicio";
         final String SEPARATOR = "----------------------";
+        String copy = "Copia";
 
-        StringBuilder receipt= new StringBuilder();
-        //for(byte i=0; i<quantity; i++){
-            receipt.append("\n\n").append(addSpace(HEADER.length())).append(HEADER).append("\n").
-                    append(addSpace(station.getNombre().length())).append(station.getNombre()).append("\n").
-                    append(addSpace(("Nit: " + station.getNit()).length())).append("Nit: ").append(station.getNit()).append("\n").
-                    append(addSpace(("Tel:" + station.getTelefono()).length())).append("Tel:").append(station.getTelefono()).append("\n").
-                    append(addSpace(("Dir:" + station.getDireccion()).length())).append("Dir:").append(station.getDireccion()).append("\n").
-                    append(addSpace(SEPARATOR.length())).append(SEPARATOR).append("\n").
-                    append(addSpace("FECHA:".length())).append("FECHA:").append("\n").
-                    append(addSpace("Numero de recibo:".length())).append("Numero de recibo:").append("\n").
-                    append(addSpace("EQUIPO - CARA - MANGUERA".length())).append("EQUIPO - CARA - MANGUERA").append("\n").
-                    append(addSpace(("MFC045 - " + sale.getPosition() + " - " + sale.getManguera()).length())).append("MFC045 - ").append(sale.getPosition()).append(" - ").append(sale.getManguera()).append("\n\n").
-                    append(addSpace(("  ").length())).append("  ").append("\n").
-                    append(addSpace("CANTIDAD - PRODUCTO - PPU".length())).append("CANTIDAD - PRODUCTO - PPU").append("\n").
-                    append(addSpace((sale.getVolumen() + " - " + programming.getProduct() + " - " + sale.getPpu()).length())).append(sale.getVolumen()).append(" - ").append(programming.getProduct()).append(" - ").append(sale.getPpu()).append("\n").
-                    append(addSpace(SEPARATOR.length())).append(SEPARATOR).append("\n").
-                    append(addSpace(("Placa: " + sale.getVehicle().getLicense_plate()).length())).append("Placa: ").append(sale.getVehicle().getLicense_plate()).append("\n").
-                    append(addSpace(("Empleado: ").length())).append("Empleado: ").append("\n").append(addSpace(SEPARATOR.length())).append(SEPARATOR).append("\n").
-                    append(addSpace(("Total: $" + sale.getDinero()).length())).append("Total: $").append(sale.getDinero()).append("\n").
-                    append(addSpace(("  ").length())).append("  ").append("\n").
-                    append(addSpace(("  ").length())).append("  ").append("\n").
-                    append(addSpace(("  ").length())).append("  ").append("\n").
-                    append(addSpace(("  ").length())).append("  ").append("\n");
-
-        //}
-        return receipt.toString();
+        if(quantity<1){
+            copy="  ";
+        }
+        return "\n\n" + addSpace(copy.length()) + copy + "\n" +
+                addSpace(HEADER.length()) + HEADER + "\n" +
+                addSpace(station.getNombre().length()) + station.getNombre() + "\n" +
+                addSpace(("Nit: " + station.getNit()).length()) + "Nit: " + station.getNit() + "\n" +
+                addSpace(("Tel:" + station.getTelefono()).length()) + "Tel:" + station.getTelefono() + "\n" +
+                addSpace(("Dir:" + station.getDireccion()).length()) + "Dir:" + station.getDireccion() + "\n" +
+                addSpace(SEPARATOR.length()) + SEPARATOR + "\n" +
+                addSpace(("FECHA:" + deviceDate()).length()) + "FECHA:" + deviceDate() + "\n" +
+                addSpace("Numero de recibo:".length()) + "Numero de recibo:" + "\n" +
+                addSpace("EQUIPO - CARA - MANGUERA".length()) + "EQUIPO - CARA - MANGUERA" + "\n" +
+                addSpace(("MFC045 - " + sale.getPosition() + " - " + sale.getManguera()).length()) + "MFC045 - " + sale.getPosition() + " - " + sale.getManguera() + "\n\n" +
+                addSpace(("  ").length()) + "  " + "\n" +
+                addSpace("CANTIDAD - PRODUCTO - PPU".length()) + "CANTIDAD - PRODUCTO - PPU" + "\n" +
+                addSpace((sale.getVolumen() + " - " + programming.getProduct() + " - " + sale.getPpu()).length()) + sale.getVolumen() + " - " + programming.getProduct() + " - " + sale.getPpu() + "\n" +
+                addSpace(SEPARATOR.length()) + SEPARATOR + "\n" +
+                addSpace(("Placa: " + sale.getVehicle().getLicense_plate()).length()) + "Placa: " + sale.getVehicle().getLicense_plate() + "\n" +
+                addSpace(("Empleado: ").length()) + "Empleado: " + "\n" + addSpace(SEPARATOR.length()) + SEPARATOR + "\n" +
+                addSpace(("Total: $" + sale.getDinero()).length()) + "Total: $" + sale.getDinero() + "\n" +
+                addSpace(("  ").length()) + "  " + "\n" +
+                addSpace(("  ").length()) + "  " + "\n" +
+                addSpace(("  ").length()) + "  " + "\n" +
+                addSpace(("  ").length()) + "  " + "\n";
     }
+
+
+    private String deviceDate(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-M-yyyy hh:mm:ss", Locale.getDefault());
+        if(dateFormat.format(new Date())==null){
+            return "---- -- --";
+        }
+        return dateFormat.format(new Date());
+    }
+
 
     private StringBuilder addSpace(int size){
         final byte PAPER_WIDTH= 32;

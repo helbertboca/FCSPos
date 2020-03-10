@@ -208,7 +208,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
             scheduledSaleFlag=true;
             secondThread();
         }else {
-            Toast.makeText(getApplicationContext(), "Excedio el tiempo de levantar la manguera", Toast.LENGTH_SHORT).show();
+            System.out.println("Excedio el tiempo de levantar la manguera");
+            restart();
         }
     }
 
@@ -243,8 +244,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         vehiclePending.setKilometres(vehicleCurrent.getKilometres());
         sale.setVehicle(vehiclePending);
         pendingSales_file((byte) 3);
-        TextView textView = findViewById(R.id.infoVenta);
-        textView.setText("Venta;" + sale + ", VEHICULO; " + sale.getVehicle() + ", CLIENTE; " + sale.getClient());
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ReceiptFragment(sale, station, programming)).commit();
     }
 
@@ -263,6 +262,10 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         if(primeThread.isAlive()){
             primeThread.killThread(true);
         }
+        restart();
+    }
+
+    private void restart(){
         takeOutStackFragments();
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);

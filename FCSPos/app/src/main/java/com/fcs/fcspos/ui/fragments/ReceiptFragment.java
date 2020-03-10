@@ -61,7 +61,7 @@ public class ReceiptFragment extends Fragment {
         btnNingunRecibo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                saleOption.receipt((short) 0);
+                saleOption.receipt();
             }
         });
         btn1Recibo.setOnClickListener(new View.OnClickListener() {

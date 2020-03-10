@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fcs.fcspos.MainActivity;
@@ -40,13 +39,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
 
     private FragmentManager fragmentManager;
-    private SalesKindFragment salesKindFragment;
-    private ProductKindFragment productKindFragment;
-    private VehicleKindFragment vehicleKindFragment;
-    private PresetKindFragment presetKindFragment;
-    private MoneyFragment moneyFragment;
-    private VolumeFragment volumeFragment;
-    private FillingUpFragment fillingUpFragment;
     private Programming programming;
     private Vehicle vehiclePending;
     private Dispenser dispenser;
@@ -70,24 +62,13 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         station = (Station) getIntent().getSerializableExtra("station");
         programming = appMfcProtocol.getProgramming();
         fragmentManager = getSupportFragmentManager();
-        instantiateFragmets();
         if(currentProcess!=dispenser.getCod_ESPERA()){
             secondThread();
         }else {
-            fragmentManager.beginTransaction().replace(R.id.contSaleKind, salesKindFragment).commit();
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, new SalesKindFragment()).commit();
         }
     }
 
-
-    private void instantiateFragmets() {
-        salesKindFragment = new SalesKindFragment();
-        productKindFragment = new ProductKindFragment();
-        vehicleKindFragment = new VehicleKindFragment();
-        presetKindFragment = new PresetKindFragment();
-        moneyFragment = new MoneyFragment();
-        volumeFragment = new VolumeFragment();
-        fillingUpFragment = new FillingUpFragment();
-    }
 
     @Override
     public void optionSaleKind(int selectedOption) {
@@ -107,7 +88,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                 programming.setKind("Way To Pay");
                 break;
         }
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, productKindFragment).
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ProductKindFragment()).
                 addToBackStack(null).commit();
     }
 
@@ -123,7 +104,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                 programming.setProduct(PRODUCT_TWO);
                 break;
         }
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, vehicleKindFragment).
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new VehicleKindFragment()).
                 addToBackStack(null).commit();
     }
 
@@ -148,7 +129,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                 break;
         }
         programming.setVehicle(vehiclePending);
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, presetKindFragment).
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new PresetKindFragment()).
                 addToBackStack(null).commit();
     }
 
@@ -158,12 +139,12 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         switch (selectedKindPreset){
             case MONEY:
                 programming.setPresetKind(MONEY);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, moneyFragment).
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new MoneyFragment()).
                         addToBackStack(null).commit();
             break;
             case VOLUME:
                 programming.setPresetKind(VOLUME);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, volumeFragment).
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new VolumeFragment()).
                         addToBackStack(null).commit();
                 break;
             case FULL:
@@ -248,13 +229,9 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     }
 
     @Override
-    public void receipt(short cantidad) {
+    public void receipt() {
         takeOutStackFragments();
-        if(cantidad>1){
-            startApp();
-        }else{
-            startApp();
-        }
+        startApp();
     }
 
 
@@ -314,7 +291,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
             AppMfcProtocol appMfcProtocol = new AppMfcProtocol(mfcWifiCom, dispenser);//abro conexion
             appMfcProtocol.setProgramming(programming);//envio programacion del usuario
             SaleDataFragment saleDataFragment = new SaleDataFragment(programming, appMfcProtocol);
-
+            FillingUpFragment fillingUpFragment = new FillingUpFragment();
             if(currentProcess == dispenser.getCod_SURTIENDO()){
                 fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
                 scheduledSaleFlag=true;

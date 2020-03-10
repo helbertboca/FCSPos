@@ -75,7 +75,6 @@ public class MfcWifiCom implements Serializable {
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
-                        System.out.println("bug<<<<<<<<<<<<<<<<<");
                     }
                 }
             }
@@ -83,11 +82,44 @@ public class MfcWifiCom implements Serializable {
 
     }
 
+
     public static byte conectar(Context context, Net net) {
         final byte OLD_CONNECTION=1, NEW_CONNECTION=2, ERROR_CONNECTION=0;
 
         WifiConfiguration conf = new WifiConfiguration();
-        conf.SSID = "\"" + net.getSsid() + "\"";   // Please note the quotes. String should contain ssid in quotes
+        WifiManager wifiManager = configureWifi(conf, context, net);
+        if (wifiManager != null) {
+            if(wifiManager.getWifiState()==WifiManager.WIFI_STATE_ENABLED){
+                wifiManager.addNetwork(conf);
+                List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+                if(list!= null){
+                    for( WifiConfiguration i : list ) {
+                        if(i.SSID != null && i.SSID.equals("\"" + net.getSsid() + "\"")) {
+                            if(wifiManager.getConnectionInfo().getSSID().equals("\"" + net.getSsid() + "\"")) {
+                                wifiManager.enableNetwork(i.networkId, true);
+                                wifiManager.reconnect();
+                                return OLD_CONNECTION;
+                            }else {
+                                wifiManager.disconnect();
+                                wifiManager.enableNetwork(i.networkId, true);
+                                wifiManager.reconnect();
+                                return NEW_CONNECTION;
+                            }
+                        }
+                    }
+                }else{
+                    System.out.println("Lista vacia");
+                }
+            }else{
+                System.out.println("Active el wifi por favor");
+            }
+        }
+        return ERROR_CONNECTION;
+    }
+
+
+    private static WifiManager configureWifi(WifiConfiguration conf,Context context, Net net){
+        conf.SSID = "\"" + net.getSsid() + "\"";
         conf.preSharedKey = "\""+ net.getPassword() +"\"";
         conf.allowedProtocols.set(WifiConfiguration.Protocol.RSN);
         conf.allowedProtocols.set(WifiConfiguration.Protocol.WPA);
@@ -99,39 +131,7 @@ public class MfcWifiCom implements Serializable {
         conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.CCMP);
         conf.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.TKIP);
         conf.preSharedKey = "\"".concat(net.getPassword()).concat("\"");
-        WifiManager wifiManager = (WifiManager)context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (wifiManager != null) {
-            if(wifiManager.getWifiState()==WifiManager.WIFI_STATE_ENABLED){
-                System.out.println(wifiManager.getConnectionInfo().getSSID());
-                if(wifiManager.getConnectionInfo().getSSID().equals("\"" + net.getSsid() + "\"")){
-                    System.out.println("no hay problema con la red");
-                    if(wifiManager.reconnect()){
-                        return OLD_CONNECTION;
-                    }else {
-                        return NEW_CONNECTION;
-                    }
-                    //return OLD_CONNECTION;
-                }else {
-                    wifiManager.addNetwork(conf);
-                    List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
-                    if(list!= null){
-                        for( WifiConfiguration i : list ) {
-                            if(i.SSID != null && i.SSID.equals("\"" + net.getSsid() + "\"")) {
-                                wifiManager.disconnect();
-                                wifiManager.enableNetwork(i.networkId, true);
-                                wifiManager.reconnect();
-                                return NEW_CONNECTION;
-                            }
-                        }
-                    }else{
-                        System.out.println("Lista vacia");
-                    }
-                }
-            }else{
-                System.out.println("Active el wifi por favor");
-            }
-        }
-        return ERROR_CONNECTION;
+        return (WifiManager)context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     }
 
 

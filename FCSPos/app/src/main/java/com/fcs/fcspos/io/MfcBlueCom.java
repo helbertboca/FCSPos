@@ -100,7 +100,8 @@ public class MfcBlueCom {
                             p.write(byteArr);
                             SystemClock.sleep(500);
                         }
-                        saleOption.receipt((short) 1);
+
+                        saleOption.receipt();
                     }else {
                         Toast.makeText(context, "No se logro conectar a la impresora", Toast.LENGTH_SHORT).show();
                     }

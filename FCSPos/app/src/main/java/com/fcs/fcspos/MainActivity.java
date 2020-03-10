@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity{
         final byte OLD_CONNECTION=1, NEW_CONNECTION=2, ERROR_CONNECTION=0;
         switch (MfcWifiCom.conectar(getApplicationContext(), net)){
             case OLD_CONNECTION:
-                new ConetionMfcThread().execute("0");
+                new ConetionMfcThread().execute("5");
                 break;
             case NEW_CONNECTION:
                 new ConetionMfcThread().execute("32");
@@ -145,8 +145,7 @@ public class MainActivity extends AppCompatActivity{
                 SystemClock.sleep(200);
                 count++;
             }
-            MfcWifiCom mfcWifiCom = MfcWifiCom.getInstance(net.getIp(), net.getPort());
-            appMfcProtocol = new AppMfcProtocol(mfcWifiCom,dispenser);
+            appMfcProtocol = new AppMfcProtocol( MfcWifiCom.getInstance(net.getIp(), net.getPort()) ,dispenser);
             appMfcProtocol.setProgramming(programming);
             appMfcProtocol.machineCommunication(false);
             SystemClock.sleep(80);

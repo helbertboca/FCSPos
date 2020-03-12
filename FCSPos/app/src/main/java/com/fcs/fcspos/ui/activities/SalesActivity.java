@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fcs.fcspos.MainActivity;
@@ -20,6 +19,7 @@ import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
 import com.fcs.fcspos.model.SaleOption;
+import com.fcs.fcspos.model.Station;
 import com.fcs.fcspos.model.Vehicle;
 import com.fcs.fcspos.ui.fragments.FillingUpFragment;
 import com.fcs.fcspos.ui.fragments.MoneyFragment;
@@ -39,14 +39,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
 
     private FragmentManager fragmentManager;
-    private SalesKindFragment salesKindFragment;
-    private ProductKindFragment productKindFragment;
-    private VehicleKindFragment vehicleKindFragment;
-    private PresetKindFragment presetKindFragment;
-    private MoneyFragment moneyFragment;
-    private VolumeFragment volumeFragment;
-    private FillingUpFragment fillingUpFragment;
-    private ReceiptFragment receiptFragment;
     private Programming programming;
     private Vehicle vehiclePending;
     private Dispenser dispenser;
@@ -54,6 +46,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private PrimeThread primeThread;
     private boolean scheduledSaleFlag=false;
     private Net net;
+    private Station station;
 
 
 
@@ -65,28 +58,17 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         currentProcess = (byte)getIntent().getSerializableExtra("currentProcess");
         AppMfcProtocol appMfcProtocol = (AppMfcProtocol)getIntent().getSerializableExtra("appMfcProtocol");
         net = (Net)getIntent().getSerializableExtra("net");
-        vehiclePending = (Vehicle) getIntent().getSerializableExtra("vehicle");//v2
+        vehiclePending = (Vehicle) getIntent().getSerializableExtra("vehicle");
+        station = (Station) getIntent().getSerializableExtra("station");
         programming = appMfcProtocol.getProgramming();
         fragmentManager = getSupportFragmentManager();
-        instantiateFragmets();
         if(currentProcess!=dispenser.getCod_ESPERA()){
             secondThread();
         }else {
-            fragmentManager.beginTransaction().replace(R.id.contSaleKind, salesKindFragment).commit();
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, new SalesKindFragment()).commit();
         }
     }
 
-
-    private void instantiateFragmets() {
-        salesKindFragment = new SalesKindFragment();
-        productKindFragment = new ProductKindFragment();
-        vehicleKindFragment = new VehicleKindFragment();
-        presetKindFragment = new PresetKindFragment();
-        moneyFragment = new MoneyFragment();
-        volumeFragment = new VolumeFragment();
-        fillingUpFragment = new FillingUpFragment();
-        receiptFragment = new ReceiptFragment();
-    }
 
     @Override
     public void optionSaleKind(int selectedOption) {
@@ -106,7 +88,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                 programming.setKind("Way To Pay");
                 break;
         }
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, productKindFragment).
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ProductKindFragment()).
                 addToBackStack(null).commit();
     }
 
@@ -122,7 +104,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                 programming.setProduct(PRODUCT_TWO);
                 break;
         }
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, vehicleKindFragment).
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new VehicleKindFragment()).
                 addToBackStack(null).commit();
     }
 
@@ -147,7 +129,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                 break;
         }
         programming.setVehicle(vehiclePending);
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, presetKindFragment).
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new PresetKindFragment()).
                 addToBackStack(null).commit();
     }
 
@@ -157,12 +139,12 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         switch (selectedKindPreset){
             case MONEY:
                 programming.setPresetKind(MONEY);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, moneyFragment).
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new MoneyFragment()).
                         addToBackStack(null).commit();
             break;
             case VOLUME:
                 programming.setPresetKind(VOLUME);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, volumeFragment).
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new VolumeFragment()).
                         addToBackStack(null).commit();
                 break;
             case FULL:
@@ -207,7 +189,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
             scheduledSaleFlag=true;
             secondThread();
         }else {
-            Toast.makeText(getApplicationContext(), "Excedio el tiempo de levantar la manguera", Toast.LENGTH_SHORT).show();
+            System.out.println("Excedio el tiempo de levantar la manguera");
+            restart();
         }
     }
 
@@ -242,25 +225,24 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         vehiclePending.setKilometres(vehicleCurrent.getKilometres());
         sale.setVehicle(vehiclePending);
         pendingSales_file((byte) 3);
-        TextView textView = findViewById(R.id.infoVenta);
-        textView.setText("Venta;" + sale + ", VEHICULO; " + sale.getVehicle() + ", CLIENTE; " + sale.getClient());
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, receiptFragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ReceiptFragment(sale, station, programming)).commit();
     }
 
     @Override
-    public void receipt(short cantidad) {
+    public void receipt() {
         takeOutStackFragments();
-        if(cantidad>1){
-            startApp();
-        }else{
-            startApp();
-        }
+        startApp();
     }
+
 
     private void startApp(){
         if(primeThread.isAlive()){
             primeThread.killThread(true);
         }
+        restart();
+    }
+
+    private void restart(){
         takeOutStackFragments();
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
         startActivity(intent);
@@ -309,7 +291,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
             AppMfcProtocol appMfcProtocol = new AppMfcProtocol(mfcWifiCom, dispenser);//abro conexion
             appMfcProtocol.setProgramming(programming);//envio programacion del usuario
             SaleDataFragment saleDataFragment = new SaleDataFragment(programming, appMfcProtocol);
-
+            FillingUpFragment fillingUpFragment = new FillingUpFragment();
             if(currentProcess == dispenser.getCod_SURTIENDO()){
                 fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
                 scheduledSaleFlag=true;

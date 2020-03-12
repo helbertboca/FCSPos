@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.model.SaleOption;
@@ -29,36 +29,37 @@ public class VehicleKindFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_vehicle_kind, container, false);
-        Button btnHeavy = view.findViewById(R.id.btnHeavy);
-        Button btnParticular = view.findViewById(R.id.btnParticular);
-        Button btnCab = view.findViewById(R.id.btnCab);
-        Button btnMotorcycle = view.findViewById(R.id.btnMotorcycle);
-        Button btnOther = view.findViewById(R.id.btnOther);
-        btnHeavy.setOnClickListener(new View.OnClickListener() {
+
+        LinearLayout llHeavy = view.findViewById(R.id.llHeavy);
+        LinearLayout llParticular = view.findViewById(R.id.llParticular);
+        LinearLayout llCab = view.findViewById(R.id.llCab);
+        LinearLayout llMotorcycle = view.findViewById(R.id.llMotorcycle);
+        LinearLayout llOther = view.findViewById(R.id.llOther);
+        llHeavy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionVehicleKind(PESADO);
             }
         });
-        btnParticular.setOnClickListener(new View.OnClickListener() {
+        llParticular.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionVehicleKind(PARTICULAR);
             }
         });
-        btnCab.setOnClickListener(new View.OnClickListener() {
+        llCab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionVehicleKind(TAXI);
             }
         });
-        btnMotorcycle.setOnClickListener(new View.OnClickListener() {
+        llMotorcycle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionVehicleKind(MOTO);
             }
         });
-        btnOther.setOnClickListener(new View.OnClickListener() {
+        llOther.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionVehicleKind(OTRO);

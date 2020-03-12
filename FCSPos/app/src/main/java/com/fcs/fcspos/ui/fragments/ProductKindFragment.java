@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.model.SaleOption;
@@ -26,15 +26,16 @@ public class ProductKindFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_product_kind, container, false);
-        Button btnFirstProduct = view.findViewById(R.id.btnFirstProduct);
-        Button btnSecondProduct = view.findViewById(R.id.btnSecondProduct);
-        btnFirstProduct.setOnClickListener(new View.OnClickListener() {
+
+        LinearLayout llFirstProduct = view.findViewById(R.id.llFirstProduct);
+        LinearLayout llSecondProduct = view.findViewById(R.id.llSecondProduct);
+        llFirstProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionProductKind(PRODUCT_ONE);
             }
         });
-        btnSecondProduct.setOnClickListener(new View.OnClickListener() {
+        llSecondProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionProductKind(PRODUCT_TWO);

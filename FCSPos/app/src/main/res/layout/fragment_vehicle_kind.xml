@@ -7,30 +7,102 @@
     tools:context=".ui.fragments.VehicleKindFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <Button
-        android:text="Pesado"
-        android:id="@+id/btnHeavy"
+    <TextView
+        android:id="@+id/textView9"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <Button
-        android:text="Liviano Particular"
-        android:id="@+id/btnParticular"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/vehiculos"
+        android:textSize="36sp" />
+
+    <LinearLayout
+        android:id="@+id/llHeavy"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <Button
-        android:text="Taxi"
-        android:id="@+id/btnCab"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/spinner"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:layout_marginLeft="7dp"
+            android:text="@string/pesado"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llParticular"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <Button
-        android:text="Moto"
-        android:id="@+id/btnMotorcycle"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/spinner"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:layout_marginLeft="7dp"
+            android:text="@string/particular"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llCab"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <Button
-        android:text="Otro"
-        android:id="@+id/btnOther"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/spinner"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:layout_marginLeft="7dp"
+            android:text="@string/taxi"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llMotorcycle"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/spinner"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:layout_marginLeft="7dp"
+            android:text="@string/moto"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llOther"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="20dp"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/spinner"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="16dp"
+            android:layout_marginLeft="7dp"
+            android:text="@string/otro"
+            android:textSize="18sp" />
+    </LinearLayout>
 
 </LinearLayout>

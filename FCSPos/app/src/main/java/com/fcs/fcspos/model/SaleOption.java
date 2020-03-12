@@ -10,6 +10,6 @@ public interface SaleOption {
     void correctHose(boolean is_hose);
     void positionChange();
     void endSale(Sale sale);
-    void receipt(short cantidad);
+    void receipt();
 
 }

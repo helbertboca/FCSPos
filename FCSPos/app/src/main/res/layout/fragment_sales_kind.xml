@@ -8,25 +8,176 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <Button
-        android:text="Contado"
-        android:id="@+id/btnCounted"
+    <LinearLayout
+        android:id="@+id/llCounted"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <Button
-        android:text="Fidelizado"
-        android:id="@+id/btnLoyal"
+        android:layout_height="137dp"
+        android:layout_marginBottom="20dp"
+        android:background="#6BBD18"
+        android:elevation="5dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="0.3"
+            android:gravity="center_vertical"
+            android:text="@string/contado"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="36sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:src="@drawable/dolar" />
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:src="@drawable/ic_triangulo" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llLoyal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <Button
-        android:text="Credito"
-        android:id="@+id/btnCredit"
+        android:layout_height="137dp"
+        android:layout_marginBottom="20dp"
+        android:background="#6BBD18"
+        android:elevation="5dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="0.3"
+            android:gravity="center_vertical"
+            android:text="@string/fidelizado"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="36sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:src="@drawable/dolar" />
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:src="@drawable/ic_triangulo" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llCredit"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
-    <Button
-        android:text="Forma De Pago"
-        android:id="@+id/btnWayToPay"
+        android:layout_height="137dp"
+        android:layout_marginBottom="20dp"
+        android:background="#6BBD18"
+        android:elevation="5dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="0.3"
+            android:gravity="center_vertical"
+            android:text="@string/credito"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="36sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:src="@drawable/dolar" />
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:src="@drawable/ic_triangulo" />
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/llWayToPay"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="137dp"
+        android:layout_marginBottom="20dp"
+        android:background="#6BBD18"
+        android:elevation="5dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_gravity="center"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="0.3"
+            android:gravity="center_vertical"
+            android:text="@string/formas_de_pago"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="36sp" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="0.7">
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:src="@drawable/dolar" />
+
+            <ImageView
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:src="@drawable/ic_triangulo" />
+
+        </RelativeLayout>
+    </LinearLayout>
 
 </LinearLayout>

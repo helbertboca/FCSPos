@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.model.SaleOption;
@@ -28,29 +28,30 @@ public class SalesKindFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_sales_kind, container, false);
-        Button btnCounted = view.findViewById(R.id.btnCounted);
-        Button btnLoyal = view.findViewById(R.id.btnLoyal);
-        Button btnCredit = view.findViewById(R.id.btnCredit);
-        Button btnWayToPay = view.findViewById(R.id.btnWayToPay);
-        btnCounted.setOnClickListener(new View.OnClickListener() {
+
+        LinearLayout llCounted = view.findViewById(R.id.llCounted);
+        LinearLayout llLoyal = view.findViewById(R.id.llLoyal);
+        LinearLayout llCredit = view.findViewById(R.id.llCredit);
+        LinearLayout llWayToPay = view.findViewById(R.id.llWayToPay);
+        llCounted.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionSaleKind(COUNTED);
             }
         });
-        btnLoyal.setOnClickListener(new View.OnClickListener() {
+        llLoyal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionSaleKind(LOYAL);
             }
         });
-        btnCredit.setOnClickListener(new View.OnClickListener() {
+        llCredit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionSaleKind(CREDIT);
             }
         });
-        btnWayToPay.setOnClickListener(new View.OnClickListener() {
+        llWayToPay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionSaleKind(WAY_TO_PAY);

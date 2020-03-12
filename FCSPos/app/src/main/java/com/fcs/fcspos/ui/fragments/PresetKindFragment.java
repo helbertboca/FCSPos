@@ -7,7 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.LinearLayout;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.model.SaleOption;
@@ -26,26 +26,26 @@ public class PresetKindFragment extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
 
         View view = inflater.inflate(R.layout.fragment_preset_kind, container, false);
-        Button btnMoneyPreset =view.findViewById(R.id.btnMoneyPreset);
-        Button btnVolumePreset =view.findViewById(R.id.btnVolumePreset);
-        Button btnFullPreset =view.findViewById(R.id.btnFullPreset);
-        btnMoneyPreset.setOnClickListener(new View.OnClickListener() {
+
+        LinearLayout llMoneyPreset = view.findViewById(R.id.llMoneyPreset);
+        LinearLayout llVolumePreset = view.findViewById(R.id.llVolumePreset);
+        LinearLayout llFullPreset = view.findViewById(R.id.llFullPreset);
+        llMoneyPreset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionPresetKind(MONEY);
             }
         });
-        btnVolumePreset.setOnClickListener(new View.OnClickListener() {
+        llVolumePreset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionPresetKind(VOLUME);
             }
         });
-        btnFullPreset.setOnClickListener(new View.OnClickListener() {
+        llFullPreset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.optionPresetKind(FULL);

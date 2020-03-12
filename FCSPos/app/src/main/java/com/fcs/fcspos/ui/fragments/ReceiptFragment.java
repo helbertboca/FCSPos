@@ -15,8 +15,8 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.MfcBlueCom;
@@ -55,16 +55,18 @@ public class ReceiptFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_receipt, container, false);
         pbPrinter = view.findViewById(R.id.pbPrinter);
-        Button btnNingunRecibo = view.findViewById(R.id.btnNingunRecibo);
-        Button btn1Recibo = view.findViewById(R.id.btn1Recibo);
-        Button btn2Recibo = view.findViewById(R.id.btn2Recibo);
-        btnNingunRecibo.setOnClickListener(new View.OnClickListener() {
+
+        RelativeLayout rlReceiptNone = view.findViewById(R.id.rlReceiptNone);
+        RelativeLayout rlReceiptOne = view.findViewById(R.id.rlReceiptOne);
+        RelativeLayout rlReceiptTwo = view.findViewById(R.id.rlReceiptTwo);
+
+        rlReceiptNone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 saleOption.receipt();
             }
         });
-        btn1Recibo.setOnClickListener(new View.OnClickListener() {
+        rlReceiptOne.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(bluetoothActivado()){
@@ -76,7 +78,7 @@ public class ReceiptFragment extends Fragment {
                 }
             }
         });
-        btn2Recibo.setOnClickListener(new View.OnClickListener() {
+        rlReceiptTwo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(bluetoothActivado()) {

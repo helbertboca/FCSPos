@@ -2,5 +2,204 @@
     <string name="app_name">FCS Pos</string>
 
     <!-- TODO: Remove or change this placeholder text -->
+
+
+    <!-- menú principal -->
+
+    <string name="ventas">Ventas</string>
+    <string name="canasta">Canasta</string>
+    <string name="consignar">Consignar</string>
+    <string name="turno">Turno</string>
+    <string name="calibrar">Calibrar</string>
+    <string name="p1">P1</string>
+    <string name="p2">P2</string>
+    <string name="p3">P3</string>
+    <string name="p4">P4</string>
+    <string name="p5">P5</string>
+
+    <!-- fin menú princpal -->
+
+
+    <!-- Canasta -->
+
+    <string name="lubricantes">Lubricantes</string>
+    <string name="soat">Soat</string>
+
+    <!-- Fin canasta  -->
+
+    <!-- Soat  -->
+
+    <string name="placa">Placa</string>
+    <string name="cliente">Cliente</string>
+    <string name="clase_de_vehiculo">Clase de vehículo</string>
+    <string name="numero_de_pasajeros">Número de pasajeros</string>
+    <string name="cotizar">Cotizar</string>
+
+    <!-- Fin soat  -->
+
+    <!-- Datos vehículo  -->
+
+    <string name="datos_vehiculo">Datos del vehiculo</string>
+    <string name="marca">Marca</string>
+    <string name="linea">Descripción linea</string>
+    <string name="servicio">Servicio</string>
+    <string name="modelo">Modelo</string>
+    <string name="cilindraje">Cilindraje</string>
+    <string name="pasajeros">Pasajeros</string>
+    <string name="capacidad">Capacidad</string>
+    <string name="motor">Motor</string>
+    <string name="chasis">Chasis</string>
+    <string name="vin">Vin</string>
+    <string name="pais">Pais del vehículo</string>
+    <string name="viganecia">Vigencia Expedición Soat</string>
+    <string name="viganecia_desde">Desde</string>
+    <string name="vigencia_hasta">Hasta</string>
+    <string name="info_datos_vehiculo">!Verificar detenidamente los datos del vehiculo en la tarjeta de propiedad¡</string>
+
+
+    <!-- Fin datos vehículo  -->
+
+
+    <!-- Datos cliente  -->
+
+    <string name="datos_cliente">Datos del cliente</string>
+    <string name="nombre">Nombre(s)</string>
+    <string name="primer_apellido">Primer apellido</string>
+    <string name="segundo_apellido">Segundo Apellido</string>
+    <string name="numero_identificacion">Número de indetificación</string>
+    <string name="direccion_recidencia">direccion de recidencia</string>
+    <string name="numero_celular">número de celular</string>
+    <string name="fecha_nacimiento">Fecha de nacimiento</string>
+    <string name="correo_electronico">Correo eletrónico</string>
+    <string name="info_datos_cliente">!Importante¡ Recuerde que al email que registre llegarán los comprobantes del Soat</string>
+
+    <!-- Fin datos cliente  -->
+
+
+    <!-- Registro medios de pago  -->
+
+    <string name="vendedor">Vendedor</string>
+    <string name="valor_poliza">Valor Poliza</string>
+    <string name="registro_medios_de_pago">Registro medios de pago</string>
+    <string name="forma_de_pago">Forma de pago</string>
+    <string name="saldo_total">Saldo total disponible</string>
+    <string name="confirmacion">Confirmo que todos los datos son correctos</string>
+    <string name="si">Si</string>
+    <string name="no">No</string>
+    <string name="guardar">Guardar</string>
+
+    <!-- Fin registro medios de pago  -->
+
+    <!-- Medios de pago  -->
+
+    <string name="medio_de_pago">Medio de pago</string>
+    <string name="referencia">Referencia</string>
+    <string name="valor">Valor</string>
+    <string name="valor_a_cancelar">Valor a cencelar</string>
+    <string name="agregar">Agregar</string>
+    <string name="total">Total</string>
+
+    <!-- Fin  medios de pago  -->
+
+    <!-- Resumen  -->
+
+    <string name="titulo">Por favor verificar datos</string>
+    <string name="subtitulo">Confirmar los datos de la expedición de la poliza, recuerda que el soat no se puede anular./n
+    Recuerda validar los datos de expedición con el cliente</string>
+    <string name="datos_soat">Datos del soat</string>
+    <string name="tipo_vehiculo">Tipo de vehiculo</string>
+    <string name="expedir">Expedir</string>
+    <string name="cancelar">Cancelar</string>
+
+    <!-- Fin resumen  -->
+
+
+    <!-- terminos y condiciones -->
+
+    <string name="titulo_ventana_terminos">Terminos y condiciones</string>
+    <string name="terminos_condiciones">
+        Términos y Condiciones Soat
+        1. La cotización y la emisión de la póliza la realiza directamente la
+        Compañía Mundial de Seguros S.A. Nit 860.037.013-6 con la intermediación de la agencia de seguros
+        GRANSEGUROS COLOMBIA LTDA identificado con Nit: 900.063.546-4, a través de la plataforma
+        FUELCONTROL de propiedad FUEL CONTROL SOLUTIONS Nit 901053314-3, compartiendo servicios
+        web con ASEGURALO de propiedad de GRANCALL S.A.S. Nit 900.183.653-9  2. Los usuarios de
+        ASEGÚRALO, podrán solicitar el SOAT, en cualquier momento. Se aclara que el Soat que se puede
+        adquirir por medio de ASEGÚRALO corresponde a un Soat Desmaterializado, de conformidad con lo
+        establecido en la Resolución Número 4170 de 2016 del Ministerio de Transporte.  3. El servicio está
+        disponible para expedicion de SOAT de motos, matriculadas ante los organismos de tránsito de los
+        departamentos de Amazonas, Antioquia, Arauca, Boyacá, Caldas, Manizales, Caquetá, Casanare,
+        Cauca, Chocó,  Cundinamarca, Bogotá, Guainía, Guaviare, Huila, Meta, Nariño, Norte de Santander,
+        Putumayo, Quindío, Risaralda, San Andrés y Providencia, Santander, Tolima, Valle del Cauca, Vaupés y
+        Vichada, así como para cualquier otra clase de vehículos matriculados en todo el territorio nacional
+        de Colombia.  4. ASEGÚRALO no será responsable ante ningún usuario por las obligaciones
+        derivadas del Soat emitido por Seguros Mundial. El usuario reconoce y acepta que ASEGÚRALO solo
+        es una plataforma digital a través de la cual puede adquirir el Soat emitido por Seguros Mundial.
+        5. Cualquier reclamación o duda relacionada con la póliza emitida por Seguros Mundial, deberá
+        ser comunicada directamente a Seguros Mundial. El usuario se podrá comunicar a las siguientes
+        líneas de atención: 1) Línea de atención en Bogotá: 3274712 – 3274713; 2) Línea de atención a
+        nivel nacional: 01 8000111935; 3) www.segurosmundial.com.co/servicio-al-cliente/.  6. Cualquier
+        aclaración o duda relacionada con la plartaforma ASEGURALO, deberá ser comunicada directamente a
+        GRANCALL S.A.S. El usuario se podrá comunicar a las siguientes líneas de atención: 1) Línea de
+        atención celular: 321 218 4342 2) www.aseguralo.co/servicio-al-cliente/.  7. De acuerdo con lo
+        establecido en el Decreto 056 de 2015, Titulo VI – Condiciones Generales del Soat, Artículo 41,
+        numeral 5: “IRREVOCABILIDAD.  La póliza del SOAT no podrá ser revocada por ninguna de las partes
+        intervinientes”. Consecuentemente, en caso que el usuario digite datos erróneos, el usuario
+        declara y acepta que será el único responsable por dichos errores, exonerando de cualquier
+        responsabilidad a Seguros Mundial y a ASEGÚRALO, en particular, en la devolución de la prima,
+        la cual resulta improcedente.  8. En todo caso, el tomador deberá verificar que la información
+        contenida en la póliza coincida con la información de la licencia de tránsito; de encontrar
+        inconsistencias, deberá informar al organismo de tránsito donde se encuentre matriculado, para
+        que realice las correcciones pertinentes.  9. Seguros Mundial no es responsable por los descuentos
+        y/o ofertas ofrecidas por ASEGÚRALO.  10. El usuario acepta que ASEGÚRALO envíe comunicaciones
+        para la renovación del Soat adquirido, previo a su vencimiento.  11. Los datos personales de
+        los usuarios se sujetarán a la política de tratamiento de datos personales de ASEGÚRALO y
+        Seguros Mundial, disponibles en las siguientes direcciones electrónicas
+        • https://aseguralo.co/tratamiento-de-datos-personales/  • https://www.segurosmundial.com.co/legal/
+        12. El usuario reconoce y acepta que la información proporcionada y registrada en ASEGÚRALO,
+        es veraz, correcta y fidedigna, haciéndose completamente responsable por su falsedad o error.
+        13. El inicio de vigencia de la póliza está sujeto a la fecha de finalización de la póliza
+        anterior o actual y en ningún caso será anterior al día de la expedición.
+    </string>
+
+    <!-- Fin terminos y condiciones -->
+
+    <!-- imprimir -->
+
+    <string name="imprimir">Imprimir</string>
+    <string name ="salir">Salir</string>
+
+    <!-- fin imprimir-->
+
+
+    <string name="contado">Contado</string>
+    <string name="fidelizado">Fidelizado</string>
+    <string name="credito">Credito</string>
+    <string name="dinero">Dinero</string>
+    <string name="volumen">Volumen</string>
+    <string name="full">Full</string>
+    <string name="formas_de_pago">Formas de pago</string>
+    <string name="levante_manguera">Levante manguera</string>
+    <string name="error">Error</string>
+    <string name="recibos">Imprimir recibos</string>
+
+
+    <string name="extra">Extra</string>
+    <string name="corriente">Corriente</string>
+    <string name="productos">Seleccione el producto</string>
+    <string name="producto">Producto</string>
+    <string name="vehiculo">Vehículo</string>
+    <string name="vehiculos">Seleccione el tipo de Vehículo</string>
+    <string name="pesado">Pesado</string>
+    <string name="taxi">Taxi</string>
+    <string name="particular">Particular</string>
+    <string name="liviano_particular">Liviano Particular</string>
+    <string name="moto">Moto</string>
+    <string name="otro">Otro</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+
 </resources>

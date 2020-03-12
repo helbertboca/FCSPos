@@ -6,7 +6,7 @@ import android.os.SystemClock;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.fcs.fcspos.MainActivity;
@@ -22,7 +22,8 @@ import com.fcs.fcspos.model.Vehicle;
 public class PositionActivity extends AppCompatActivity {
 
 
-    private Button btnSales,btnBasket,btnRecord,btnTurn,btnCalibrate;
+    //private Button btnSales,btnBasket,btnRecord,btnTurn,btnCalibrate;
+    private LinearLayout llSales, llBasket, llRecord, llTurn, llCablibrate;
     private Dispenser dispenser;
     private AppMfcProtocol appMfcProtocol;
     private Net net;
@@ -98,28 +99,28 @@ public class PositionActivity extends AppCompatActivity {
     }
 
     private void eventsViews() {
-        btnSales.setOnClickListener(new View.OnClickListener() {
+        llSales.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 nextActivity(dispenser.getCod_ESPERA());
             }
         });
-        btnBasket.setOnClickListener(new View.OnClickListener() {
+        llBasket.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
             }
         });
-        btnRecord.setOnClickListener(new View.OnClickListener() {
+        llRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
             }
         });
-        btnTurn.setOnClickListener(new View.OnClickListener() {
+        llTurn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
             }
         });
-        btnCalibrate.setOnClickListener(new View.OnClickListener() {
+        llCablibrate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
             }
@@ -127,12 +128,10 @@ public class PositionActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        btnSales = findViewById(R.id.btnSales);
-        btnBasket = findViewById(R.id.btnBasket);
-        btnRecord = findViewById(R.id.btnRecord);
-        btnTurn = findViewById(R.id.btnTurn);
-        btnCalibrate = findViewById(R.id.btnCalibrate);
+        llSales = findViewById(R.id.llSales);
+        llBasket = findViewById(R.id.llBasket);
+        llRecord = findViewById(R.id.llRecord);
+        llTurn = findViewById(R.id.llTurn);
+        llCablibrate = findViewById(R.id.llCablibrate);
     }
-
-
 }

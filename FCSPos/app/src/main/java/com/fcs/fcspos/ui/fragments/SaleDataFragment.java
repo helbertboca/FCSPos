@@ -5,6 +5,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+
+import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +21,9 @@ import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
 import com.fcs.fcspos.model.SaleOption;
 import com.fcs.fcspos.model.Vehicle;
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +35,7 @@ public class SaleDataFragment extends Fragment {
     private SaleOption saleOption;
     private AppMfcProtocol appMfcProtocol;
 
+
     public SaleDataFragment() {}
 
     @SuppressLint("ValidFragment")
@@ -39,33 +45,37 @@ public class SaleDataFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_sale_data, container, false);
-        final EditText edtLicensePlate = view.findViewById(R.id.edtLicensePlate);
-        final EditText edtIdentificationCard = view.findViewById(R.id.edtIdentificationCard);
-        final EditText edtNit = view.findViewById(R.id.edtNit);
-        final EditText edtMileage = view.findViewById(R.id.edtMileage);
+        final TextInputEditText edtLicensePlate =view.findViewById(R.id.edtLicensePlate);
+        final TextInputEditText edtIdentificationCard =view.findViewById(R.id.edtIdentificationCard);
+        final TextInputEditText edtNit =view.findViewById(R.id.edtNit);
+        final TextInputEditText edtMileage =view.findViewById(R.id.edtMileage);
+        final Vehicle vehicle = new Vehicle();
+        final Client client = new Client();
+
         Button btnEndSale = view.findViewById(R.id.btnEndSale);
         btnEndSale.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Vehicle vehicle = new Vehicle();
-                vehicle.setLicense_plate(edtLicensePlate.getText().toString());
-                vehicle.setKilometres(edtMileage.getText().toString());
-                Client client = new Client();
-                client.setIdentificationCard(edtIdentificationCard.getText().toString());
-                client.setNit(edtNit.getText().toString());
-
+                vehicle.setLicense_plate(edtLicensePlate.getEditableText().toString());
+                vehicle.setKilometres(edtMileage.getEditableText().toString());
+                client.setIdentificationCard(edtIdentificationCard.getEditableText().toString());
+                client.setNit(edtNit.getEditableText().toString());
                 //pedir venta
 
-                if(appMfcProtocol.getSale()!=null && client.getIdentificationCard()!=null){//revisar que cuando no se llenan los datos de la venta al parecer se bloquea
-                    Sale sale = appMfcProtocol.getSale();
-                    sale.setClient(client);
-                    sale.setVehicle(vehicle);
-                    saleOption.endSale(sale);
-                }else {
-                    Toast.makeText(getContext(),"Espere un momento y presione SIGUIENTE", Toast.LENGTH_SHORT ).show();
+                if(!vehicle.getLicense_plate().equals("") && !vehicle.getKilometres().equals("")
+                    && !client.getIdentificationCard().equals("") && !client.getNit().equals("")){
+                    if(appMfcProtocol.getSale()!=null){
+                        Sale sale = appMfcProtocol.getSale();
+                        sale.setClient(client);
+                        sale.setVehicle(vehicle);
+                        saleOption.endSale(sale);
+                    }else {
+                        Toast.makeText(getContext(),"Espere un momento y presione SIGUIENTE", Toast.LENGTH_SHORT ).show();
+                    }
+                }else{
+                    Toast.makeText(getContext(), "Ingrese todos los datos por favor", Toast.LENGTH_SHORT).show();
                 }
             }
         });

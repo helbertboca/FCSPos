@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-
     }
 
 
@@ -87,7 +86,7 @@ public class MainActivity extends AppCompatActivity{
         final byte OLD_CONNECTION=1, NEW_CONNECTION=2, ERROR_CONNECTION=0;
         switch (MfcWifiCom.conectar(getApplicationContext(), net)){
             case OLD_CONNECTION:
-                new ConetionMfcThread().execute("5");
+                new ConetionMfcThread().execute("0");
                 break;
             case NEW_CONNECTION:
                 new ConetionMfcThread().execute("32");
@@ -147,8 +146,8 @@ public class MainActivity extends AppCompatActivity{
             }
             appMfcProtocol = new AppMfcProtocol( MfcWifiCom.getInstance(net.getIp(), net.getPort()) ,dispenser);
             appMfcProtocol.setProgramming(programming);
-            appMfcProtocol.machineCommunication(false);
-            SystemClock.sleep(80);
+            appMfcProtocol.machineCommunication(false);//maybe do you making sometimes send to comunication
+            SystemClock.sleep(150);//80
             return appMfcProtocol.getEstado() != 0;
         }
 

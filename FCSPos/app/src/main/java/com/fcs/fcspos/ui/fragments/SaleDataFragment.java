@@ -54,6 +54,8 @@ public class SaleDataFragment extends Fragment {
         final Vehicle vehicle = new Vehicle();
         final Client client = new Client();
 
+        System.out.println("");
+
         Button btnEndSale = view.findViewById(R.id.btnEndSale);
         btnEndSale.setOnClickListener(new View.OnClickListener() {
             @Override

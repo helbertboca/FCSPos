@@ -6,24 +6,20 @@ import android.app.Activity;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
 
-import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.model.Client;
-import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
 import com.fcs.fcspos.model.SaleOption;
 import com.fcs.fcspos.model.Vehicle;
 import com.google.android.material.textfield.TextInputEditText;
 
-import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,7 +27,6 @@ import java.util.Objects;
 public class SaleDataFragment extends Fragment {
 
 
-    private Programming programming;
     private SaleOption saleOption;
     private AppMfcProtocol appMfcProtocol;
 
@@ -39,8 +34,7 @@ public class SaleDataFragment extends Fragment {
     public SaleDataFragment() {}
 
     @SuppressLint("ValidFragment")
-    public SaleDataFragment(Programming programming, AppMfcProtocol appMfcProtocol) {
-        this.programming = programming;
+    public SaleDataFragment(AppMfcProtocol appMfcProtocol) {
         this.appMfcProtocol = appMfcProtocol;
     }
 
@@ -53,8 +47,6 @@ public class SaleDataFragment extends Fragment {
         final TextInputEditText edtMileage =view.findViewById(R.id.edtMileage);
         final Vehicle vehicle = new Vehicle();
         final Client client = new Client();
-
-        System.out.println("");
 
         Button btnEndSale = view.findViewById(R.id.btnEndSale);
         btnEndSale.setOnClickListener(new View.OnClickListener() {

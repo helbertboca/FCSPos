@@ -46,6 +46,9 @@ public class Receipt {
                 addSpace(("Placa: " + sale.getVehicle().getLicense_plate()).length()) + "Placa: " + sale.getVehicle().getLicense_plate() + "\n" +
                 addSpace(("Empleado: ").length()) + "Empleado: " + "\n" + addSpace(SEPARATOR.length()) + SEPARATOR + "\n" +
                 addSpace(("Total: $" + sale.getDinero()).length()) + "Total: $" + sale.getDinero() + "\n" +
+
+                addSpace(("Vprueba: $" + sale.getVehicle().getKind()).length()) + "Vprueba: $" + sale.getVehicle().getKind() + "\n" +
+
                 addSpace(("  ").length()) + "  " + "\n" +
                 addSpace(("  ").length()) + "  " + "\n" +
                 addSpace(("  ").length()) + "  " + "\n" +

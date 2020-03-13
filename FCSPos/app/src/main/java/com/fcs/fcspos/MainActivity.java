@@ -146,8 +146,8 @@ public class MainActivity extends AppCompatActivity{
             }
             appMfcProtocol = new AppMfcProtocol( MfcWifiCom.getInstance(net.getIp(), net.getPort()) ,dispenser);
             appMfcProtocol.setProgramming(programming);
-            appMfcProtocol.machineCommunication(false);//maybe do you making sometimes send to comunication
-            SystemClock.sleep(150);//80
+            appMfcProtocol.machineCommunication(false);
+            SystemClock.sleep(150);
             return appMfcProtocol.getEstado() != 0;
         }
 

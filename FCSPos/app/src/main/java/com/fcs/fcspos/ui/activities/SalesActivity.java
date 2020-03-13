@@ -14,14 +14,19 @@ import com.fcs.fcspos.MainActivity;
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.io.MfcWifiCom;
+import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.Dispenser;
+import com.fcs.fcspos.model.Identification;
 import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
 import com.fcs.fcspos.model.SaleOption;
 import com.fcs.fcspos.model.Station;
 import com.fcs.fcspos.model.Vehicle;
+import com.fcs.fcspos.ui.fragments.AuthorizedSupplyFragment;
 import com.fcs.fcspos.ui.fragments.FillingUpFragment;
+import com.fcs.fcspos.ui.fragments.IdentificacionMethodFragment;
+import com.fcs.fcspos.ui.fragments.MileageFragment;
 import com.fcs.fcspos.ui.fragments.MoneyFragment;
 import com.fcs.fcspos.ui.fragments.PresetKindFragment;
 import com.fcs.fcspos.ui.fragments.ProductKindFragment;
@@ -29,8 +34,10 @@ import com.fcs.fcspos.ui.fragments.ReceiptFragment;
 import com.fcs.fcspos.ui.fragments.SaleDataFragment;
 import com.fcs.fcspos.ui.fragments.SalesKindFragment;
 import com.fcs.fcspos.ui.fragments.UpHoseFragment;
+import com.fcs.fcspos.ui.fragments.ValidatingFragment;
 import com.fcs.fcspos.ui.fragments.VehicleKindFragment;
 import com.fcs.fcspos.ui.fragments.VolumeFragment;
+import com.google.gson.Gson;
 
 import java.util.List;
 
@@ -47,6 +54,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private boolean scheduledSaleFlag=false;
     private Net net;
     private Station station;
+    private final String SALEKIND_COUNTED="Counted", SALEKIND_CREDIT="Credit";
+    private Client client;
 
 
 
@@ -56,11 +65,11 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         setContentView(R.layout.activity_sales);
         dispenser =(Dispenser)getIntent().getSerializableExtra("surtidor");
         currentProcess = (byte)getIntent().getSerializableExtra("currentProcess");
-        AppMfcProtocol appMfcProtocol = (AppMfcProtocol)getIntent().getSerializableExtra("appMfcProtocol");
+        AppMfcProtocol appMfcProtocol = (AppMfcProtocol)getIntent().getSerializableExtra("appMfcProtocol");//v1
         net = (Net)getIntent().getSerializableExtra("net");
-        vehiclePending = (Vehicle) getIntent().getSerializableExtra("vehicle");
         station = (Station) getIntent().getSerializableExtra("station");
         programming = appMfcProtocol.getProgramming();
+        vehiclePending = appMfcProtocol.getProgramming().getVehicle();
         fragmentManager = getSupportFragmentManager();
         if(currentProcess!=dispenser.getCod_ESPERA()){
             secondThread();
@@ -76,16 +85,16 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
         switch (selectedOption){
             case COUNTED:
-                programming.setKind("Counted");
+                programming.setKind(SALEKIND_COUNTED); //v1
                 break;
             case LOYAL:
-                programming.setKind("Loyal");
+                programming.setKind("Loyal"); //v1
                 break;
             case CREDIT:
-                programming.setKind("Credit");
+                programming.setKind(SALEKIND_CREDIT); //v1
                 break;
             case WAY_TO_PAY:
-                programming.setKind("Way To Pay");
+                programming.setKind("Way To Pay");//v1
                 break;
         }
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ProductKindFragment()).
@@ -98,10 +107,10 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
         switch (selectedProduct){
             case PRODUCT_ONE:
-                programming.setProduct(PRODUCT_ONE);
+                programming.setProduct(PRODUCT_ONE);//v1
                 break;
             case PRODUCT_TWO:
-                programming.setProduct(PRODUCT_TWO);
+                programming.setProduct(PRODUCT_TWO);//v1
                 break;
         }
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, new VehicleKindFragment()).
@@ -128,9 +137,15 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                 vehiclePending.setKind(OTRO);
                 break;
         }
-        programming.setVehicle(vehiclePending);
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new PresetKindFragment()).
-                addToBackStack(null).commit();
+        programming.setVehicle(vehiclePending);//v1
+
+        if(programming.getKind().equals(SALEKIND_COUNTED)){//v1
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, new PresetKindFragment()).
+                    addToBackStack(null).commit();
+        }else if(programming.getKind().equals(SALEKIND_CREDIT)){//v1
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind,
+                    new IdentificacionMethodFragment()).addToBackStack(null).commit();// identification method
+        }
     }
 
     @Override
@@ -138,22 +153,22 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         final int FULL=3,MONEY=2,VOLUME=1;
         switch (selectedKindPreset){
             case MONEY:
-                programming.setPresetKind(MONEY);
+                programming.setPresetKind(MONEY); //V1
                 fragmentManager.beginTransaction().replace(R.id.contSaleKind, new MoneyFragment()).
                         addToBackStack(null).commit();
             break;
             case VOLUME:
-                programming.setPresetKind(VOLUME);
+                programming.setPresetKind(VOLUME); //V1
                 fragmentManager.beginTransaction().replace(R.id.contSaleKind, new VolumeFragment()).
                         addToBackStack(null).commit();
                 break;
             case FULL:
                 if( dispenser.getNumberOfDigits()>=7){
-                    programming.setQuantity(9999900);
+                    programming.setQuantity(9999900); //v1
                 }else{
-                    programming.setQuantity(999900);
+                    programming.setQuantity(999900);//v1
                 }
-                programming.setPresetKind(FULL);
+                programming.setPresetKind(FULL);//v1
                 sendShuduledSale();
                 break;
         }
@@ -161,8 +176,52 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
 
     @Override
+    public void identificationKind(Identification identification) {
+        switch (identification.getName()){
+            case "LicensePlate":
+                programming.setIdentification(identification);//v1
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new MileageFragment()).
+                        addToBackStack(null).commit();
+                break;
+            case "Ibutton":
+                break;
+            case "Rfid":
+                break;
+            case "Rings":
+                break;
+            case "Covenants":
+                break;
+        }
+    }
+
+    @Override
+    public void mileage(String value) {
+        programming.getIdentification().setValue(value);//v1
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ValidatingFragment(programming)).//v1
+                addToBackStack(null).commit();
+    }
+
+    @Override
+    public void authorizedCustomer(Client client) {
+        if(client!=null){
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, new AuthorizedSupplyFragment(client)).
+                    addToBackStack(null).commit();
+        }else{
+            Toast.makeText(getApplicationContext(),"El cliente no pudo ser validado", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void showCustomerInformation(Client client){
+        this.client = client;
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new PresetKindFragment()).
+                addToBackStack(null).commit();
+    }
+
+
+    @Override
     public void money(int money) {
-        programming.setQuantity(money);
+        programming.setQuantity(money); //v1
         sendShuduledSale();
     }
 
@@ -170,8 +229,8 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     @Override
     public void volume(double volume) {
         int volumeInt = ((int)(volume*100))*10;
-        programming.setPresetKind(1);
-        programming.setQuantity(volumeInt);
+        programming.setPresetKind(1);//v1
+        programming.setQuantity(volumeInt);//v1
         sendShuduledSale();
     }
 
@@ -204,10 +263,13 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private void pendingSales_file(byte action){
         final byte SAVE=1, READ=2, DELETE=3;
         final SharedPreferences sharedPref = SalesActivity.this.getSharedPreferences("pendingSales", MODE_PRIVATE);
-        final SharedPreferences.Editor editor = sharedPref.edit();
+        final SharedPreferences.Editor editor = sharedPref.edit();//para venta de credito necesito, el cliente y la programacion(vechiuclo , preset)
+        Gson gson = new Gson();
+        //String jsonVehiclePend = gson.toJson(vehiclePending);
+        String jsonVehiclePend = gson.toJson(vehiclePending);
         switch (action){
             case SAVE:
-                editor.putString(net.getSsid() + "/" + programming.getPosition(), vehiclePending.getKind() + "/");
+                editor.putString(net.getSsid() + "/" + programming.getPosition(), jsonVehiclePend);
                 editor.apply();
                 break;
             case DELETE:
@@ -220,6 +282,15 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
     @Override
     public void endSale(Sale sale) {
+        Vehicle vehicleCurrent =sale.getVehicle();
+        vehiclePending.setLicense_plate(vehicleCurrent.getLicense_plate());
+        vehiclePending.setKilometres(vehicleCurrent.getKilometres());
+        sale.setVehicle(vehiclePending);
+        pendingSales_file((byte) 3);
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ReceiptFragment(sale, station, programming)).commit();
+    }
+
+    private void endSaleCredit(Sale sale){
         Vehicle vehicleCurrent =sale.getVehicle();
         vehiclePending.setLicense_plate(vehicleCurrent.getLicense_plate());
         vehiclePending.setKilometres(vehicleCurrent.getKilometres());
@@ -287,10 +358,9 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         }
 
         public void run() {
-            MfcWifiCom mfcWifiCom = MfcWifiCom.getInstance(net.getIp(), net.getPort());
-            AppMfcProtocol appMfcProtocol = new AppMfcProtocol(mfcWifiCom, dispenser);//abro conexion
+            AppMfcProtocol appMfcProtocol = new AppMfcProtocol(MfcWifiCom.getInstance(net.getIp(), net.getPort()), dispenser);//abro conexion
             appMfcProtocol.setProgramming(programming);//envio programacion del usuario
-            SaleDataFragment saleDataFragment = new SaleDataFragment(programming, appMfcProtocol);
+
             FillingUpFragment fillingUpFragment = new FillingUpFragment();
             if(currentProcess == dispenser.getCod_SURTIENDO()){
                 fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
@@ -312,8 +382,21 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                     appMfcProtocol.machineCommunication(false);
                 } while ((appMfcProtocol.getEstado() != dispenser.getCod_VENTA()) && (!kill));
             }
-            fragmentManager.beginTransaction().replace(R.id.contSaleKind, saleDataFragment).
-                    addToBackStack(null).commit();
+            //if(programming.getKind().equals(SALEKIND_COUNTED)){
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new SaleDataFragment(appMfcProtocol)).
+                        addToBackStack(null).commit();//comportamiento extraño
+            /*}else{//es credito
+                for (byte i=0; i<6;i++){
+                    if(appMfcProtocol.getSale()!=null){
+                        Sale sale = appMfcProtocol.getSale();
+                        sale.setClient(client);
+                        sale.setVehicle(programming.getVehicle());
+                        endSaleCredit(sale);
+                    }else {
+                        System.out.println("Recogiendo venta credito...");
+                    }
+                }
+            }*/
         }
 
 

@@ -14,6 +14,7 @@ import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Net;
+import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Station;
 import com.fcs.fcspos.model.Vehicle;
 import com.google.gson.Gson;
@@ -66,16 +67,14 @@ public class PositionActivity extends AppCompatActivity {
         Gson gson = new Gson();
 
         String json = sharedPref.getString(net.getSsid() + "/" + appMfcProtocol.getProgramming().getPosition(),null);
-        Vehicle vehiclePending = gson.fromJson(json, Vehicle.class);
+        Programming programming = gson.fromJson(json, Programming.class);//
+        appMfcProtocol.setProgramming(programming);
         if(json!=null){
-            vehicle.setKind(vehiclePending.getKind());
-            appMfcProtocol.getProgramming().setVehicle(vehicle);
             validateActiveSale((byte) currentProcess, true);
         }else {
             validateActiveSale((byte) currentProcess, false);
         }
     }
-
 
 
     private void validateActiveSale(byte currentProcess, boolean pendingSale){

@@ -6,7 +6,7 @@ public interface SaleOption {
     void optionVehicleKind(int selectedVehicle);
     void optionPresetKind(int selectedKindPreset);
     void identificationKind(Identification identification);
-    void mileage(String value);
+    void mileage(String quantity);
     void authorizedCustomer(Client client);
     void showCustomerInformation(Client client);
     void money(int money);

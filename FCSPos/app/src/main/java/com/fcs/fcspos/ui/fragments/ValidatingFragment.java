@@ -57,7 +57,7 @@ public class ValidatingFragment extends Fragment {
         protected Boolean doInBackground(Programming ... programmings){
 
 
-            //AQUI SE ENVIA SOLICITUD POR DATOS DEL CLIENTE EN SI ESTA AUTORIZADO Y CUPO
+            //AQUI SE ENVIA SOLICITUD Del vehiculo , SI ESTA AUTORIZADO Y CUPO
             //programmings[0].getIdentification();
             int count=0;
             while ( 5>count){
@@ -77,6 +77,7 @@ public class ValidatingFragment extends Fragment {
             client.setName("Julio Cardenas De los Valdez");
             client.setAvailableMoney(10000000);
             client.setAvailableVolume(1219.5);
+
 
             return true;//true mientras se hace los pasos de las lineas superiores
             //return false;

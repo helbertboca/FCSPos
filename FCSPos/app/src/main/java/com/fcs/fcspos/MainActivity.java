@@ -152,9 +152,9 @@ public class MainActivity extends AppCompatActivity{
         }
 
         @Override
-        protected void onPostExecute(Boolean respuesta){
+        protected void onPostExecute(Boolean answer){
             progressBar.setVisibility(View.GONE);
-            if(respuesta){
+            if(answer){
                 Intent i = new Intent(getApplicationContext(), PositionActivity.class);
                 i.putExtra("AppMfcProtocol", appMfcProtocol);
                 i.putExtra("net", net);

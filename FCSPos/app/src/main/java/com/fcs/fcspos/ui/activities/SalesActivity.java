@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.widget.Toast;
 
 import com.fcs.fcspos.MainActivity;
@@ -189,26 +190,29 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     @Override
     public void mileage(String quantity) {
         appMfcProtocol.getProgramming().getVehicle().setKilometres(quantity);
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ValidatingFragment(appMfcProtocol.getProgramming())).//v1
+        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ValidatingFragment(appMfcProtocol.getProgramming())).
                 addToBackStack(null).commit();
     }
 
     @Override
     public void authorizedCustomer(Client client) {
-        takeOutStackFragments();
         if(client!=null){
-            fragmentManager.beginTransaction().replace(R.id.contSaleKind, new AuthorizedSupplyFragment(client)).
-                    addToBackStack(null).commit();
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, new AuthorizedSupplyFragment(client, appMfcProtocol)).addToBackStack(null).commit();
+                    //addToBackStack(null).commit();
         }else{
-            Toast.makeText(getApplicationContext(),"El cliente no pudo ser validado", Toast.LENGTH_SHORT).show();
+            startApp();
         }
     }
 
     @Override
     public void showCustomerInformation(Client client){
-        //client se utilizara cuando este credito completo
-        fragmentManager.beginTransaction().replace(R.id.contSaleKind, new PresetKindFragment()).
-                addToBackStack(null).commit();
+        if(client!=null){
+            takeOutStackFragments();
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, new PresetKindFragment()).addToBackStack(null).commit();
+            scheduledSaleFlag=true;
+        }else{
+            startApp();//seee
+        }
     }
 
 
@@ -291,8 +295,10 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
 
     private void startApp(){
-        if(primeThread.isAlive()){
-            primeThread.killThread(true);
+        if(primeThread!=null){
+            if(primeThread.isAlive()){
+                primeThread.killThread(true);
+            }
         }
         restart();
     }

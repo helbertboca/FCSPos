@@ -8,10 +8,22 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-    <EditText
-        android:hint="Ingrese kilometraje actual"
-        android:id="@+id/edtKilometrajeVehiculo"
+
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+        <EditText
+            android:hint="Ingrese kilometraje actual"
+            android:id="@+id/edtKilometrajeVehiculo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="Ok"
+            android:id="@+id/btnOkKilometraje"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
 
 </LinearLayout>

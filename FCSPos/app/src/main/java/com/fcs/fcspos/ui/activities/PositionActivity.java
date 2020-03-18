@@ -26,7 +26,7 @@ public class PositionActivity extends AppCompatActivity {
     private Dispenser dispenser;
     private AppMfcProtocol appMfcProtocol;
     private Net net;
-    private Vehicle vehicle;
+    //private Vehicle vehicle;
     private Station station;
 
 
@@ -38,7 +38,7 @@ public class PositionActivity extends AppCompatActivity {
         net = (Net)getIntent().getSerializableExtra("net");
         dispenser = (Dispenser)getIntent().getSerializableExtra("dispenser");
         station = (Station)getIntent().getSerializableExtra("station");
-        vehicle = new Vehicle();
+        //vehicle = new Vehicle();
         supplierStatus();
         initView();
         eventsViews();

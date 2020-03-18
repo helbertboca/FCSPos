@@ -14,11 +14,21 @@
         android:layout_height="wrap_content"
         android:text="METODO DE IDENTIFICACION" />
 
-    <EditText
-        android:hint="Identificarse por Placa"
-        android:id="@+id/edtPlaca"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+        <EditText
+            android:hint="Identificarse por Placa"
+            android:id="@+id/edtPlaca"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:text="Ok"
+            android:id="@+id/btnOkPlaca"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
     <Button
         android:text="I-button"
         android:id="@+id/btnIbutton"

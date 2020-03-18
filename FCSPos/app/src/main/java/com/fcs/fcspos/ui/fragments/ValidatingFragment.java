@@ -55,8 +55,6 @@ public class ValidatingFragment extends Fragment {
 
         @Override
         protected Boolean doInBackground(Programming ... programmings){
-
-
             //AQUI SE ENVIA SOLICITUD Del vehiculo , SI ESTA AUTORIZADO Y CUPO
             //programmings[0].getIdentification();
             int count=0;
@@ -68,19 +66,15 @@ public class ValidatingFragment extends Fragment {
                 //    return true;
                 //}
             }
-
             client = new Client();
             client.setMessage("Cliente de AXA Seguros Colpatria vehiculos" +
-                    "cupo disponible de $10'000.000 con ppu de $8200");
+                    ", cupo disponible de $10'000.000 con ppu de $8200 ,extra");
             client.setAuthorizedProduct((byte) 1);
             client.setAuthorizedPpu((short) 8200);
             client.setName("Julio Cardenas De los Valdez");
             client.setAvailableMoney(10000000);
             client.setAvailableVolume(1219.5);
-
-
-            return true;//true mientras se hace los pasos de las lineas superiores
-            //return false;
+            return true;
         }
 
         @Override

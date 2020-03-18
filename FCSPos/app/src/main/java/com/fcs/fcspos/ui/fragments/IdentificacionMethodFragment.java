@@ -32,22 +32,20 @@ public class IdentificacionMethodFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.fragment_identificacion_method, container, false);
         final EditText edtLicensePlate = view.findViewById(R.id.edtPlaca);
+        Button btnOkPlaca =view.findViewById(R.id.btnOkPlaca);
         Button btnIbutton = view.findViewById(R.id.btnIbutton);
         Button btnRfid = view.findViewById(R.id.btnRfid);
         Button btnRings = view.findViewById(R.id.btnAnillos);
         Button btnCovenants =view.findViewById(R.id.btnConvenios);
         final Identification identification = new Identification();
 
-
-        edtLicensePlate.setOnKeyListener(new View.OnKeyListener() {
+        btnOkPlaca.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if( (keyEvent.getAction() == KeyEvent.ACTION_DOWN) || (i == KeyEvent.KEYCODE_ENTER)){
-                    identification.setName("LicensePlate");
-                    identification.setValue(edtLicensePlate.getText().toString());
-                    saleOption.identificationKind(identification);
-                }
-                return false;
+            public void onClick(View view) {
+                System.out.println("estoy en identification+}++++<<<<<<<<<<<<<<<<");
+                identification.setName("LicensePlate");
+                identification.setValue(edtLicensePlate.getText().toString());
+                saleOption.identificationKind(identification);
             }
         });
         btnIbutton.setOnClickListener(new View.OnClickListener() {

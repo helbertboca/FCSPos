@@ -10,6 +10,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.fcs.fcspos.R;
@@ -23,25 +24,25 @@ public class MileageFragment extends Fragment {
 
     private SaleOption saleOption;
 
+
     public MileageFragment() {}
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState){
-
         View view = inflater.inflate(R.layout.fragment_mileage, container, false);
         final EditText edtMileageVehicle = view.findViewById(R.id.edtKilometrajeVehiculo);
-        edtMileageVehicle.setOnKeyListener(new View.OnKeyListener() {
+
+        Button btnOkKilometraje =view.findViewById(R.id.btnOkKilometraje);
+        btnOkKilometraje.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onKey(View view, int i, KeyEvent keyEvent) {
-                if( (keyEvent.getAction() == KeyEvent.ACTION_DOWN) || (i == KeyEvent.KEYCODE_ENTER)){
-                    saleOption.mileage(edtMileageVehicle.getText().toString());
-                }
-                return false;
+            public void onClick(View view) {
+                saleOption.mileage(edtMileageVehicle.getText().toString());
             }
         });
         return view;
     }
+
 
     @Override
     public void onAttach(Activity activity){

@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.fcs.fcspos.R;
+import com.fcs.fcspos.io.AppMfcProtocol;
+import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.SaleOption;
 
 /**
@@ -21,28 +23,51 @@ public class MoneyFragment extends Fragment {
 
 
     private SaleOption saleOption;
+    private AppMfcProtocol appMfcProtocol;
+    private Client client;
+    private EditText edtMoney;
 
-    public MoneyFragment() { }
+
+    public MoneyFragment(AppMfcProtocol appMfcProtocol, Client client) {
+        this.appMfcProtocol = appMfcProtocol;
+        this.client = client;
+    }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_money, container, false);
-        final EditText edtMoney = view.findViewById(R.id.edtMoney);
+        edtMoney = view.findViewById(R.id.edtMoney);
         Button btnAcceptMon = view.findViewById(R.id.btnAcceptMon);
         btnAcceptMon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!edtMoney.getText().toString().equals("")){
-                    saleOption.money(Integer.parseInt(edtMoney.getText().toString()));
-                }else {
-                    Toast.makeText(getContext(), "Ingrese un valor", Toast.LENGTH_SHORT).show();
-                }
+                validationMoneyXcustomer();
             }
         });
         return view;
     }
+
+
+    private void validationMoneyXcustomer(){
+        final String SALEKIND_COUNTED="Counted", SALEKIND_CREDIT="Credit";
+
+        if(!edtMoney.getText().toString().equals("")){
+            if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)) {
+                saleOption.money(Integer.parseInt(edtMoney.getText().toString()));
+            }else{
+                if(Integer.parseInt(edtMoney.getText().toString())<= client.getAvailableMoney()){
+                    saleOption.money(Integer.parseInt(edtMoney.getText().toString()));
+                }else{
+                    Toast.makeText(getContext(), "El valor excede al cupo del que dispone", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }else {
+            Toast.makeText(getContext(), "Ingrese un valor", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     @Override
     public void onAttach(Activity activity){

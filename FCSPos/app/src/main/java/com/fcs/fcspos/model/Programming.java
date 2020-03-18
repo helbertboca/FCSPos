@@ -12,7 +12,15 @@ public class Programming implements Serializable {
     private int presetKind;
     private int quantity;
     private byte position;
+    private Identification identification;
 
+    public Identification getIdentification() {
+        return identification;
+    }
+
+    public void setIdentification(Identification identification) {
+        this.identification = identification;
+    }
 
     public void setKind(String kind) {
         this.kind = kind;

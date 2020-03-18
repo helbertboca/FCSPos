@@ -63,11 +63,12 @@ public class MfcWifiCom implements Serializable {
                     inputStreamReader = new InputStreamReader(socket[0].getInputStream());
                     BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                     answer = bufferedReader.readLine();
-                    setAnswer(answer);
+                    setData(true);
                     socket[0].close();
                 }catch (IOException e){
                     System.out.println("Inconveniente de Lectura nula");
-                    setAnswer("");
+                    answer="";
+                    setData(false);
                 }finally {
                     try {
                         if (inputStreamReader != null) {
@@ -134,9 +135,14 @@ public class MfcWifiCom implements Serializable {
         return (WifiManager)context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
     }
 
+    private boolean data=false;
 
-    private void setAnswer(String answer) {
-        this.answer = answer;
+    private void setData(boolean data){
+        this.data= data;
+    }
+
+    public boolean isData(){
+            return data;
     }
 
     public String getAnswer() {

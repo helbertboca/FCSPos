@@ -22,7 +22,7 @@ public class PresetKindFragment extends Fragment {
     private final int FULL=3,MONEY=2,VOLUME=1;
 
 
-    public PresetKindFragment() {}
+    public PresetKindFragment() { }
 
 
     @Override

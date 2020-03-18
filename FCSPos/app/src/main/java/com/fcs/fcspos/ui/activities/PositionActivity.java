@@ -14,20 +14,19 @@ import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Net;
+import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Station;
 import com.fcs.fcspos.model.Vehicle;
-
+import com.google.gson.Gson;
 
 
 public class PositionActivity extends AppCompatActivity {
 
-
-    //private Button btnSales,btnBasket,btnRecord,btnTurn,btnCalibrate;
     private LinearLayout llSales, llBasket, llRecord, llTurn, llCablibrate;
     private Dispenser dispenser;
     private AppMfcProtocol appMfcProtocol;
     private Net net;
-    private Vehicle vehicle;
+    //private Vehicle vehicle;
     private Station station;
 
 
@@ -39,7 +38,7 @@ public class PositionActivity extends AppCompatActivity {
         net = (Net)getIntent().getSerializableExtra("net");
         dispenser = (Dispenser)getIntent().getSerializableExtra("dispenser");
         station = (Station)getIntent().getSerializableExtra("station");
-        vehicle = new Vehicle();
+        //vehicle = new Vehicle();
         supplierStatus();
         initView();
         eventsViews();
@@ -64,21 +63,23 @@ public class PositionActivity extends AppCompatActivity {
 
 
     private void pendingSale(int currentProcess){
-        final int TYPE_VEHICLE=0;
         final SharedPreferences sharedPref = PositionActivity.this.getSharedPreferences("pendingSales", MODE_PRIVATE);
-        String s = sharedPref.getString(net.getSsid() + "/" + appMfcProtocol.getProgramming().getPosition(), null);
-        if(s!=null){
-            String[] splitAnswer = s.split("/");
-            vehicle.setKind(Integer.parseInt(splitAnswer[TYPE_VEHICLE]));
+        Gson gson = new Gson();
+
+        String json = sharedPref.getString(net.getSsid() + "/" + appMfcProtocol.getProgramming().getPosition(),null);
+        Programming programming = gson.fromJson(json, Programming.class);//
+        appMfcProtocol.setProgramming(programming);
+        if(json!=null){
             validateActiveSale((byte) currentProcess, true);
         }else {
             validateActiveSale((byte) currentProcess, false);
         }
     }
 
+
     private void validateActiveSale(byte currentProcess, boolean pendingSale){
         if(pendingSale){
-            nextActivity(currentProcess);
+            salesActivity(currentProcess);
         }else{
             Toast.makeText(getApplicationContext(),"Esta venta no le pertenece a este dispositivo", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
@@ -87,13 +88,12 @@ public class PositionActivity extends AppCompatActivity {
         }
     }
 
-    private void nextActivity(byte currentProcess){
+    private void salesActivity(byte currentProcess){
         Intent i = new Intent(getApplicationContext(), SalesActivity.class);
         i.putExtra("surtidor",dispenser);
         i.putExtra("currentProcess", currentProcess);
         i.putExtra("appMfcProtocol", appMfcProtocol);
         i.putExtra("net", net);
-        i.putExtra("vehicle", vehicle);
         i.putExtra("station", station);
         startActivity(i);
     }
@@ -102,7 +102,8 @@ public class PositionActivity extends AppCompatActivity {
         llSales.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                nextActivity(dispenser.getCod_ESPERA());
+                appMfcProtocol.getProgramming().setVehicle(new Vehicle());
+                salesActivity(dispenser.getCod_ESPERA());
             }
         });
         llBasket.setOnClickListener(new View.OnClickListener() {

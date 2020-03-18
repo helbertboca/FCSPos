@@ -13,7 +13,16 @@ public class Client implements Serializable {
     private String name;
     private int availableMoney;
     private double availableVolume;
+    private int availableFull;
 
+
+    public int getAvailableFull() {
+        return availableFull;
+    }
+
+    public void setAvailableFull(int availableFull) {
+        this.availableFull = availableFull;
+    }
 
     public int getAvailableMoney() {
         return availableMoney;

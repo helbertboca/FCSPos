@@ -175,6 +175,10 @@ public class AppMfcProtocol implements Serializable {
         return null;
     }
 
+    public Dispenser getDispenser() {
+        return dispenser;
+    }
+
     public boolean isCorrectHose() {
         return correctHose;
     }

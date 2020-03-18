@@ -65,15 +65,11 @@ public class AuthorizedSupplyFragment extends Fragment {
                 SystemClock.sleep(1000);
                 count++;
             }
-            prueba();
+            saleOption.showCustomerInformation(client);
         }
     }
     //----------------------------------------------------------------------------------------------
 
-
-    public void prueba(){
-        saleOption.showCustomerInformation(client);
-    }
 
     @Override
     public void onAttach(Activity activity){

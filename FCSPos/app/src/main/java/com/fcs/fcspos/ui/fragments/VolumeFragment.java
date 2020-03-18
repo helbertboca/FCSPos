@@ -12,6 +12,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.fcs.fcspos.R;
+import com.fcs.fcspos.io.AppMfcProtocol;
+import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.SaleOption;
 
 /**
@@ -21,30 +23,52 @@ public class VolumeFragment extends Fragment {
 
 
     private SaleOption saleOption;
+    private AppMfcProtocol appMfcProtocol;
+    private Client client;
+    private EditText edtVolume;
 
-    public VolumeFragment() {}
+
+    public VolumeFragment(AppMfcProtocol appMfcProtocol, Client client) {
+        this.appMfcProtocol = appMfcProtocol;
+        this.client = client;
+    }
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_volume, container, false);
-        final EditText edtVolume = view.findViewById(R.id.edtVolume);
+        edtVolume = view.findViewById(R.id.edtVolume);
         Button btnAcceptVol = view.findViewById(R.id.btnAcceptVol);
         btnAcceptVol.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!edtVolume.getText().toString().equals("")){
-                    saleOption.volume(Double.parseDouble( edtVolume.getText().toString().
-                            replace(",",".") ));
-                }else {
-                    Toast.makeText(getContext(), "Ingrese un valor", Toast.LENGTH_SHORT).show();
-                }
+                validationVolumeXcustomer();
             }
         });
         return view;
     }
+
+
+    private void validationVolumeXcustomer(){
+        final String SALEKIND_COUNTED="Counted", SALEKIND_CREDIT="Credit";
+
+        if(!edtVolume.getText().toString().equals("")){
+            double volume = Double.parseDouble( edtVolume.getText().toString().replace(",",".") );
+            if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)){
+                saleOption.volume(volume);
+            }else{
+                if(volume <= client.getAvailableVolume()){
+                    saleOption.volume(volume);
+                }else{
+                    Toast.makeText(getContext(), "El valor excede al cupo del que dispone", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }else {
+            Toast.makeText(getContext(), "Ingrese un valor", Toast.LENGTH_SHORT).show();
+        }
+    }
+
 
     @Override
     public void onAttach(Activity activity){

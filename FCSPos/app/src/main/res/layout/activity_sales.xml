@@ -6,6 +6,52 @@
     android:layout_height="match_parent"
     tools:context=".ui.activities.SalesActivity">
 
+    <LinearLayout
+        android:id="@+id/LlMenu"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="13dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/TvMenuPrincipal"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@drawable/ic_logo_fcs"
+                android:textColor="@color/ic_launcher_background"
+                android:textSize="36sp" />
+
+            <LinearLayout
+                android:id="@+id/LlRuta"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/TvRuta"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/ic_launcher_background" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
     <FrameLayout
         android:id="@+id/contSaleKind"
         android:layout_width="match_parent"

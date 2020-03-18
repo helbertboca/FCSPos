@@ -8,7 +8,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.widget.Toast;
 
 import com.fcs.fcspos.MainActivity;
@@ -53,6 +52,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private Station station;
     private final String SALEKIND_COUNTED="Counted", SALEKIND_CREDIT="Credit";
     private AppMfcProtocol appMfcProtocol;
+    private Client client;
 
 
 
@@ -147,25 +147,42 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         switch (selectedKindPreset){
             case MONEY:
                 appMfcProtocol.getProgramming().setPresetKind(MONEY);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new MoneyFragment()).
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new MoneyFragment(appMfcProtocol, client)).
                         addToBackStack(null).commit();
-            break;
+                break;
             case VOLUME:
                 appMfcProtocol.getProgramming().setPresetKind(VOLUME);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new VolumeFragment()).
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new VolumeFragment(appMfcProtocol, client)).
                         addToBackStack(null).commit();
                 break;
             case FULL:
                 if( dispenser.getNumberOfDigits()>=7){
-                    appMfcProtocol.getProgramming().setQuantity(9999900);
+                    if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)){
+                        appMfcProtocol.getProgramming().setQuantity(9999900);
+                    }else{
+                        if(client.getAvailableFull()>=9999900){
+                            appMfcProtocol.getProgramming().setQuantity(9999900);
+                        }else{
+                            appMfcProtocol.getProgramming().setQuantity(client.getAvailableFull());
+                        }
+                    }
                 }else{
-                    appMfcProtocol.getProgramming().setQuantity(999900);
+                    if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)){
+                        appMfcProtocol.getProgramming().setQuantity(999900);
+                    }else{
+                        if(client.getAvailableFull()>=999900){
+                            appMfcProtocol.getProgramming().setQuantity(9999900);
+                        }else{
+                            appMfcProtocol.getProgramming().setQuantity(client.getAvailableFull());
+                        }
+                    }
                 }
                 appMfcProtocol.getProgramming().setPresetKind(FULL);
                 sendShuduledSale();
                 break;
         }
     }
+
 
 
     @Override
@@ -198,7 +215,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     public void authorizedCustomer(Client client) {
         if(client!=null){
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, new AuthorizedSupplyFragment(client, appMfcProtocol)).addToBackStack(null).commit();
-                    //addToBackStack(null).commit();
         }else{
             startApp();
         }
@@ -207,11 +223,12 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     @Override
     public void showCustomerInformation(Client client){
         if(client!=null){
+            this.client = client;
             takeOutStackFragments();
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, new PresetKindFragment()).addToBackStack(null).commit();
             scheduledSaleFlag=true;
         }else{
-            startApp();//seee
+            startApp();
         }
     }
 
@@ -345,7 +362,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
         private boolean kill;
 
-        PrimeThread() {
+        private PrimeThread() {
         }
 
         public void run() {
@@ -370,19 +387,23 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
                     appMfcProtocol.machineCommunication(false);
                 } while ((appMfcProtocol.getEstado() != dispenser.getCod_VENTA()) && (!kill));
             }
-
-            if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)){
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new SaleDataFragment(appMfcProtocol)).
-                        addToBackStack(null).commit();//comportamiento extraño
-            }else{//es credito
-                for (byte i=0; i<6;i++){
-                    if(appMfcProtocol.getSale()!=null){
-                        startApp();
-                    }else {
-                        System.out.println("Recogiendo venta credito...");
+            if(!kill){
+                if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)){
+                    fragmentManager.beginTransaction().replace(R.id.contSaleKind, new SaleDataFragment(appMfcProtocol)).
+                            addToBackStack(null).commit();
+                }else{//es credito
+                    for (byte i=0; i<6;i++){
+                        if(appMfcProtocol.getSale()!=null){
+                            pendingSales_file((byte)3);
+                            break;
+                        }else {
+                            System.out.println("Recogiendo venta credito...");
+                        }
                     }
+                    startApp();
                 }
             }
+
         }
 
 

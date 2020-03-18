@@ -68,12 +68,13 @@ public class ValidatingFragment extends Fragment {
             }
             client = new Client();
             client.setMessage("Cliente de AXA Seguros Colpatria vehiculos" +
-                    ", cupo disponible de $10'000.000 con ppu de $8200 ,extra");
+                    ", cupo disponible de $15.000 con ppu de $8200 ,extra");
             client.setAuthorizedProduct((byte) 1);
             client.setAuthorizedPpu((short) 8200);
             client.setName("Julio Cardenas De los Valdez");
-            client.setAvailableMoney(10000000);
-            client.setAvailableVolume(1219.5);
+            client.setAvailableMoney(15000);
+            client.setAvailableVolume(1.82);
+            client.setAvailableFull(14924);//GENERAR funciones
             return true;
         }
 

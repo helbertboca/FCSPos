@@ -42,7 +42,6 @@ public class IdentificacionMethodFragment extends Fragment {
         btnOkPlaca.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                System.out.println("estoy en identification+}++++<<<<<<<<<<<<<<<<");
                 identification.setName("LicensePlate");
                 identification.setValue(edtLicensePlate.getText().toString());
                 saleOption.identificationKind(identification);

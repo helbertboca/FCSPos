@@ -24,13 +24,11 @@ public class VolumeFragment extends Fragment {
 
     private SaleOption saleOption;
     private AppMfcProtocol appMfcProtocol;
-    private Client client;
     private EditText edtVolume;
 
 
-    public VolumeFragment(AppMfcProtocol appMfcProtocol, Client client) {
+    public VolumeFragment(AppMfcProtocol appMfcProtocol) {
         this.appMfcProtocol = appMfcProtocol;
-        this.client = client;
     }
 
 
@@ -58,7 +56,7 @@ public class VolumeFragment extends Fragment {
             if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)){
                 saleOption.volume(volume);
             }else{
-                if(volume <= client.getAvailableVolume()){
+                if(volume <= appMfcProtocol.getClient().getAvailableVolume()){
                     saleOption.volume(volume);
                 }else{
                     Toast.makeText(getContext(), "El valor excede al cupo del que dispone", Toast.LENGTH_SHORT).show();

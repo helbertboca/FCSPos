@@ -10,10 +10,6 @@ import android.view.ViewGroup;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
-import com.fcs.fcspos.io.MfcWifiCom;
-import com.fcs.fcspos.model.Dispenser;
-import com.fcs.fcspos.model.Net;
-import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.SaleOption;
 
 
@@ -22,16 +18,12 @@ import com.fcs.fcspos.model.SaleOption;
  */
 public class UpHoseFragment extends Fragment {
 
-    private Programming programming;
-    private Net net;
     private SaleOption saleOption;
-    private Dispenser dispenser;
+    private AppMfcProtocol appMfcProtocol;
 
 
-    public UpHoseFragment(Programming programming, Net net, Dispenser dispenser){
-        this.programming = programming;
-        this.net = net;
-        this.dispenser = dispenser;
+    public UpHoseFragment(AppMfcProtocol appMfcProtocol){
+        this.appMfcProtocol = appMfcProtocol;
     }
 
     @Override
@@ -53,9 +45,6 @@ public class UpHoseFragment extends Fragment {
         }
 
         public void run() {
-            MfcWifiCom mfcWifiCom = MfcWifiCom.getInstance(net.getIp(), net.getPort());
-            AppMfcProtocol appMfcProtocol = new AppMfcProtocol(mfcWifiCom,dispenser);//abro conexion
-            appMfcProtocol.setProgramming(programming);//envio programacion del usuario
             short count=0;
             do {
                 appMfcProtocol.machineCommunication(true);
@@ -68,7 +57,8 @@ public class UpHoseFragment extends Fragment {
                     correctHose=false;
                     break;
                 }
-            } while (appMfcProtocol.getEstado() == dispenser.getCod_LISTO() || appMfcProtocol.getEstado() == dispenser.getCod_ESPERA());
+            } while (appMfcProtocol.getEstado() == appMfcProtocol.getDispenser().getCod_LISTO() ||
+                    appMfcProtocol.getEstado() == appMfcProtocol.getDispenser().getCod_ESPERA());
             saleOption.correctHose(correctHose);
         }
 

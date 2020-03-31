@@ -2,6 +2,7 @@ package com.fcs.fcspos.io;
 
 import android.os.SystemClock;
 
+import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
@@ -13,11 +14,13 @@ public class AppMfcProtocol implements Serializable {
 
     private MfcWifiCom mfcWifiCom;
     private Programming programming;
+    private Client client;
+    private Dispenser dispenser;
     private byte estado;
     private final String SEPARATOR=";";
-    private boolean correctHose=false;
-    private Dispenser dispenser;
     private final int OK = 1;
+    private boolean correctHose=false;
+    private final String PRICE="precio", HOSE= "M";
 
 
     public AppMfcProtocol(MfcWifiCom mfcWifiCom, Dispenser dispenser){
@@ -74,10 +77,62 @@ public class AppMfcProtocol implements Serializable {
 
 
     private void processReady(boolean pendingSale, String[] splitAnswer) {
+        final String SALEKIND_COUNTED="Counted", SALEKIND_CREDIT="Credit";
+
         if(programming.getKind()!=null && !pendingSale) {//si hay venta programada, realizarla
             scheduledSale(splitAnswer);
         }else{
-            unscheduledSale(splitAnswer);
+            if(programming.getKind().equals(SALEKIND_COUNTED)){
+                unscheduledSale(splitAnswer);
+            }else{
+                if(changePrice(splitAnswer)){
+                    unscheduledSale(splitAnswer);
+                }
+            }
+        }
+    }
+
+
+    private boolean changePrice(String[] splitAnswer){
+        cleanBuffer(splitAnswer);
+        mfcWifiCom.sendRequest(PRICE + SEPARATOR + programming.getPosition() + SEPARATOR +
+                HOSE + client.getAuthorizedProduct() + SEPARATOR + "P" + client.getAuthorizedPpu());
+        SystemClock.sleep(80);
+        return priceChangeResponse(splitAnswer);
+    }
+
+
+    public boolean changePrice(byte position, int product, Dispenser dispenser){
+        mfcWifiCom.sendRequest(PRICE + SEPARATOR + position + SEPARATOR + HOSE + product + SEPARATOR + "P" +
+                (dispenser.getSides().get(position).getHoses().get(product).getPpu())  );
+        SystemClock.sleep(80);
+        String[] splitAnswer = new String[3];
+        return priceChangeResponse(splitAnswer);
+    }
+
+
+    private boolean priceChangeResponse(String[] splitAnswer) {
+        cleanBuffer(splitAnswer);
+        if (mfcWifiCom.getAnswer() != null) {
+            splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
+            if (splitAnswer[0].equals(PRICE) && Integer.parseInt(splitAnswer[1])==programming.getPosition()
+                    && Integer.parseInt(splitAnswer[2]) == OK) {
+                System.out.println("Cambio de precio exitoso");
+                return true;
+            } else {
+                System.out.println("error en el cambio de precio");
+                return false;
+            }
+        }else {
+            System.out.println("No hubo respuesta de cambio de precio");
+            return false;
+        }
+    }
+
+
+    private void cleanBuffer(String[] splitAnswer) {
+        for (int i = 0; i < splitAnswer.length; i++) {
+            splitAnswer[i] = "";
         }
     }
 
@@ -85,11 +140,9 @@ public class AppMfcProtocol implements Serializable {
     private void scheduledSale(String[] splitAnswer) {
         final String AUTHORIZE="autorizar";
 
+        cleanBuffer(splitAnswer);
         mfcWifiCom.sendRequest(AUTHORIZE + SEPARATOR + programming.getPosition());
         if (mfcWifiCom.getAnswer() != null) {
-            for (int i = 0; i < splitAnswer.length; i++) {
-                splitAnswer[i] = "";
-            }
             splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
             if (splitAnswer[0].equals(AUTHORIZE) && Integer.parseInt(splitAnswer[1])==programming.getPosition()
                     && Integer.parseInt(splitAnswer[2]) == OK) {
@@ -106,11 +159,9 @@ public class AppMfcProtocol implements Serializable {
     private void unscheduledSale(String[] splitAnswer) {
         final String HOSE="manguera", PROGRAM="programar";
 
+        cleanBuffer(splitAnswer);
         mfcWifiCom.sendRequest(HOSE + SEPARATOR + programming.getPosition());
         if(mfcWifiCom.getAnswer()!= null){
-            for (int i = 0; i < splitAnswer.length; i++) {
-                splitAnswer[i] = "";
-            }
             splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
             if (splitAnswer[0].equals(HOSE) && Integer.parseInt(splitAnswer[1])==programming.getPosition()
                     && Integer.parseInt(splitAnswer[2]) == programming.getProduct()) {
@@ -121,9 +172,7 @@ public class AppMfcProtocol implements Serializable {
                         + ";P" + programming.getQuantity());
                 SystemClock.sleep(140);
                 if (mfcWifiCom.getAnswer() != null) {
-                    for(int i=0; i<splitAnswer.length; i++){
-                        splitAnswer[i]="";
-                    }
+                    cleanBuffer(splitAnswer);
                     splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
                     if (splitAnswer[0].equals(PROGRAM) && Integer.parseInt(splitAnswer[1])==programming.getPosition()
                             && Integer.parseInt(splitAnswer[2]) == OK) {
@@ -147,17 +196,6 @@ public class AppMfcProtocol implements Serializable {
         return Double.parseDouble((x/1000) + "." + (x%1000));
     }
 
-    public Programming getProgramming() {
-        return programming;
-    }
-
-    public void setProgramming(Programming programming) {
-        this.programming = programming;
-    }
-
-    public byte getEstado() {
-        return estado;
-    }
 
     public Sale getSale() {
         final String SALE="venta";
@@ -175,15 +213,40 @@ public class AppMfcProtocol implements Serializable {
         return null;
     }
 
+
+    public Programming getProgramming() {
+        return programming;
+    }
+
+    public byte getEstado() {
+        return estado;
+    }
+
     public Dispenser getDispenser() {
         return dispenser;
     }
+
+    public Client getClient() {
+        return client;
+    }
+
 
     public boolean isCorrectHose() {
         return correctHose;
     }
 
+    public void setProgramming(Programming programming) {
+        this.programming = programming;
+    }
+
     private void setCorrectHose(boolean correctHose) {
         this.correctHose = correctHose;
     }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+
+
 }

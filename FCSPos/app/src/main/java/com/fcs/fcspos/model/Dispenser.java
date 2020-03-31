@@ -4,7 +4,7 @@ package com.fcs.fcspos.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Dispenser extends Configuration implements Serializable {
+public class Dispenser extends States implements Serializable {
 
     private String brand;
     private byte numberOfDigits;

@@ -36,6 +36,6 @@ public class Vehicle implements Serializable {
 
     @Override
     public String toString() {
-        return "VEHICULO. tipo:" + kind + ", Placa:" + license_plate + ", kilometraje:" + kilometres;
+        return "VEHICULO:Kind:" + kind + ";LicensePlate;" + license_plate + ";Kilometres;" + kilometres + ";";
     }
 }

@@ -6,20 +6,20 @@ public class Sale {
 
     private short position;
     private short ok;
-    private short manguera;
-    private double volumen;
-    private int dinero;
+    private short hose;
+    private double volume;
+    private int money;
     private int ppu;
     private Client client;
     private Vehicle vehicle;
 
 
-    public Sale(short position, short ok, short manguera, double volumen, int dinero, int ppu) {
+    public Sale(short position, short ok, short hose, double volume, int money, int ppu) {
         this.position = position;
         this.ok = ok;
-        this.manguera = manguera;
-        this.volumen = volumen;
-        this.dinero = dinero;
+        this.hose = hose;
+        this.volume = volume;
+        this.money = money;
         this.ppu = ppu;
     }
 
@@ -27,20 +27,16 @@ public class Sale {
         return position;
     }
 
-    public short getOk() {
-        return ok;
-    }
-
     public short getManguera() {
-        return manguera;
+        return hose;
     }
 
     public double getVolumen() {
-        return volumen;
+        return volume;
     }
 
     public int getDinero() {
-        return dinero;
+        return money;
     }
 
     public int getPpu() {
@@ -66,6 +62,6 @@ public class Sale {
     @NonNull
     @Override
     public String toString() {
-        return  "Position: " + position +", ok: " + ok +", manguera: " + manguera +", volumen: " + volumen +", dinero: " + dinero +", ppu: " + ppu ;
+        return  "Sale:Position;" + position +";Hose;" + hose +";Volume;" + volume +";Money;" + money +";Ppu;" + ppu + ";";
     }
 }

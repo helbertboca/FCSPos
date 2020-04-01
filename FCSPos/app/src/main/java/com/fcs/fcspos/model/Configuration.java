@@ -12,11 +12,11 @@ public class Configuration {
     public static Station settingsEDS(){
         UseCases useCases  = new UseCases();
         Map<String, String> mapEDS =useCases.initialSettingsEDS();
-        return new Station( Objects.requireNonNull(mapEDS.get("NOMBRE")),
+        return new Station( Objects.requireNonNull(mapEDS.get("NAME")),
                 Objects.requireNonNull(mapEDS.get("NIT")),
-                Objects.requireNonNull(mapEDS.get("TELEFONO")),
-                Objects.requireNonNull(mapEDS.get("DIRECCION")),
-                Objects.requireNonNull(mapEDS.get("CIUDAD_DEPARTAMENTO")));
+                Objects.requireNonNull(mapEDS.get("PHONE")),
+                Objects.requireNonNull(mapEDS.get("DIRECTION")),
+                Objects.requireNonNull(mapEDS.get("CITY_DEPARTMENT")));
     }
 
     public static Dispenser settingsDispenser() {

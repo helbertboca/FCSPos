@@ -8,11 +8,11 @@ public class UseCases {
 
     public Map<String, String> initialSettingsEDS() {
         Map<String, String > mapEDS = new HashMap<>();
-        mapEDS.put("NOMBRE", "EDS Los Narjanjos");
+        mapEDS.put("NAME", "EDS Los Narjanjos");
         mapEDS.put("NIT", "811009788-8");
-        mapEDS.put("TELEFONO", "43729688");
-        mapEDS.put("DIRECCION", "Cr42 54 A-35");
-        mapEDS.put("CIUDAD_DEPARTAMENTO", "Itaguí - Antioquia");
+        mapEDS.put("PHONE", "43729688");
+        mapEDS.put("DIRECTION", "Cr42 54 A-35");
+        mapEDS.put("CITY_DEPARTMENT", "Itaguí - Antioquia");
         return mapEDS;
     }
 
@@ -30,7 +30,37 @@ public class UseCases {
         return mapDispenser;
     }
 
+    public Map<String, String> customerCredit() {
+        Map<String, String> mapClient = new HashMap<>();
 
-    //Necesito clientes creditos
+        mapClient.put("MESSAGE", "Cliente de AXA Seguros Colpatria vehiculos" +
+                ", cupo disponible de $15.000 con ppu de $8200 ,extra");
+        mapClient.put("PRODUCT","1");//producto por numero, extra=1, corriente=2, diesel=3
+        mapClient.put("PPU", "8200");
+        mapClient.put("NAME", "Julio Cardenas De los Valdez");
+        mapClient.put("MONEY", "15000");
+        mapClient.put("VOLUME", "1.82");
+        return mapClient;
+    }
+
+
+    public void saleCounted(String sale, String client, String vehicle) {
+        System.out.println(sale);
+        System.out.println(client);
+        System.out.println(vehicle);
+    }
+
+    public void saleCredit(String sale, String client, String vehicle, String identification) {
+        System.out.println(sale);
+        System.out.println(client);
+        System.out.println(vehicle);
+        System.out.println(identification);
+    }
+
+
+
+    //falta recibo de venta credito
+
+
 
 }

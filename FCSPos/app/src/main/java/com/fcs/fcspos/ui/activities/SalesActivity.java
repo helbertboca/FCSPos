@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.fcs.fcspos.MainActivity;
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
+import com.fcs.fcspos.io.UseCases;
 import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.Identification;
 import com.fcs.fcspos.model.Net;
@@ -297,6 +298,9 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         appMfcProtocol.getProgramming().getVehicle().setKilometres(vehicleCurrent.getKilometres());
         sale.setVehicle(appMfcProtocol.getProgramming().getVehicle());
         pendingSales_file((byte) 3);
+        new UseCases().saleCounted(sale.toString(), ("Cliente:IdentificationCard;" +
+                        sale.getClient().getIdentificationCard() + ";Nit;" +
+                        sale.getClient().getNit() + ";"), sale.getVehicle().toString());
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ReceiptFragment(sale, station, appMfcProtocol.getProgramming())).commit();
     }
 
@@ -401,6 +405,12 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
             for (byte i=0; i<6;i++){
                 if(appMfcProtocol.getSale()!=null){
                     pendingSales_file((byte)3);
+                    Sale sale = appMfcProtocol.getSale();
+                    sale.setClient(appMfcProtocol.getClient());
+                    sale.setVehicle(appMfcProtocol.getProgramming().getVehicle());
+                    new UseCases().saleCredit(sale.toString(), sale.getClient().toString(),
+                            sale.getVehicle().toString(),
+                            appMfcProtocol.getProgramming().getIdentification().toString());
                     break;
                 }else {
                     System.out.println("Recogiendo venta credito...");

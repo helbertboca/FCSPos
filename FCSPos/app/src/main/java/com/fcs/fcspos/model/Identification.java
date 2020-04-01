@@ -23,4 +23,10 @@ public class Identification implements Serializable {
     public String getValue() {
         return value;
     }
+
+    public String toString(){
+        return "Identificacion:Name;" + name + ";Value;" + value + ";";
+    }
+
+
 }

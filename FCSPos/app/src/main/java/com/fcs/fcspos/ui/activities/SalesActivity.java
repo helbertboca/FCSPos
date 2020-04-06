@@ -13,8 +13,8 @@ import android.widget.Toast;
 import com.fcs.fcspos.MainActivity;
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
+import com.fcs.fcspos.io.UseCases;
 import com.fcs.fcspos.model.Client;
-import com.fcs.fcspos.model.Dispenser;
 import com.fcs.fcspos.model.Identification;
 import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Sale;
@@ -44,7 +44,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
 
     private FragmentManager fragmentManager;
-    private Dispenser dispenser;
     private byte currentProcess;
     private PrimeThread primeThread;
     private boolean scheduledSaleFlag=false;
@@ -52,7 +51,6 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     private Station station;
     private final String SALEKIND_COUNTED="Counted", SALEKIND_CREDIT="Credit";
     private AppMfcProtocol appMfcProtocol;
-    private Client client;
 
 
 
@@ -60,13 +58,12 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sales);
-        dispenser =(Dispenser)getIntent().getSerializableExtra("surtidor");
         currentProcess = (byte)getIntent().getSerializableExtra("currentProcess");
         appMfcProtocol = (AppMfcProtocol)getIntent().getSerializableExtra("appMfcProtocol");
         net = (Net)getIntent().getSerializableExtra("net");
         station = (Station) getIntent().getSerializableExtra("station");
         fragmentManager = getSupportFragmentManager();
-        if(currentProcess!=dispenser.getCod_ESPERA()){
+        if( currentProcess!=  appMfcProtocol.getDispenser().getCod_ESPERA()){//inicio
             secondThread();
         }else {
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, new SalesKindFragment()).commit();
@@ -147,33 +144,33 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         switch (selectedKindPreset){
             case MONEY:
                 appMfcProtocol.getProgramming().setPresetKind(MONEY);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new MoneyFragment(appMfcProtocol, client)).
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new MoneyFragment(appMfcProtocol)).
                         addToBackStack(null).commit();
                 break;
             case VOLUME:
                 appMfcProtocol.getProgramming().setPresetKind(VOLUME);
-                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new VolumeFragment(appMfcProtocol, client)).
+                fragmentManager.beginTransaction().replace(R.id.contSaleKind, new VolumeFragment(appMfcProtocol)).
                         addToBackStack(null).commit();
                 break;
             case FULL:
-                if( dispenser.getNumberOfDigits()>=7){
+                if( appMfcProtocol.getDispenser().getNumberOfDigits()>=7){
                     if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)){
                         appMfcProtocol.getProgramming().setQuantity(9999900);
                     }else{
-                        if(client.getAvailableFull()>=9999900){
+                        if( appMfcProtocol.getClient().getAvailableFull()>=9999900){
                             appMfcProtocol.getProgramming().setQuantity(9999900);
                         }else{
-                            appMfcProtocol.getProgramming().setQuantity(client.getAvailableFull());
+                            appMfcProtocol.getProgramming().setQuantity( appMfcProtocol.getClient().getAvailableFull());
                         }
                     }
                 }else{
                     if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)){
                         appMfcProtocol.getProgramming().setQuantity(999900);
                     }else{
-                        if(client.getAvailableFull()>=999900){
+                        if( appMfcProtocol.getClient().getAvailableFull()>=999900){
                             appMfcProtocol.getProgramming().setQuantity(9999900);
                         }else{
-                            appMfcProtocol.getProgramming().setQuantity(client.getAvailableFull());
+                            appMfcProtocol.getProgramming().setQuantity( appMfcProtocol.getClient().getAvailableFull());
                         }
                     }
                 }
@@ -212,18 +209,19 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     }
 
     @Override
-    public void authorizedCustomer(Client client) {
+    public void authorizedCustomer(Client client) {//aquie se creo el cliente ya viene armado
         if(client!=null){
-            fragmentManager.beginTransaction().replace(R.id.contSaleKind, new AuthorizedSupplyFragment(client, appMfcProtocol)).addToBackStack(null).commit();
+            appMfcProtocol.setClient(client);
+            fragmentManager.beginTransaction().replace(R.id.contSaleKind, new AuthorizedSupplyFragment(appMfcProtocol)).addToBackStack(null).commit();
         }else{
             startApp();
         }
     }
 
     @Override
-    public void showCustomerInformation(Client client){
-        if(client!=null){
-            this.client = client;
+    public void showCustomerInformation(AppMfcProtocol appMfcProtocol){
+        this.appMfcProtocol = appMfcProtocol;
+        if(this.appMfcProtocol.getClient()!=null){
             takeOutStackFragments();
             fragmentManager.beginTransaction().replace(R.id.contSaleKind, new PresetKindFragment()).addToBackStack(null).commit();
             scheduledSaleFlag=true;
@@ -249,7 +247,7 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
     }
 
     private void sendShuduledSale(){
-        UpHoseFragment upHoseFragment = new UpHoseFragment(appMfcProtocol.getProgramming(), net, dispenser);
+        UpHoseFragment upHoseFragment = new UpHoseFragment( appMfcProtocol);
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, upHoseFragment).
                 addToBackStack(null).commit();
     }
@@ -300,6 +298,9 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
         appMfcProtocol.getProgramming().getVehicle().setKilometres(vehicleCurrent.getKilometres());
         sale.setVehicle(appMfcProtocol.getProgramming().getVehicle());
         pendingSales_file((byte) 3);
+        new UseCases().saleCounted(sale.toString(), ("Cliente:IdentificationCard;" +
+                        sale.getClient().getIdentificationCard() + ";Nit;" +
+                        sale.getClient().getNit() + ";"), sale.getVehicle().toString());
         fragmentManager.beginTransaction().replace(R.id.contSaleKind, new ReceiptFragment(sale, station, appMfcProtocol.getProgramming())).commit();
     }
 
@@ -367,43 +368,62 @@ public class SalesActivity extends AppCompatActivity  implements SaleOption{
 
         public void run() {
             FillingUpFragment fillingUpFragment = new FillingUpFragment();
-            if(currentProcess == dispenser.getCod_SURTIENDO()){
+            if(currentProcess == appMfcProtocol.getDispenser().getCod_SURTIENDO()){
                 fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
                 scheduledSaleFlag=true;
                 pendingSales_file((byte) 1);
                 do {
                     appMfcProtocol.machineCommunication(true);
-                } while ((appMfcProtocol.getEstado() != dispenser.getCod_VENTA()) && (!kill));
-            }else if(currentProcess == dispenser.getCod_VENTA()){
+                } while ((appMfcProtocol.getEstado() !=  appMfcProtocol.getDispenser().getCod_VENTA()) && (!kill));
+            }else if(currentProcess == appMfcProtocol.getDispenser().getCod_VENTA()){
 
             }else{
                 do {
                     appMfcProtocol.machineCommunication(false);
-                } while (appMfcProtocol.getEstado() != dispenser.getCod_LISTO());
+                } while (appMfcProtocol.getEstado() != appMfcProtocol.getDispenser().getCod_LISTO());
                 fragmentManager.beginTransaction().replace(R.id.contSaleKind, fillingUpFragment).commit();
                 scheduledSaleFlag=true;
                 pendingSales_file((byte) 1);
                 do {
                     appMfcProtocol.machineCommunication(false);
-                } while ((appMfcProtocol.getEstado() != dispenser.getCod_VENTA()) && (!kill));
+                } while ((appMfcProtocol.getEstado() != appMfcProtocol.getDispenser().getCod_VENTA()) && (!kill));
             }
             if(!kill){
                 if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)){
                     fragmentManager.beginTransaction().replace(R.id.contSaleKind, new SaleDataFragment(appMfcProtocol)).
                             addToBackStack(null).commit();
                 }else{//es credito
-                    for (byte i=0; i<6;i++){
-                        if(appMfcProtocol.getSale()!=null){
-                            pendingSales_file((byte)3);
-                            break;
-                        }else {
-                            System.out.println("Recogiendo venta credito...");
-                        }
-                    }
+                    endCreditSale();
                     startApp();
                 }
             }
 
+        }
+
+
+        private void endCreditSale(){
+            for (byte i=0; i<6;i++){
+                if(appMfcProtocol.getSale()!=null){
+                    pendingSales_file((byte)3);
+                    Sale sale = appMfcProtocol.getSale();
+                    sale.setClient(appMfcProtocol.getClient());
+                    sale.setVehicle(appMfcProtocol.getProgramming().getVehicle());
+                    new UseCases().saleCredit(sale.toString(), sale.getClient().toString(),
+                            sale.getVehicle().toString(),
+                            appMfcProtocol.getProgramming().getIdentification().toString());
+                    break;
+                }else {
+                    System.out.println("Recogiendo venta credito...");
+                }
+            }
+            for(byte i=0; i<=3;i++){
+                if(appMfcProtocol.changePrice(appMfcProtocol.getProgramming().getPosition(),
+                        appMfcProtocol.getProgramming().getProduct(), appMfcProtocol.getDispenser())){
+                    break;
+                }else {
+                    System.out.println("Cambiando a precio estandar...");
+                }
+            }
         }
 
 

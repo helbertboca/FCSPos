@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
-import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.SaleOption;
 
 /**
@@ -24,13 +23,11 @@ public class MoneyFragment extends Fragment {
 
     private SaleOption saleOption;
     private AppMfcProtocol appMfcProtocol;
-    private Client client;
     private EditText edtMoney;
 
 
-    public MoneyFragment(AppMfcProtocol appMfcProtocol, Client client) {
+    public MoneyFragment(AppMfcProtocol appMfcProtocol) {
         this.appMfcProtocol = appMfcProtocol;
-        this.client = client;
     }
 
 
@@ -57,7 +54,7 @@ public class MoneyFragment extends Fragment {
             if(appMfcProtocol.getProgramming().getKind().equals(SALEKIND_COUNTED)) {
                 saleOption.money(Integer.parseInt(edtMoney.getText().toString()));
             }else{
-                if(Integer.parseInt(edtMoney.getText().toString())<= client.getAvailableMoney()){
+                if(Integer.parseInt(edtMoney.getText().toString())<= appMfcProtocol.getClient().getAvailableMoney()){
                     saleOption.money(Integer.parseInt(edtMoney.getText().toString()));
                 }else{
                     Toast.makeText(getContext(), "El valor excede al cupo del que dispone", Toast.LENGTH_SHORT).show();

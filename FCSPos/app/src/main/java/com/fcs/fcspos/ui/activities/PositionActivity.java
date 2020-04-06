@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.fcs.fcspos.MainActivity;
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
-import com.fcs.fcspos.model.Dispenser;
+import com.fcs.fcspos.model.Hose;
 import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Station;
@@ -23,10 +23,8 @@ import com.google.gson.Gson;
 public class PositionActivity extends AppCompatActivity {
 
     private LinearLayout llSales, llBasket, llRecord, llTurn, llCablibrate;
-    private Dispenser dispenser;
     private AppMfcProtocol appMfcProtocol;
     private Net net;
-    //private Vehicle vehicle;
     private Station station;
 
 
@@ -36,26 +34,33 @@ public class PositionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_position);
         appMfcProtocol = (AppMfcProtocol) getIntent().getSerializableExtra("AppMfcProtocol");
         net = (Net)getIntent().getSerializableExtra("net");
-        dispenser = (Dispenser)getIntent().getSerializableExtra("dispenser");
         station = (Station)getIntent().getSerializableExtra("station");
-        //vehicle = new Vehicle();
+        appMfcProtocol.machineCommunication(false);//revisar
+        savePositionTotals();
         supplierStatus();
         initView();
         eventsViews();
+    }
+
+    private void savePositionTotals() {
+        if(appMfcProtocol.requestTotals(appMfcProtocol.getDispenser(), appMfcProtocol.getProgramming().getPosition())==null){
+            Toast.makeText(getApplicationContext(), "Inveniente con los totales de la posicion", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
 
     private void supplierStatus(){
         appMfcProtocol.machineCommunication(false);
         SystemClock.sleep(80);
-        if(appMfcProtocol.getEstado()==dispenser.getCod_LISTO()){
+        if(appMfcProtocol.getEstado()==  appMfcProtocol.getDispenser().getCod_LISTO()){
             Toast.makeText(getApplicationContext(), "Manguera levantada", Toast.LENGTH_SHORT).show();
-        }else if(appMfcProtocol.getEstado()==dispenser.getCod_SURTIENDO()){
+        }else if(appMfcProtocol.getEstado()== appMfcProtocol.getDispenser().getCod_SURTIENDO()){
             Toast.makeText(getApplicationContext(), "Surtiendo", Toast.LENGTH_SHORT).show();
-            pendingSale(dispenser.getCod_SURTIENDO());
-        }else if(appMfcProtocol.getEstado()==dispenser.getCod_VENTA()){
-            pendingSale(dispenser.getCod_VENTA());
-        }else if(appMfcProtocol.getEstado()==dispenser.getCod_ERROR()){
+            pendingSale( appMfcProtocol.getDispenser().getCod_SURTIENDO());
+        }else if(appMfcProtocol.getEstado()== appMfcProtocol.getDispenser().getCod_VENTA()){
+            pendingSale( appMfcProtocol.getDispenser().getCod_VENTA());
+        }else if(appMfcProtocol.getEstado()== appMfcProtocol.getDispenser().getCod_ERROR()){
             Toast.makeText(getApplicationContext(), "No hay respuesta de la MFC", Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -90,7 +95,6 @@ public class PositionActivity extends AppCompatActivity {
 
     private void salesActivity(byte currentProcess){
         Intent i = new Intent(getApplicationContext(), SalesActivity.class);
-        i.putExtra("surtidor",dispenser);
         i.putExtra("currentProcess", currentProcess);
         i.putExtra("appMfcProtocol", appMfcProtocol);
         i.putExtra("net", net);
@@ -103,7 +107,7 @@ public class PositionActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 appMfcProtocol.getProgramming().setVehicle(new Vehicle());
-                salesActivity(dispenser.getCod_ESPERA());
+                salesActivity( appMfcProtocol.getDispenser().getCod_ESPERA());
             }
         });
         llBasket.setOnClickListener(new View.OnClickListener() {

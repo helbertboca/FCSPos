@@ -91,6 +91,9 @@ public class Client implements Serializable {
     @NonNull
     @Override
     public String toString() {
-        return "Cliente: identificacion:" + identificationCard + ", nit:" + nit;
+        return "Client:IdentificationCard;" + identificationCard + ";nit;" + nit +
+                ";AuthorizedProduct;" +authorizedProduct + ";AuthorizedPpu;" + authorizedPpu
+                + ";Message;" + message + ";Name" + name + ";AvailableMoney" + availableMoney
+                + ";AvailableVolume;" + availableVolume + ";";
     }
 }

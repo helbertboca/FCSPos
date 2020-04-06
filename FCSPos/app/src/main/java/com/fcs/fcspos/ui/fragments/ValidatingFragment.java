@@ -15,9 +15,13 @@ import android.widget.ProgressBar;
 
 import com.fcs.fcspos.R;
 
+import com.fcs.fcspos.io.UseCases;
 import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.SaleOption;
+
+import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -66,15 +70,17 @@ public class ValidatingFragment extends Fragment {
                 //    return true;
                 //}
             }
+
+            UseCases useCases = new UseCases();
+            Map<String, String> mapCustomerClient = useCases.customerCredit();
             client = new Client();
-            client.setMessage("Cliente de AXA Seguros Colpatria vehiculos" +
-                    ", cupo disponible de $15.000 con ppu de $8200 ,extra");
-            client.setAuthorizedProduct((byte) 1);
-            client.setAuthorizedPpu((short) 8200);
-            client.setName("Julio Cardenas De los Valdez");
-            client.setAvailableMoney(15000);
-            client.setAvailableVolume(1.82);
-            client.setAvailableFull(14924);//GENERAR funciones
+            client.setMessage( mapCustomerClient.get("MESSAGE"));
+            client.setAuthorizedProduct((byte) Integer.parseInt(Objects.requireNonNull(mapCustomerClient.get("PRODUCT"))));
+            client.setAuthorizedPpu((short) Integer.parseInt(Objects.requireNonNull(mapCustomerClient.get("PPU"))));
+            client.setName(mapCustomerClient.get("NAME"));
+            client.setAvailableMoney(Integer.parseInt(Objects.requireNonNull(mapCustomerClient.get("MONEY"))));
+            client.setAvailableVolume(Double.parseDouble(Objects.requireNonNull(mapCustomerClient.get("VOLUME"))));
+            client.setAvailableFull((int)(client.getAvailableVolume()*client.getAuthorizedPpu()));
             return true;
         }
 

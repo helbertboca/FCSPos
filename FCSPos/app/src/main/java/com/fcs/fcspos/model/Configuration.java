@@ -1,34 +1,50 @@
 package com.fcs.fcspos.model;
 
+import com.fcs.fcspos.io.UseCases;
 
-import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Objects;
 
-public class Configuration implements Serializable {
+public class Configuration {
 
 
-    public Configuration(){ }
-
-    public byte getCod_ERROR() {
-        return 0;
+    public static Station settingsEDS(){
+        UseCases useCases  = new UseCases();
+        Map<String, String> mapEDS =useCases.initialSettingsEDS();
+        return new Station( Objects.requireNonNull(mapEDS.get("NAME")),
+                Objects.requireNonNull(mapEDS.get("NIT")),
+                Objects.requireNonNull(mapEDS.get("PHONE")),
+                Objects.requireNonNull(mapEDS.get("DIRECTION")),
+                Objects.requireNonNull(mapEDS.get("CITY_DEPARTMENT")));
     }
 
-    public byte getCod_ESPERA() {
-        return 6;
+    public static Dispenser settingsDispenser() {
+        UseCases useCases  = new UseCases();
+        Map<String, String> mapDispenser =useCases.initialSettingsDispenser();
+        Dispenser dispenser = new Dispenser(mapDispenser.get("BRAND"),
+                (byte)Integer.parseInt(Objects.requireNonNull(mapDispenser.get("NUMBER_OF_DIGITS"))),
+                (byte)Integer.parseInt(Objects.requireNonNull(mapDispenser.get("DECIMALS_IN_VOLUME"))));
+        ArrayList<Side> sides = new ArrayList<>();
+        for(int x=0; x< Integer.parseInt(Objects.requireNonNull(mapDispenser.get("NUMBER_OF_FACES"))); x++){
+            sides.add(new Side());
+        }
+        short[] ppus = {(short)Integer.parseInt(Objects.requireNonNull(mapDispenser.get("PPU1"))),
+                (short)Integer.parseInt(Objects.requireNonNull(mapDispenser.get("PPU2"))),
+                (short)Integer.parseInt(Objects.requireNonNull(mapDispenser.get("PPU3")))};
+        ArrayList<Hose> hosesLA = new ArrayList<>();
+        for(int x=0; x< Integer.parseInt(Objects.requireNonNull(mapDispenser.get("NUMBER_OF_HOUSES_PERFACE")));x++){
+            hosesLA.add(new Hose(ppus[x]));
+        }
+        final byte SIDE_A=0, SIDE_B=1;
+        sides.get(SIDE_A).setHoses(hosesLA);
+        ArrayList<Hose> hosesLB = new ArrayList<>();
+        for(int x=0; x<Integer.parseInt(Objects.requireNonNull(mapDispenser.get("NUMBER_OF_HOUSES_PERFACE")));x++){
+            hosesLB.add(new Hose(ppus[x]));
+        }
+        sides.get(SIDE_B).setHoses(hosesLB);
+        dispenser.setSides(sides);
+        return dispenser;
     }
 
-    public byte getCod_LISTO() {
-        return 7;
-    }
-
-    public byte getCod_AUTORIZADO() {
-        return 8;
-    }
-
-    public byte getCod_SURTIENDO() {
-        return 9;
-    }
-
-    public byte getCod_VENTA() {
-        return 10;
-    }
 }

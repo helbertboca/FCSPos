@@ -12,15 +12,13 @@ import android.widget.Toast;
 
 import com.fcs.fcspos.io.AppMfcProtocol;
 import com.fcs.fcspos.io.MfcWifiCom;
+import com.fcs.fcspos.model.Configuration;
 import com.fcs.fcspos.model.Dispenser;
-import com.fcs.fcspos.model.Hose;
 import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Programming;
-import com.fcs.fcspos.model.Side;
 import com.fcs.fcspos.model.Station;
 import com.fcs.fcspos.ui.activities.PositionActivity;
 
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -35,8 +33,7 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        station = new Station("EDS Los Narjanjos", "811009788-8", "43729688","Cr42 54 A-35" , "Itaguí - Antioquia");
-        initialSettingsDispenser();
+        initialSettings();
         Button btnPos1 = findViewById(R.id.btnPos1);
         Button btnPos2 = findViewById(R.id.btnPos2);
         Button btnPos3 = findViewById(R.id.btnPos3);
@@ -81,6 +78,11 @@ public class MainActivity extends AppCompatActivity{
 
     }
 
+    private void initialSettings() {
+        station = Configuration.settingsEDS();
+        dispenser = Configuration.settingsDispenser();
+    }
+
 
     private void establishConnection(){
         final byte OLD_CONNECTION=1, NEW_CONNECTION=2, ERROR_CONNECTION=0;
@@ -95,35 +97,6 @@ public class MainActivity extends AppCompatActivity{
                 Toast.makeText(getApplicationContext(), "No puede conectarse con el equipo", Toast.LENGTH_SHORT).show();
         }
     }
-
-
-    private void initialSettingsDispenser() {
-        //Configuraciones parciales para pruebas de venta ------------------------------------------
-        final String BRAND="Gilbarco";
-        final byte NUMBER_OF_DIGITS=6, DECIMALS_IN_VOLUME=3;
-        final byte NUMBER_OF_FACES=2, NUMBER_OF_HOUSES_PERFACE=3;
-        final byte SIDE_A=0, SIDE_B=1;
-        short[] ppus = {7000,8000,10500};
-        //------------------------------------------------------------------------------------------
-        dispenser = new Dispenser(BRAND , NUMBER_OF_DIGITS, DECIMALS_IN_VOLUME);
-        ArrayList<Side> sides = new ArrayList<>();
-        for(int x=0; x<NUMBER_OF_FACES; x++){
-            sides.add(new Side());
-        }
-        ArrayList<Hose> hosesLA = new ArrayList<>();
-        for(int x=0; x<NUMBER_OF_HOUSES_PERFACE;x++){
-            hosesLA.add(new Hose(ppus[x]));
-        }
-        sides.get(SIDE_A).setHoses(hosesLA);
-        ArrayList<Hose> hosesLB = new ArrayList<>();
-        for(int x=0; x<NUMBER_OF_HOUSES_PERFACE;x++){
-            hosesLB.add(new Hose(ppus[x]));
-        }
-        sides.get(SIDE_B).setHoses(hosesLB);
-        dispenser.setSides(sides);
-    }
-
-
 
     //----------------------------------------------------------------------------------------------
     private class ConetionMfcThread extends AsyncTask<String, Void, Boolean> {
@@ -158,7 +131,6 @@ public class MainActivity extends AppCompatActivity{
                 Intent i = new Intent(getApplicationContext(), PositionActivity.class);
                 i.putExtra("AppMfcProtocol", appMfcProtocol);
                 i.putExtra("net", net);
-                i.putExtra("dispenser", dispenser);
                 i.putExtra("station", station);
                 startActivity(i);
             }else{

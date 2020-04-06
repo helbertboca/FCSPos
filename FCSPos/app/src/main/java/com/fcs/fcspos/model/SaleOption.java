@@ -1,5 +1,7 @@
 package com.fcs.fcspos.model;
 
+import com.fcs.fcspos.io.AppMfcProtocol;
+
 public interface SaleOption {
     void optionSaleKind(int selectedOption);
     void optionProductKind(int selectedProduct);
@@ -8,7 +10,7 @@ public interface SaleOption {
     void identificationKind(Identification identification);
     void mileage(String quantity);
     void authorizedCustomer(Client client);
-    void showCustomerInformation(Client client);
+    void showCustomerInformation(AppMfcProtocol appMfcProtocol);
     void money(int money);
     void volume(double volume);
     void correctHose(boolean is_hose);

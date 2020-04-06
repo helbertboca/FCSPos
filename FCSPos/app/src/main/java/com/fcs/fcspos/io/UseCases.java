@@ -57,10 +57,8 @@ public class UseCases {
         System.out.println(identification);
     }
 
-
-
-    //falta recibo de venta credito
-
+    //falta recibo de venta credito de la capa superior
+    //falta totales electronicos peticion de la capa superior
 
 
 }

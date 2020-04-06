@@ -4,6 +4,7 @@ import android.os.SystemClock;
 
 import com.fcs.fcspos.model.Client;
 import com.fcs.fcspos.model.Dispenser;
+import com.fcs.fcspos.model.Hose;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Sale;
 
@@ -20,7 +21,7 @@ public class AppMfcProtocol implements Serializable {
     private final String SEPARATOR=";";
     private final int OK = 1;
     private boolean correctHose=false;
-    private final String PRICE="precio", HOSE= "M";
+    private final String PRICE="precio", HOSE= "M", TOTALS="totales";
 
 
     public AppMfcProtocol(MfcWifiCom mfcWifiCom, Dispenser dispenser){
@@ -91,6 +92,45 @@ public class AppMfcProtocol implements Serializable {
             }
         }
     }
+
+
+    public Dispenser requestTotals(Dispenser dispenser, byte position) {
+        mfcWifiCom.sendRequest(TOTALS + SEPARATOR + position + SEPARATOR + "M3");
+        SystemClock.sleep(200);
+        String[] splitAnswer = new String[16];
+        splitAnswer = requestTotalsResponse(splitAnswer, position);
+        if(splitAnswer!=null) {
+            byte count=3;
+            for (Hose h:dispenser.getSides().get(position).getHoses()) {
+                h.setElectronicTotalVolume(Integer.parseInt(splitAnswer[count]));
+                count++;
+                h.setElectronicTotalMoney(Integer.parseInt(splitAnswer[count]));
+                count++;
+            }
+            return dispenser;
+        }
+        return null;
+    }
+
+
+    private String[] requestTotalsResponse(String[] splitAnswer, byte position) {
+        cleanBuffer(splitAnswer);
+        if (mfcWifiCom.getAnswer() != null) {
+            splitAnswer = mfcWifiCom.getAnswer().split(SEPARATOR);
+            if (splitAnswer[0].equals(TOTALS) && Integer.parseInt(splitAnswer[1])==position
+                    && Integer.parseInt(splitAnswer[2]) == OK) {
+                System.out.println("Totales devueltos correctamente");
+                return splitAnswer;
+            } else {
+                System.out.println("error en la peticion de totales");
+                return null;
+            }
+        }else {
+            System.out.println("No hubo respuesta de los totales");
+            return null;
+        }
+    }
+
 
 
     private boolean changePrice(String[] splitAnswer){

@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.fcs.fcspos.MainActivity;
 import com.fcs.fcspos.R;
 import com.fcs.fcspos.io.AppMfcProtocol;
+import com.fcs.fcspos.model.Hose;
 import com.fcs.fcspos.model.Net;
 import com.fcs.fcspos.model.Programming;
 import com.fcs.fcspos.model.Station;
@@ -34,9 +35,18 @@ public class PositionActivity extends AppCompatActivity {
         appMfcProtocol = (AppMfcProtocol) getIntent().getSerializableExtra("AppMfcProtocol");
         net = (Net)getIntent().getSerializableExtra("net");
         station = (Station)getIntent().getSerializableExtra("station");
+        appMfcProtocol.machineCommunication(false);//revisar
+        savePositionTotals();
         supplierStatus();
         initView();
         eventsViews();
+    }
+
+    private void savePositionTotals() {
+        if(appMfcProtocol.requestTotals(appMfcProtocol.getDispenser(), appMfcProtocol.getProgramming().getPosition())==null){
+            Toast.makeText(getApplicationContext(), "Inveniente con los totales de la posicion", Toast.LENGTH_SHORT).show();
+            finish();
+        }
     }
 
 

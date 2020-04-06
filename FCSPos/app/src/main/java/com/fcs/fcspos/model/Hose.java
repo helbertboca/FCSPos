@@ -4,20 +4,12 @@ import java.io.Serializable;
 
 public class Hose implements Serializable {
 
-    private byte state;
-    private int electronicTotal;
+    private int electronicTotalMoney;
+    private int electronicTotalVolume;
     private short ppu;
 
     public Hose(short ppu){
         this.ppu = ppu;
-    }
-
-    public void setState(byte state) {
-        this.state = state;
-    }
-
-    public byte getState() {
-        return state;
     }
 
     public void setPpu(short ppu) {
@@ -28,11 +20,19 @@ public class Hose implements Serializable {
         return ppu;
     }
 
-    public void setElectronicTotal(int electronicTotal) {
-        this.electronicTotal = electronicTotal;
+    public int getElectronicTotalMoney() {
+        return electronicTotalMoney;
     }
 
-    public int getElectronicTotal() {
-        return electronicTotal;
+    public void setElectronicTotalMoney(int electronicTotalMoney) {
+        this.electronicTotalMoney = electronicTotalMoney;
+    }
+
+    public int getElectronicTotalVolume() {
+        return electronicTotalVolume;
+    }
+
+    public void setElectronicTotalVolume(int electronicTotalVolume) {
+        this.electronicTotalVolume = electronicTotalVolume;
     }
 }
